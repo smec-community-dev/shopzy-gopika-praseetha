@@ -15,7 +15,7 @@ class User(AbstractUser):
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='customer')
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def _str_(self):
+    def __str__(self):
         return f"{self.username} ({self.role})"
 
 class Category(models.Model):
@@ -23,7 +23,7 @@ class Category(models.Model):
     slug = models.SlugField(unique=True, blank=True)
     description = models.TextField()
 
-    def _str_(self):
+    def __str__(self):
         return self.category_name
 
 class SubCategory(models.Model):
@@ -31,6 +31,6 @@ class SubCategory(models.Model):
     sub_category_name = models.CharField(max_length=200)
     description = models.TextField()
 
-    def _str_(self):
+    def __str__(self):
         return f"{self.sub_category_name} ({self.category.category_name})"
 

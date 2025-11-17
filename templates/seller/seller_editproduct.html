@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+    <div class="container mx-auto p-6">
+        <h2 class="text-2xl font-bold mb-6 text-center">Edit Product</h2>
+
+        <form method="POST" enctype="multipart/form-data"
+              class="bg-white p-6 rounded-lg shadow-lg">
+            {% csrf_token %}
+
+            <div class="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
+
+                <!-- Subcategory -->
+                <div>
+                    <label class="font-medium">Subcategory</label>
+                    <select id="subcategory_id" name="subcategory_id"
+                            class="mt-2 w-full p-2 border rounded-md">
+                        {% for sub in subcategories %}
+                        <option value="{{ sub.id }}" {% if product.sub_category.id == sub.id %}selected{% endif %}>
+                            {{ sub.sub_category_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Product Name -->
+                <div>
+                    <label class="font-medium">Product Name</label>
+                    <input type="text" name="product_name"
+                           value="{{ product.product_name }}"
+                           class="mt-2 p-2 block w-full border rounded-md">
+                </div>
+
+                <!-- Price -->
+                <div>
+                    <label class="font-medium">Price</label>
+                    <input type="number" name="price" step="0.01"
+                           value="{{ product.price }}"
+                           class="mt-2 p-2 block w-full border rounded-md">
+                </div>
+
+                <!-- Stock -->
+                <div>
+                    <label class="font-medium">Stock</label>
+                    <input type="number" name="stock"
+                           value="{{ product.stock }}"
+                           class="mt-2 p-2 block w-full border rounded-md">
+                </div>
+
+                <!-- Rating -->
+                <div>
+                    <label class="font-medium">Rating</label>
+                    <select name="rating" class="mt-2 p-2 block w-full border rounded-md">
+                        {% for r in "12345" %}
+                        <option value="{{ r }}"
+                            {% if product.rating == r|add:"0" %}selected{% endif %}>
+                            {{ r }} ★
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Slug -->
+                <div>
+                    <label class="font-medium">Slug</label>
+                    <input type="text" name="slug"
+                           value="{{ product.slug }}"
+                           class="mt-2 p-2 block w-full border rounded-md">
+                </div>
+
+                <!-- Description -->
+                <div class="sm:col-span-2">
+                    <label class="font-medium">Description</label>
+                    <textarea name="description" rows="3"
+                        class="mt-2 p-2 block w-full border rounded-md">{{ product.description }}</textarea>
+                </div>
+
+                <!-- Current Image -->
+                {% if product_image %}
+                <div class="sm:col-span-2">
+                    <label>Current Image:</label>
+                    <img src="{{ product_image.product_img.url }}"
+                         class="h-24 w-24 object-cover rounded-md mt-2">
+                </div>
+                {% endif %}
+
+                <!-- Upload New Image -->
+                <div class="sm:col-span-2">
+                    <label class="font-medium">Update Image</label>
+                    <input type="file" name="image"
+                           class="mt-2 p-2 block w-full border rounded-md">
+                </div>
+
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-between mt-6">
+                <a href="/seller_add_product"
+                   class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md">
+                    Cancel
+                </a>
+
+                <button type="submit"
+                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">
+                    Update Product
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+</body>
+</html>
