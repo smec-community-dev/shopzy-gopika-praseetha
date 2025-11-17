@@ -3,6 +3,7 @@ from pyexpat.errors import messages
 
 from Core.models import User,Category,SubCategory
 from Seller.models import Product
+from decorators.decorators import role_required
 from .models import Customer,Review,ReviewImage,Wishlist
 from django.contrib.auth import authenticate,login,logout
 from django.db.models import Q
@@ -78,7 +79,7 @@ def user_single_product(request, slug):
     wishlisted = Wishlist.objects.filter(user=request.user, product=product).exists()
     return render(request, 'user/user_single_product.html', {'product': product,'images': images,'wishlisted': wishlisted})
 
-@login_required(login_url='/user_login')
+@role_required("customer", login_url="/user_login")
 def user_add_wishlist(request, slug):
     product = Product.objects.get(slug=slug)
     try:
