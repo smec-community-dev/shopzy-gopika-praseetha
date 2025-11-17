@@ -62,7 +62,7 @@ class Wishlist(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} → {self.product.product_name}"
+        return f"{self.unser.username} → {self.product.product_name}"
 
 
 class Review(models.Model):
