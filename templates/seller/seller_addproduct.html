@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller | Add Product</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-100">
+
+<div class="container mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-6 text-center">Add / Edit Product</h1>
+
+    <!-- Show Form only on first page -->
+    {% if products.number == 1 %}
+
+    <form method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-lg"
+          action="{% if edit %}{% url 'edit_product' product.slug %}{% else %}{% url 'seller_addproduct' %}{% endif %}">
+        {% csrf_token %}
+
+        <div class="grid grid-cols-1 gap-6 mt-4 sm:grid-cols-2">
+
+            <div>
+                <label>Subcategory</label>
+                <select id="subcategory_id" name="subcategory_id"
+                        class="mt-2 w-full p-2 border rounded-md">
+                    <option value="">Select Subcategory</option>
+                    {% for sub in subcategories %}
+                    <option value="{{ sub.id }}">
+                        {{ sub.sub_category_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label>Product Name</label>
+                <input type="text" name="product_name"
+                       value="{% if edit %}{{ product.product_name }}{% endif %}"
+                       class="mt-2 p-2 block w-full border rounded-md"/>
+            </div>
+
+            <div>
+                <label>Price</label>
+                <input type="number" name="price" step="0.01"
+                       value="{% if edit %}{{ product.price }}{% endif %}"
+                       class="mt-2 p-2 block w-full border rounded-md"/>
+            </div>
+
+            <div>
+                <label>Stock</label>
+                <input type="number" name="stock"
+                       value="{% if edit %}{{ product.stock }}{% endif %}"
+                       class="mt-2 p-2 block w-full border rounded-md"/>
+            </div>
+
+            <div>
+                <label>Rating</label>
+                <select name="rating" class="mt-2 p-2 block w-full border rounded-md">
+                    <option value="">Select Rating</option>
+                    {% for r in "12345" %}
+                    <option value="{{ r }}"
+                        {% if edit and product.rating == r|add:"0" %}selected{% endif %}>{{ r }} ★</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label>Slug</label>
+                <input type="text" name="slug"
+                       value="{% if edit %}{{ product.slug }}{% endif %}"
+                       class="mt-2 p-2 block w-full border rounded-md"/>
+            </div>
+
+            <div class="sm:col-span-2">
+                <label>Description</label>
+                <textarea name="description" rows="3"
+                          class="mt-2 p-2 block w-full border rounded-md">{% if edit %}{{ product.description }}{% endif %}</textarea>
+            </div>
+
+            {% if edit and product.productimage_set.first %}
+            <div class="sm:col-span-2">
+                <p>Current Image:</p>
+                <img src="{{ product.productimage_set.first.product_img.url }}"
+                     class="h-24 w-24 object-cover rounded-md mt-2"/>
+            </div>
+            {% endif %}
+
+            <div class="sm:col-span-2">
+                <label>Product Image</label>
+                <input type="file" name="image" class="mt-2 p-2 block w-full border rounded-md"/>
+            </div>
+
+        </div>
+
+        <div class="flex justify-end mt-6">
+            {% if not edit %}
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md">
+                <i class="fa fa-plus"></i> Add Product
+            </button>
+            {% else %}
+            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md">
+                <i class="fa fa-edit"></i> Update Product
+            </button>
+            {% endif %}
+        </div>
+
+    </form>
+
+    {% endif %} <!-- END form hide condition -->
+
+    <!-- Product List -->
+    <div class="mt-10">
+        <h2 class="text-xl font-semibold mb-4">Existing Products</h2>
+
+        <table class="w-full bg-white rounded-lg shadow-lg overflow-hidden">
+            <thead class="bg-gray-800 text-white">
+            <tr>
+                <th class="p-3">Image</th>
+                <th class="p-3">Name</th>
+                <th class="p-3">Price</th>
+                <th class="p-3">Stock</th>
+                <th class="p-3">Actions</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for p in products %}
+            <tr class="border-b">
+                <td class="p-3 text-center">
+                    {% if p.productimage_set.first %}
+                    <img src="{{ p.productimage_set.first.product_img.url }}"
+                         class="h-14 w-14 object-cover rounded-md inline-block"/>
+                    {% endif %}
+                </td>
+
+                <td class="p-3">{{ p.product_name }}</td>
+                <td class="p-3">₹{{ p.price }}</td>
+                <td class="p-3">{{ p.stock }}</td>
+
+                <td class="p-3 space-x-3">
+                    <a href="{% url 'edit_product' p.slug %}"
+                       class="text-blue-600 hover:text-blue-800"><i class="fa fa-edit"></i></a>
+                    <a href="{% url 'product_delete' p.slug %}"
+                       onclick="return confirm('Are you sure want to delete?')"
+                       class="text-red-600 hover:text-red-800"><i class="fa fa-trash"></i></a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="mt-4 flex justify-between items-center text-sm font-medium">
+            {% if products.has_previous %}
+                <a class="text-blue-600" href="?page={{ products.previous_page_number }}">&laquo; Previous</a>
+            {% endif %}
+
+            <span>Page {{ products.number }} of {{ products.paginator.num_pages }}</span>
+
+            {% if products.has_next %}
+                <a class="text-blue-600" href="?page={{ products.next_page_number }}">Next &raquo;</a>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
