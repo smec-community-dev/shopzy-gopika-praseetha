@@ -3,7 +3,7 @@ from django.contrib import messages as dj_messages
 from Core.models import User,Category,SubCategory
 from Seller.models import Product
 from decorators.decorators import role_required
-from .models import Customer,Review,ReviewImage,Wishlist,Cart,Order,OrderItem
+from .models import Customer,Review,ReviewImage,Wishlist,Cart,Order,OrderItem,Address
 from django.contrib.auth import authenticate,login,logout
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -272,18 +272,14 @@ def user_update_cart(request, id):
 
 @role_required("customer", login_url="/user_login")
 def user_checkout(request):
-
     items = Cart.objects.filter(user=request.user).select_related("product")
-
+    addresses = Address.objects.filter(user=request.user)  # <-- new
     for item in items:
         item.subtotal = item.product.price * item.quantity
-
     total = sum(item.subtotal for item in items)
 
-    return render(request, "user/user_checkout.html", {
-        "items": items,
-        "total": total
-    })
+    return render(request, "user/user_checkout.html", {"items": items,"total": total,"addresses": addresses})
+
 
 @role_required("customer", login_url="/user_login")
 def user_update_checkout_quantity(request, id):
@@ -320,12 +316,12 @@ def user_update_checkout_quantity(request, id):
 
 @role_required("customer", login_url="/user_login")
 def place_order(request):
-
     if request.method != "POST":
         return redirect("user_checkout")
 
-    items = Cart.objects.filter(user=request.user).select_related("product")
+    user = request.user
 
+    items = Cart.objects.filter(user=user).select_related("product")
     if not items:
         dj_messages.error(request, "Cart is empty.")
         return redirect("user_view_cart")
@@ -335,37 +331,64 @@ def place_order(request):
             dj_messages.error(request, f"Not enough stock for {item.product.product_name}.")
             return redirect("user_checkout")
 
-    shipping_address = request.POST.get("shipping_address", "").strip()
+    selected_addr_id = request.POST.get("selected_address")
 
-    if shipping_address == "":
-        dj_messages.error(request, "Shipping address is required.")
-        return redirect("user_checkout")
+    if selected_addr_id:
+        try:
+            addr = Address.objects.get(id=selected_addr_id, user=user)
+        except Address.DoesNotExist:
+            dj_messages.error(request, "Invalid address selected.")
+            return redirect("user_checkout")
+    else:
+
+        full_name = request.POST.get("full_name", "").strip()
+        phone = request.POST.get("phone", "").strip()
+        line1 = request.POST.get("address_line1", "").strip()
+        line2 = request.POST.get("address_line2", "").strip()
+        city = request.POST.get("city", "").strip()
+        state = request.POST.get("state", "").strip()
+        pincode = request.POST.get("pincode", "").strip()
+        country = request.POST.get("country", "India").strip()
+
+        if not (full_name and phone and line1 and city and state and pincode):
+            dj_messages.error(request, "Please select an address or fill all required address fields.")
+            return redirect("user_checkout")
+
+        addr = Address.objects.create(
+            user=user,
+            full_name=full_name,
+            phone=phone,
+            address_line1=line1,
+            address_line2=line2 or None,
+            city=city,
+            state=state,
+            pincode=pincode,
+            country=country
+        )
+
+    final_address = f"{addr.full_name}, {addr.phone}, {addr.address_line1}, "
+    if addr.address_line2:
+        final_address += f"{addr.address_line2}, "
+    final_address += f"{addr.city}, {addr.state} - {addr.pincode}, {addr.country}"
 
     total_amount = sum(item.product.price * item.quantity for item in items)
 
     order = Order.objects.create(
-        user=request.user,
+        user=user,
         total_amount=total_amount,
-        shipping_address=shipping_address,
+        shipping_address=final_address,
         status="placed"
     )
 
     for item in items:
-        OrderItem.objects.create(
-            order=order,
-            product=item.product,
-            quantity=item.quantity
-        )
-
+        OrderItem.objects.create(order=order, product=item.product, quantity=item.quantity)
         product = item.product
         product.stock -= item.quantity
         product.save()
 
     items.delete()
-
     dj_messages.success(request, "Order placed successfully!")
     return redirect("order_summary", id=order.id)
-
 
 @role_required("customer", login_url="/user_login")
 def order_summary(request, id):
