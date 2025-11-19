@@ -161,9 +161,9 @@
                         <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ data|length }}</span>
                     </a>
 
-                    <a href="#" class="relative mx-2 text-dark hover:text-primary hover:-translate-y-1">
+                    <a href="{% url 'user_view_cart' %}" class="relative mx-2 text-dark hover:text-primary hover:-translate-y-1">
                         <i class="fas fa-shopping-cart text-xl"></i>
-                        <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full">0</span>
+                        <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full">{{ request.user.cart_items.count }}</span>
                     </a>
 
                     <div class="user-info flex items-center ml-4 bg-light rounded-full px-4 py-2 hover:bg-primary hover:text-white">

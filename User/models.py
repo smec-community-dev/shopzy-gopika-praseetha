@@ -1,7 +1,7 @@
 from django.db import models
 from Core.models import User,SubCategory
 from Seller.models import Product
-
+from django.utils.text import slugify
 # Create your models here.
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customer_profile")

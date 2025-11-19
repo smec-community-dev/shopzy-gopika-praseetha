@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>User Dashboard</title>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex">
+
+    <!-- Sidebar -->
+    <div class="w-64 bg-white h-screen shadow-lg p-6">
+
+        <h2 class="text-2xl font-bold mb-6">Dashboard</h2>
+
+        <ul class="space-y-4">
+            <li><a href="{% url 'user_dashboard' %}" class="block text-lg font-semibold">My Profile</a></li>
+            <li><a href="#" class="block text-lg font-semibold">My Orders</a></li>
+            <li><a href="#" class="block text-lg font-semibold">Wishlist</a></li>
+            <li><a href="#" class="block text-lg font-semibold">My Reviews</a></li>
+        </ul>
+    </div>
+
+</div>
+
+</body>
+</html>
