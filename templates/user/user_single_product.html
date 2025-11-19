@@ -6,6 +6,7 @@
     <title>{{ product.product_name }} - ShopSphere</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -40,82 +41,38 @@
             }
         }
     </script>
+
     <style>
-        .logo-hover i {
-            transition: transform 0.5s ease;
-        }
+        .logo-hover i { transition: transform 0.5s ease; }
+        .logo-hover:hover i { transform: rotate(0deg); }
 
-        .logo-hover:hover i {
-            transform: rotate(0deg);
-        }
-
-        .nav-link {
-            position: relative;
-        }
-
+        .nav-link { position: relative; }
         .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -5px;
-            left: 0;
-            background-color: #5d5fef;
-            transition: width 0.3s ease;
+            content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0;
+            background-color: #5d5fef; transition: width 0.3s ease;
         }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
+        .nav-link:hover::after { width: 100%; }
 
         .footer-title::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 3px;
-            background: #5d5fef;
-            bottom: 0;
-            left: 0;
+            content: ''; position: absolute; width: 40px; height: 3px; background: #5d5fef; bottom: 0; left: 0;
         }
 
-        .social-icon:hover {
-            transform: translateY(-5px);
-        }
+        .social-icon:hover { transform: translateY(-5px); }
 
-        .btn {
-            position: relative;
-            overflow: hidden;
-        }
-
+        .btn { position: relative; overflow: hidden; }
         .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             transition: left 0.5s;
         }
-
-        .btn:hover::before {
-            left: 100%;
-        }
+        .btn:hover::before { left: 100%; }
 
         /* Mobile Navigation with CSS-only toggle */
-        #nav-toggle {
-            display: none;
-        }
-
-        #nav-toggle:checked ~ .mobile-nav {
-            max-height: 500px;
-            padding: 1.5rem 0;
-        }
+        #nav-toggle { display: none; }
+        #nav-toggle:checked ~ .mobile-nav { max-height: 500px; padding: 1.5rem 0; }
 
         .mobile-nav {
-            max-height: 0;
-            overflow: hidden;
-            transition: all 0.4s ease;
+            max-height: 0; overflow: hidden; transition: all 0.4s ease;
         }
 
         /* Search bar focus effect */
@@ -203,358 +160,454 @@
         .review-card:hover {
             transform: translateY(-3px);
         }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .main-image-container {
+                height: 300px;
+            }
+
+            .thumbnail img {
+                height: 60px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main-image-container {
+                height: 250px;
+            }
+
+            .thumbnail img {
+                height: 50px;
+            }
+        }
     </style>
 </head>
+
 <body class="bg-gray-50 text-dark">
-    <!-- Header & Navigation -->
-    <header class="bg-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-4">
-            <nav class="flex justify-between items-center py-4">
-                <a href="{% url 'user_home' %}" class="logo-hover flex items-center text-2xl font-bold text-primary">
-                    <i class="fas fa-shopping-bag mr-2 transform -rotate-12"></i>
-                    ShopSphere
+
+<!-- HEADER -->
+<header class="bg-white shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+        <nav class="flex justify-between items-center py-4">
+            <a href="{% url 'user_home' %}" class="logo-hover flex items-center text-2xl font-bold text-primary">
+                <i class="fas fa-shopping-bag mr-2 transform -rotate-12"></i>
+                ShopSphere
+            </a>
+
+            <ul class="hidden md:flex space-x-8">
+                <li><a href="{% url 'user_home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
+                <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Shop</a></li>
+                <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Categories</a></li>
+                <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Deals</a></li>
+                <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
+                <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
+            </ul>
+
+            <div class="flex items-center">
+                <div class="hidden md:flex items-center bg-light rounded-full px-4 py-2 mr-4 w-64">
+                    <input type="text" placeholder="Search products..." class="bg-transparent outline-none w-full px-2">
+                    <button class="text-gray hover:text-primary transition-colors">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <a href="{% url 'user_view_wishlist' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
+                    <i class="far fa-heart text-xl"></i>
+                    <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ request.user.wishlist.count }}</span>
                 </a>
-
-                <ul class="hidden md:flex space-x-8">
-                    <li><a href="{% url 'user_home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Shop</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Categories</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Deals</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
-                </ul>
-
-                <div class="flex items-center">
-                    <div class="hidden md:flex items-center bg-light rounded-full px-4 py-2 mr-4 w-64">
-                        <input type="text" placeholder="Search products..." class="bg-transparent outline-none w-full px-2">
-                        <button class="text-gray hover:text-primary transition-colors">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                    <a href="{% url 'user_view_wishlist' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
-                        <i class="far fa-heart text-xl"></i>
-                        <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ request.user.wishlist.count }}</span>
-                    </a>
-                    <a href="#" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
-                        <i class="fas fa-shopping-cart text-xl"></i>
-                        <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">0</span>
-                    </a>
+                <a href="{% url 'user_view_cart' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ request.user.cart_items.count }}</span>
+                </a>
+                <!-- User Account Dropdown -->
+                <div class="relative group">
                     <div class="user-info flex items-center ml-4 bg-light rounded-full px-4 py-2 cursor-pointer transition-all hover:bg-primary hover:text-white">
                         <i class="fas fa-user mr-2 text-primary transition-colors"></i>
                         <span class="font-medium">
                             {% if request.user.is_authenticated %}
                                 {{ request.user.username }}
                             {% else %}
-                                Guest
+                                Account
                             {% endif %}
                         </span>
+                        <i class="fas fa-chevron-down ml-2 text-sm"></i>
                     </div>
 
-                    <!-- Mobile menu toggle -->
-                    <label for="nav-toggle" class="md:hidden ml-4 text-xl cursor-pointer">
-                        <i class="fas fa-bars"></i>
-                    </label>
-                </div>
-            </nav>
-        </div>
-
-        <!-- Hidden checkbox for mobile menu -->
-        <input type="checkbox" id="nav-toggle" class="hidden">
-
-        <!-- Mobile Navigation -->
-        <div class="mobile-nav bg-white shadow-lg md:hidden">
-            <div class="container mx-auto px-4">
-                <a href="{% url 'user_home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Shop</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Categories</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Deals</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">About</a>
-                <a href="#" class="block py-3 hover:text-primary transition-colors">Contact</a>
-            </div>
-        </div>
-    </header>
-
-    <!-- Product Details Section -->
-    <section class="container mx-auto px-4 py-8 animate-fade-in">
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
-                <!-- Product Images -->
-                <div class="space-y-4">
-                    <!-- Main Image Container -->
-                    <div class="main-image-container bg-light rounded-2xl overflow-hidden flex justify-center items-center">
-                        <!-- Default Main Image -->
-                        {% if images %}
-                            <img src="{{ images.0.product_img.url }}" alt="{{ product.product_name }}" class="main-image-default main-image-target max-w-full max-h-full object-contain rounded-xl">
+                    <!-- Dropdown Menu -->
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        {% if request.user.is_authenticated %}
+                            <a href="{% url 'user_home' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user-circle mr-2"></i>My Profile
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-shopping-bag mr-2"></i>My Orders
+                            </a>
+                            <a href="{% url 'user_view_wishlist' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-heart mr-2"></i>Wishlist
+                            </a>
+                            <div class="border-t my-1"></div>
+                            <a href="{% url 'user_logout' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                            </a>
                         {% else %}
-                            <img src="https://via.placeholder.com/400" alt="{{ product.product_name }}" class="main-image-default main-image-target max-w-full max-h-full object-contain rounded-xl">
+                            <a href="{% url 'user_login' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Login
+                            </a>
+                            <a href="{% url 'user_register' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user-plus mr-2"></i>Register
+                            </a>
                         {% endif %}
-
-                        <!-- Additional Images as Targets -->
-                        {% for image in images %}
-                            {% if not forloop.first %}
-                                <img id="image-{{ forloop.counter }}" src="{{ image.product_img.url }}" alt="{{ product.product_name }}" class="main-image-target max-w-full max-h-full object-contain rounded-xl">
-                            {% endif %}
-                        {% endfor %}
                     </div>
+                </div>
 
-                    <!-- Thumbnail Gallery with Links -->
-                    {% if images and images|length > 1 %}
-                    <div class="grid grid-cols-4 gap-4">
-                        <!-- First thumbnail links to default -->
-                        <a href="#">
+                <!-- Mobile menu toggle -->
+                <label for="nav-toggle" class="md:hidden ml-4 text-xl cursor-pointer">
+                    <i class="fas fa-bars"></i>
+                </label>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Hidden checkbox for mobile menu -->
+    <input type="checkbox" id="nav-toggle" class="hidden">
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav bg-white shadow-lg md:hidden">
+        <div class="container mx-auto px-4">
+            <a href="{% url 'user_home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
+            <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Shop</a>
+            <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Categories</a>
+            <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Deals</a>
+            <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">About</a>
+            <a href="#" class="block py-3 hover:text-primary transition-colors">Contact</a>
+        </div>
+    </div>
+
+</header>
+
+<!-- PRODUCT SECTION -->
+<section class="container mx-auto px-4 py-8 animate-fade-in">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 p-4 md:p-8">
+
+            <!-- IMAGES -->
+            <div class="space-y-4">
+                <div class="main-image-container bg-light rounded-2xl overflow-hidden flex justify-center items-center">
+                    {% if images %}
+                        <img src="{{ images.0.product_img.url }}" alt="{{ product.product_name }}" class="main-image-default main-image-target max-w-full max-h-full object-contain rounded-xl">
+                    {% else %}
+                        <img src="https://via.placeholder.com/400" alt="{{ product.product_name }}" class="main-image-default main-image-target max-w-full max-h-full object-contain rounded-xl">
+                    {% endif %}
+
+                    {% for image in images %}
+                        {% if not forloop.first %}
+                            <img id="image-{{ forloop.counter }}" src="{{ image.product_img.url }}" alt="{{ product.product_name }}" class="main-image-target max-w-full max-h-full object-contain rounded-xl">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if images and images|length > 1 %}
+                <div class="grid grid-cols-4 gap-2 md:gap-4">
+                    <a href="#">
+                        <div class="thumbnail border-2 border-gray-200 rounded-lg overflow-hidden">
+                            <img src="{{ images.0.product_img.url }}" alt="{{ product.product_name }}" class="w-full h-20 object-cover">
+                        </div>
+                    </a>
+                    {% for image in images %}
+                        {% if not forloop.first %}
+                        <a href="#image-{{ forloop.counter }}">
                             <div class="thumbnail border-2 border-gray-200 rounded-lg overflow-hidden">
-                                {% if images %}
-                                    <img src="{{ images.0.product_img.url }}" alt="{{ product.product_name }}" class="w-full h-20 object-cover">
-                                {% endif %}
+                                <img src="{{ image.product_img.url }}" alt="{{ product.product_name }}" class="w-full h-20 object-cover">
                             </div>
                         </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
 
-                        <!-- Other thumbnails link to their respective targets -->
-                        {% for image in images %}
-                            {% if not forloop.first %}
-                                <a href="#image-{{ forloop.counter }}">
-                                    <div class="thumbnail border-2 border-gray-200 rounded-lg overflow-hidden">
-                                        <img src="{{ image.product_img.url }}" alt="{{ product.product_name }}" class="w-full h-20 object-cover">
-                                    </div>
-                                </a>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
+            <!-- PRODUCT DETAILS -->
+            <div class="product-details-card space-y-4 md:space-y-6">
+                <div class="flex justify-between items-start">
+                    <h1 class="text-2xl md:text-3xl font-bold text-dark mb-2">{{ product.product_name }}</h1>
+
+                    {% if wishlisted %}
+                        <a href="{% url 'add_wishlist' product.slug %}" class="text-red-500 hover:text-red-600 transition-colors">
+                            <i class="fas fa-heart text-2xl md:text-3xl"></i>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'add_wishlist' product.slug %}" class="text-gray-400 hover:text-red-500 transition-colors">
+                            <i class="far fa-heart text-2xl md:text-3xl"></i>
+                        </a>
                     {% endif %}
                 </div>
 
-                <!-- Product Details -->
-                <div class="product-details-card space-y-6">
-                    <div class="flex justify-between items-start">
-                        <h1 class="text-3xl font-bold text-dark mb-2">{{ product.product_name }}</h1>
+                <div class="flex items-center mb-4">
+                    <div class="text-yellow-500 text-base md:text-lg">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= product.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="ml-2 text-gray-600 text-sm md:text-base">({{ product.rating }})</span>
+                    <span class="mx-2 text-gray-300 hidden sm:inline">•</span>
+                    <span class="text-green-600 font-medium text-sm md:text-base">In Stock</span>
+                </div>
 
-                        <!-- WISHLIST TOGGLE -->
+                <div class="text-3xl md:text-4xl font-bold text-secondary">₹{{ product.price }}</div>
+
+                <div class="text-gray-600 leading-relaxed text-sm md:text-base">
+                    <p>{{ product.description }}</p>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <span class="font-semibold text-sm md:text-base">Quantity:</span>
+                    <div class="flex items-center border border-gray-300 rounded-lg">
+                        <button id="qty-decrease" class="px-3 md:px-4 py-2 text-gray-600 hover:text-primary">-</button>
+                        <span id="qty-display" class="px-3 md:px-4 py-2 border-l border-r border-gray-300">1</span>
+                        <button id="qty-increase" class="px-3 md:px-4 py-2 text-gray-600 hover:text-primary">+</button>
+                    </div>
+                </div>
+                <input type="hidden" id="quantity-input" value="1">
+
+
+                <!-- ADD-TO-CART + BUY NOW -->
+               <a id="addToCartBtn"
+                   href="{% url 'user_add_to_cart' product.slug %}?qty=1"
+                   class="btn border-2 border-green-600 text-green-600 py-3 px-8 rounded-lg w-full font-semibold
+                          hover:bg-green-600 hover:text-white mt-3 transition-all hover:-translate-y-1 flex
+                          items-center justify-center">
+
+                   {% if carted %}
+                   <i class="fa-solid fa-cart-shopping mr-2"></i> Remove from Cart
+                   {% else %}
+                   <i class="fa-solid fa-cart-plus mr-2"></i> Add to Cart
+                   {% endif %}
+               </a>
+
+
+
+                    <!-- BUY NOW -->
+                    <form action="{% url 'user_add_to_cart' product.slug %}" method="POST" class="w-full">
+                        {% csrf_token %}
+                        <input type="hidden" id="quantity-input-buy" name="quantity" value="1">
+                        <input type="hidden" name="next" value="review">
+                        <button type="submit" class="btn bg-secondary text-white py-3 px-4 md:px-8 rounded-lg w-full font-semibold transition-all hover:-translate-y-1 hover:bg-red-500 text-sm md:text-base">
+                            <i class="fas fa-bolt mr-2"></i> Buy Now
+                        </button>
+                    </form>
+                </div>
+                    <!-- Wishlist -->
+                    <a href="{% url 'add_wishlist' product.slug %}"
+                       class="btn border-2 border-primary text-primary py-3 px-8 rounded-lg w-full font-semibold hover:bg-primary hover:text-white mt-3 transition-all hover:-translate-y-1 flex items-center justify-center">
                         {% if wishlisted %}
-                            <a href="{% url 'add_wishlist' product.slug %}" class="text-red-500 hover:text-red-600 transition-colors">
-                                <i class="fas fa-heart text-3xl"></i>
-                            </a>
+                            <i class="fas fa-heart mr-2"></i> Remove from Wishlist
                         {% else %}
-                            <a href="{% url 'add_wishlist' product.slug %}" class="text-gray-400 hover:text-red-500 transition-colors">
-                                <i class="far fa-heart text-3xl"></i>
-                            </a>
+                            <i class="far fa-heart mr-2"></i> Add to Wishlist
                         {% endif %}
+                    </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- REVIEWS SECTION -->
+<section class="container mx-auto px-4 py-8 animate-slide-up">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div class="p-4 md:p-8">
+            <!-- Review Form -->
+            <div class="review-form-card mb-8 md:mb-12">
+                <h2 class="text-xl md:text-2xl font-bold text-dark mb-4 md:mb-6">Write a Review</h2>
+
+                <form action="{% url 'user_add_review' product.slug %}" method="POST" enctype="multipart/form-data" class="space-y-4 md:space-y-6">
+                    {% csrf_token %}
+
+                    <div>
+                        <label class="font-semibold text-dark block mb-2 text-sm md:text-base">Rating</label>
+                        <select name="rating" class="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm md:text-base">
+                            <option value="1">⭐ (1 Star)</option>
+                            <option value="2">⭐⭐ (2 Stars)</option>
+                            <option value="3">⭐⭐⭐ (3 Stars)</option>
+                            <option value="4">⭐⭐⭐⭐ (4 Stars)</option>
+                            <option value="5" selected>⭐⭐⭐⭐⭐ (5 Stars)</option>
+                        </select>
                     </div>
 
-                    <div class="flex items-center mb-4">
-                        <div class="text-yellow-500 text-lg">
+                    <div>
+                        <label class="font-semibold text-dark block mb-2 text-sm md:text-base">Your Review</label>
+                        <textarea name="review" rows="4" required class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm md:text-base" placeholder="Share your experience with this product..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="font-semibold text-dark block mb-2 text-sm md:text-base">Upload Images</label>
+                        <input type="file" name="images" multiple accept="image/*" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all text-sm md:text-base">
+                        <p class="text-gray-500 text-xs md:text-sm mt-1">You can select multiple images</p>
+                    </div>
+
+                    <button class="btn bg-primary text-white py-3 px-4 md:px-8 rounded-lg font-semibold transition-all hover:-translate-y-1 hover:bg-primary-dark text-sm md:text-base">
+                        Submit Review
+                    </button>
+                </form>
+            </div>
+
+            <!-- Existing Reviews -->
+            <div>
+                <h2 class="text-xl md:text-2xl font-bold text-dark mb-4 md:mb-6">Customer Reviews</h2>
+
+                {% for r in product.reviews.all %}
+                <div class="review-card bg-light rounded-xl p-4 md:p-6 mb-4 md:mb-6 shadow-sm">
+                    <!-- Username and Rating -->
+                    <div class="flex justify-between items-start mb-3 md:mb-4">
+                        <p class="font-bold text-base md:text-lg text-dark">{{ r.user.username }}</p>
+                        <div class="text-yellow-500 text-lg md:text-xl">
                             {% for i in "12345" %}
-                                {% if forloop.counter <= product.rating %}
+                                {% if forloop.counter <= r.rating %}
                                     <i class="fas fa-star"></i>
                                 {% else %}
                                     <i class="far fa-star"></i>
                                 {% endif %}
                             {% endfor %}
                         </div>
-                        <span class="ml-2 text-gray-600">({{ product.rating }})</span>
-                        <span class="mx-2 text-gray-300">•</span>
-                        <span class="text-green-600 font-medium">In Stock</span>
                     </div>
 
-                    <div class="text-4xl font-bold text-secondary">
-                        ₹{{ product.price }}
+                    <!-- Review Text -->
+                    <p class="text-gray-600 mb-3 md:mb-4 text-sm md:text-base">{{ r.review }}</p>
+
+                    <!-- Review Images -->
+                    {% if r.reviewimage_set.exists %}
+                    <div class="flex gap-2 md:gap-3 mt-3 md:mt-4 overflow-x-auto pb-2">
+                        {% for img in r.reviewimage_set.all %}
+                            <img src="{{ img.review_img.url }}" class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-lg shadow-sm transition-all hover:scale-105 cursor-pointer flex-shrink-0">
+                        {% endfor %}
                     </div>
+                    {% endif %}
 
-                    <div class="text-gray-600 leading-relaxed">
-                        <p>{{ product.description }}</p>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="flex items-center space-x-4">
-                            <span class="font-semibold text-dark">Quantity:</span>
-                            <div class="flex items-center border border-gray-300 rounded-lg">
-                                <button class="px-4 py-2 text-gray-600 hover:text-primary">-</button>
-                                <span class="px-4 py-2 border-l border-r border-gray-300">1</span>
-                                <button class="px-4 py-2 text-gray-600 hover:text-primary">+</button>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col sm:flex-row gap-4">
-                            <button class="btn bg-primary text-white py-3 px-8 rounded-lg font-semibold flex-1 transition-all hover:-translate-y-1 hover:bg-primary-dark">
-                                <i class="fas fa-shopping-cart mr-2"></i>Add to Cart
-                            </button>
-                            <button class="btn bg-secondary text-white py-3 px-8 rounded-lg font-semibold flex-1 transition-all hover:-translate-y-1 hover:bg-red-500">
-                                <i class="fas fa-bolt mr-2"></i>Buy Now
-                            </button>
-                        </div>
-
-                        <a href="{% url 'add_wishlist' product.slug %}" class="btn border-2 border-primary text-primary py-3 px-8 rounded-lg font-semibold w-full transition-all hover:-translate-y-1 hover:bg-primary hover:text-white flex items-center justify-center">
-                            {% if wishlisted %}
-                                <i class="fas fa-heart mr-2"></i>Remove from Wishlist
-                            {% else %}
-                                <i class="far fa-heart mr-2"></i>Add to Wishlist
-                            {% endif %}
-                        </a>
+                    <!-- Review Date -->
+                    <div class="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gray-200">
+                        <p class="text-gray-500 text-xs md:text-sm">Reviewed on {{ r.created_at|date:"F j, Y" }}</p>
                     </div>
                 </div>
+
+                {% empty %}
+                <div class="text-center py-6 md:py-8">
+                    <i class="fas fa-comment-slash text-3xl md:text-4xl text-gray-300 mb-3 md:mb-4"></i>
+                    <p class="text-gray-500 text-base md:text-lg">No reviews yet. Be the first to review this product!</p>
+                </div>
+                {% endfor %}
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Reviews Section -->
-    <section class="container mx-auto px-4 py-8 animate-slide-up">
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-            <div class="p-8">
-                <!-- Review Form -->
-                <div class="review-form-card mb-12">
-                    <h2 class="text-2xl font-bold text-dark mb-6">Write a Review</h2>
-
-                    <form action="{% url 'user_add_review' product.slug %}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                        {% csrf_token %}
-
-                        <!-- Rating -->
-                        <div>
-                            <label class="font-semibold text-dark block mb-2">Rating</label>
-                            <select name="rating" class="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
-                                <option value="1">⭐ (1 Star)</option>
-                                <option value="2">⭐⭐ (2 Stars)</option>
-                                <option value="3">⭐⭐⭐ (3 Stars)</option>
-                                <option value="4">⭐⭐⭐⭐ (4 Stars)</option>
-                                <option value="5" selected>⭐⭐⭐⭐⭐ (5 Stars)</option>
-                            </select>
-                        </div>
-
-                        <!-- Review Text -->
-                        <div>
-                            <label class="font-semibold text-dark block mb-2">Your Review</label>
-                            <textarea name="review" rows="4" required class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Share your experience with this product..."></textarea>
-                        </div>
-
-                        <!-- Multiple Images -->
-                        <div>
-                            <label class="font-semibold text-dark block mb-2">Upload Images</label>
-                            <input type="file" name="images" multiple accept="image/*" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all">
-                            <p class="text-gray-500 text-sm mt-1">You can select multiple images</p>
-                        </div>
-
-                        <button class="btn bg-primary text-white py-3 px-8 rounded-lg font-semibold transition-all hover:-translate-y-1 hover:bg-primary-dark">
-                            Submit Review
-                        </button>
-                    </form>
+<!-- FOOTER -->
+<footer class="bg-dark text-white pt-12 md:pt-16 pb-6 md:pb-8 mt-12 md:mt-16">
+    <div class="container mx-auto px-4">
+        <div class="footer-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-6 md:mb-8">
+            <div class="footer-column">
+                <h3 class="footer-title text-lg md:text-xl mb-3 md:mb-4 pb-2 relative">ShopSphere</h3>
+                <p class="text-gray-300 mb-3 md:mb-4 text-sm md:text-base">Your one-stop destination for all your shopping needs. Quality products, amazing prices, and exceptional customer service.</p>
+                <div class="social-icons flex space-x-3 md:space-x-4 mt-4 md:mt-6">
+                    <a href="#" class="social-icon w-8 h-8 md:w-10 md:h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
+                        <i class="fab fa-facebook-f text-sm md:text-base"></i>
+                    </a>
+                    <a href="#" class="social-icon w-8 h-8 md:w-10 md:h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
+                        <i class="fab fa-twitter text-sm md:text-base"></i>
+                    </a>
+                    <a href="#" class="social-icon w-8 h-8 md:w-10 md:h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
+                        <i class="fab fa-instagram text-sm md:text-base"></i>
+                    </a>
+                    <a href="#" class="social-icon w-8 h-8 md:w-10 md:h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
+                        <i class="fab fa-pinterest text-sm md:text-base"></i>
+                    </a>
                 </div>
+            </div>
 
-                <!-- Existing Reviews -->
-                <div>
-                    <h2 class="text-2xl font-bold text-dark mb-6">Customer Reviews</h2>
+            <div class="footer-column">
+                <h3 class="footer-title text-lg md:text-xl mb-3 md:mb-4 pb-2 relative">Quick Links</h3>
+                <ul class="space-y-1 md:space-y-2">
+                    <li><a href="{% url 'user_home' %}" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Home</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Shop</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Categories</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Deals</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">About Us</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Contact</a></li>
+                </ul>
+            </div>
 
-                    {% for r in product.reviews.all %}
-                    <div class="review-card bg-light rounded-xl p-6 mb-6 shadow-sm">
-                        <!-- Username and Rating -->
-                        <div class="flex justify-between items-start mb-4">
-                            <p class="font-bold text-lg text-dark">{{ r.user.username }}</p>
-                            <div class="text-yellow-500 text-xl">
-                                {% for i in "12345" %}
-                                    {% if forloop.counter <= r.rating %}
-                                        <i class="fas fa-star"></i>
-                                    {% else %}
-                                        <i class="far fa-star"></i>
-                                    {% endif %}
-                                {% endfor %}
-                            </div>
-                        </div>
+            <div class="footer-column">
+                <h3 class="footer-title text-lg md:text-xl mb-3 md:mb-4 pb-2 relative">Customer Service</h3>
+                <ul class="space-y-1 md:space-y-2">
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Shipping Policy</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Return Policy</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Privacy Policy</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Terms & Conditions</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Track Your Order</a></li>
+                </ul>
+            </div>
 
-                        <!-- Review Text -->
-                        <p class="text-gray-600 mb-4">{{ r.review }}</p>
-
-                        <!-- Review Images -->
-                        {% if r.reviewimage_set.exists %}
-                        <div class="flex gap-3 mt-4">
-                            {% for img in r.reviewimage_set.all %}
-                                <img src="{{ img.review_img.url }}" class="w-24 h-24 object-cover rounded-lg shadow-sm transition-all hover:scale-105 cursor-pointer">
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-
-                        <!-- Review Date -->
-                        <div class="mt-4 pt-4 border-t border-gray-200">
-                            <p class="text-gray-500 text-sm">Reviewed on {{ r.created_at|date:"F j, Y" }}</p>
-                        </div>
-                    </div>
-
-                    {% empty %}
-                    <div class="text-center py-8">
-                        <i class="fas fa-comment-slash text-4xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-500 text-lg">No reviews yet. Be the first to review this product!</p>
-                    </div>
-                    {% endfor %}
-                </div>
+            <div class="footer-column">
+                <h3 class="footer-title text-lg md:text-xl mb-3 md:mb-4 pb-2 relative">Contact Us</h3>
+                <ul class="space-y-2 md:space-y-3">
+                    <li class="flex items-start">
+                        <i class="fas fa-map-marker-alt mt-1 mr-2 md:mr-3 text-primary text-sm md:text-base"></i>
+                        <span class="text-gray-300 text-sm md:text-base">123 Commerce St, City, State 12345</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-phone mt-1 mr-2 md:mr-3 text-primary text-sm md:text-base"></i>
+                        <span class="text-gray-300 text-sm md:text-base">+1 (555) 123-4567</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-envelope mt-1 mr-2 md:mr-3 text-primary text-sm md:text-base"></i>
+                        <span class="text-gray-300 text-sm md:text-base">support@shopsphere.com</span>
+                    </li>
+                </ul>
             </div>
         </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="bg-dark text-white pt-16 pb-8 mt-16">
-        <div class="container mx-auto px-4">
-            <div class="footer-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-                <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">ShopSphere</h3>
-                    <p class="text-gray-300 mb-4">Your one-stop destination for all your shopping needs. Quality products, amazing prices, and exceptional customer service.</p>
-                    <div class="social-icons flex space-x-4 mt-6">
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-pinterest"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="{% url 'user_home' %}" class="text-gray-300 no-underline transition-colors hover:text-white">Home</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Shop</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Categories</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Deals</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">About Us</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Contact</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">Customer Service</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Shipping Policy</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Return Policy</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Privacy Policy</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Terms & Conditions</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Track Your Order</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">Contact Us</h3>
-                    <ul class="space-y-3">
-                        <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt mt-1 mr-3 text-primary"></i>
-                            <span class="text-gray-300">123 Commerce St, City, State 12345</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-phone mt-1 mr-3 text-primary"></i>
-                            <span class="text-gray-300">+1 (555) 123-4567</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-envelope mt-1 mr-3 text-primary"></i>
-                            <span class="text-gray-300">support@shopsphere.com</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="footer-bottom text-center pt-8 border-t border-gray-700 text-gray-400">
-                <p>&copy; 2024 ShopSphere. All rights reserved.</p>
-            </div>
+        <div class="footer-bottom text-center pt-6 md:pt-8 border-t border-gray-700 text-gray-400 text-sm md:text-base">
+            <p>&copy; 2024 ShopSphere. All rights reserved.</p>
         </div>
-    </footer>
+    </div>
+</footer>
+
+<script>
+    let qty = 1;
+    const stock = {{ product.stock }};
+    const qtyDisplay = document.getElementById("qty-display");
+    const qtyInput = document.getElementById("quantity-input");
+    const qtyBuyInput = document.getElementById("quantity-input-buy");
+    const cartBtn = document.getElementById("addToCartBtn");
+
+    function updateCartLink() {
+        cartBtn.href = "{% url 'user_add_to_cart' product.slug %}?qty=" + qty;
+    }
+
+    document.getElementById("qty-increase").onclick = () => {
+        if (qty < stock) {
+            qty++;
+            qtyDisplay.innerText = qty;
+            qtyInput.value = qty;
+            qtyBuyInput.value = qty;
+            updateCartLink();
+        }
+    };
+
+    document.getElementById("qty-decrease").onclick = () => {
+        if (qty > 1) {
+            qty--;
+            qtyDisplay.innerText = qty;
+            qtyInput.value = qty;
+            qtyBuyInput.value = qty;
+            updateCartLink();
+        }
+    };
+
+    updateCartLink();
+</script>
+
+
 </body>
 </html>
