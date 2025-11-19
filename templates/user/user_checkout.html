@@ -148,6 +148,20 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
+
+        .address-option {
+            transition: all 0.3s ease;
+        }
+
+        .address-option:hover {
+            background-color: #f8f9fa;
+            border-color: #5d5fef;
+        }
+
+        .address-option.selected {
+            background-color: rgba(93, 95, 239, 0.05);
+            border-color: #5d5fef;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-dark">
@@ -322,24 +336,8 @@
                                         </div>
                                     </td>
 
-                                    <td class="py-4 px-6">
-                                        <div class="flex justify-center">
-                                            <form method="POST" action="{% url 'user_update_checkout_quantity' item.id %}"
-                                                class="flex items-center space-x-2">
-                                                {% csrf_token %}
-                                                <button name="quantity" value="{{ item.quantity|add:'-1' }}"
-                                                    class="w-8 h-8 flex items-center justify-center bg-light hover:bg-primary hover:text-white rounded-full transition-all">
-                                                    <i class="fas fa-minus text-xs"></i>
-                                                </button>
-
-                                                <span class="px-3 font-medium">{{ item.quantity }}</span>
-
-                                                <button name="quantity" value="{{ item.quantity|add:'1' }}"
-                                                    class="w-8 h-8 flex items-center justify-center bg-light hover:bg-primary hover:text-white rounded-full transition-all">
-                                                    <i class="fas fa-plus text-xs"></i>
-                                                </button>
-                                            </form>
-                                        </div>
+                                    <td class="py-4 px-6 text-center">
+                                        <span class="bg-primary text-white px-3 py-1 rounded-full font-medium">{{ item.quantity }}</span>
                                     </td>
 
                                     <td class="py-4 px-6 text-right font-semibold">₹{{ item.product.price }}</td>
@@ -369,78 +367,105 @@
                     <form method="POST" action="{% url 'place_order' %}">
                         {% csrf_token %}
 
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-medium mb-2" for="full_name">
-                                Full Name
-                            </label>
-                            <input type="text" id="full_name" name="full_name"
-                                class="w-full border rounded-lg p-3 form-input focus:outline-none focus:ring-2 focus:ring-primary"
-                                placeholder="Enter your full name" required>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-medium mb-2" for="phone">
-                                Phone Number
-                            </label>
-                            <input type="tel" id="phone" name="phone"
-                                class="w-full border rounded-lg p-3 form-input focus:outline-none focus:ring-2 focus:ring-primary"
-                                placeholder="Enter your phone number" required>
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="block text-gray-700 text-sm font-medium mb-2" for="shipping_address">
-                                Shipping Address
-                            </label>
-                            <textarea name="shipping_address" id="shipping_address"
-                                class="w-full border rounded-lg p-3 form-input focus:outline-none focus:ring-2 focus:ring-primary"
-                                rows="4" placeholder="Enter your full address" required></textarea>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div>
-                                <label class="block text-gray-700 text-sm font-medium mb-2" for="city">
-                                    City
-                                </label>
-                                <input type="text" id="city" name="city"
-                                    class="w-full border rounded-lg p-3 form-input focus:outline-none focus:ring-2 focus:ring-primary"
-                                    placeholder="City" required>
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 text-sm font-medium mb-2" for="pincode">
-                                    Pincode
-                                </label>
-                                <input type="text" id="pincode" name="pincode"
-                                    class="w-full border rounded-lg p-3 form-input focus:outline-none focus:ring-2 focus:ring-primary"
-                                    placeholder="Pincode" required>
-                            </div>
-                        </div>
-
+                        <!-- Saved Addresses -->
                         <div class="mb-6">
-                            <label class="block text-gray-700 text-sm font-medium mb-2" for="state">
-                                State
-                            </label>
-                            <input type="text" id="state" name="state"
-                                class="w-full border rounded-lg p-3 form-input focus:outline-none focus:ring-2 focus:ring-primary"
-                                placeholder="State" required>
+                            <label class="block text-gray-700 font-medium mb-3">Choose Address</label>
+
+                            {% if addresses %}
+                                {% for addr in addresses %}
+                                <label class="address-option flex p-4 border-2 border-gray-200 rounded-xl mb-3 cursor-pointer">
+                                    <input type="radio" name="selected_address" value="{{ addr.id }}" class="mr-3 mt-1">
+                                    <div>
+                                        <p class="font-semibold">{{ addr.full_name }} - {{ addr.phone }}</p>
+                                        <p class="text-gray-600 text-sm mt-1">
+                                            {{ addr.address_line1 }},
+                                            {% if addr.address_line2 %}{{ addr.address_line2 }}, {% endif %}
+                                            {{ addr.city }}, {{ addr.state }} - {{ addr.pincode }}
+                                        </p>
+                                    </div>
+                                </label>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-gray-600 text-sm p-3 bg-light rounded-lg">No saved addresses. Please add a new address below.</p>
+                            {% endif %}
                         </div>
 
-                        <h2 class="text-xl font-semibold mb-4 flex items-center mt-6">
+                        <!-- New Address -->
+                        <h3 class="text-lg font-semibold mb-3 mt-6 flex items-center">
+                            <i class="fas fa-plus-circle mr-2 text-primary"></i> Add New Address
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 text-sm font-medium mb-2">Full Name</label>
+                               <input type="text" name="full_name" placeholder="Enter your full name"
+                                            class="w-full border rounded-lg p-3 form-input new-address-field">
+
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 text-sm font-medium mb-2">Phone Number</label>
+                                <input type="text" name="phone" placeholder="Enter phone number"
+                                       class="w-full border rounded-lg p-3 form-input focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Address Line 1</label>
+                            <input type="text" name="address_line1" placeholder="Enter address line 1"
+                                   class="w-full border rounded-lg p-3 form-input focus:outline-none focus:ring-2 focus:ring-primary" >
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Address Line 2 (Optional)</label>
+                            <input type="text" name="address_line2" placeholder="Enter address line 2"
+                                   class="w-full border rounded-lg p-3 form-input focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div>
+                                <label class="block text-gray-700 text-sm font-medium mb-2">City</label>
+                                <input type="text" name="city" placeholder="Enter city"
+                                       class="w-full border rounded-lg p-3 form-input focus:outline-none focus:ring-2 focus:ring-primary" >
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 text-sm font-medium mb-2">Pincode</label>
+                                <input type="text" name="pincode" placeholder="Enter pincode"
+                                       class="w-full border rounded-lg p-3 form-input focus:outline-none focus:ring-2 focus:ring-primary" >
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-gray-700 text-sm font-medium mb-2">State</label>
+                            <input type="text" name="state" placeholder="Enter state"
+                                   class="w-full border rounded-lg p-3 form-input focus:outline-none focus:ring-2 focus:ring-primary" >
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-gray-700 text-sm font-medium mb-2">Country</label>
+                            <input type="text" name="country" placeholder="Enter country" value="India"
+                                   class="w-full border rounded-lg p-3 form-input focus:outline-none focus:ring-2 focus:ring-primary" >
+                        </div>
+
+                        <!-- Payment Method -->
+                        <h2 class="text-xl font-semibold mb-4 mt-6 flex items-center">
                             <i class="fas fa-credit-card mr-2 text-primary"></i> Payment Method
                         </h2>
 
                         <div class="mb-6">
-                            <div class="flex items-center mb-3 p-3 border rounded-lg hover:bg-light transition-colors">
+                            <label class="address-option flex items-center p-4 border-2 border-gray-200 rounded-xl mb-3 cursor-pointer">
                                 <input type="radio" id="cod" name="payment_method" value="cod" class="mr-3" checked>
-                                <label for="cod" class="flex items-center cursor-pointer">
-                                    <i class="fas fa-money-bill-wave mr-2 text-primary"></i> Cash on Delivery
-                                </label>
-                            </div>
-                            <div class="flex items-center p-3 border rounded-lg hover:bg-light transition-colors">
+                                <div class="flex items-center">
+                                    <i class="fas fa-money-bill-wave mr-2 text-primary text-lg"></i>
+                                    <span class="font-medium">Cash on Delivery</span>
+                                </div>
+                            </label>
+                            <label class="address-option flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer">
                                 <input type="radio" id="card" name="payment_method" value="card" class="mr-3">
-                                <label for="card" class="flex items-center cursor-pointer">
-                                    <i class="fas fa-credit-card mr-2 text-primary"></i> Credit/Debit Card
-                                </label>
-                            </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-credit-card mr-2 text-primary text-lg"></i>
+                                    <span class="font-medium">Credit/Debit Card</span>
+                                </div>
+                            </label>
                         </div>
 
                         <button class="w-full btn bg-primary hover:bg-primary-dark text-white py-3 rounded-lg font-bold transition-all flex items-center justify-center">
@@ -465,11 +490,11 @@
                     <div class="border-t pt-3">
                         <div class="flex justify-between mb-2">
                             <span class="text-gray-600">Subtotal</span>
-                            <span class="font-medium">₹{{ total }}</span>
+                            <span class="font-semibold">₹{{ total }}</span>
                         </div>
                         <div class="flex justify-between mb-2">
                             <span class="text-gray-600">Shipping</span>
-                            <span class="font-medium">₹0</span>
+                            <span class="font-semibold">₹0</span>
                         </div>
                         <div class="flex justify-between font-bold text-lg mt-3 pt-3 border-t">
                             <span>Total</span>
@@ -562,5 +587,29 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        // Address selection styling
+        document.addEventListener('DOMContentLoaded', function() {
+            const addressOptions = document.querySelectorAll('.address-option');
+
+            addressOptions.forEach(option => {
+                const radio = option.querySelector('input[type="radio"]');
+
+                // Set initial selected state
+                if (radio.checked) {
+                    option.classList.add('selected');
+                }
+
+                // Update on change
+                radio.addEventListener('change', function() {
+                    addressOptions.forEach(opt => opt.classList.remove('selected'));
+                    if (this.checked) {
+                        option.classList.add('selected');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
