@@ -22,6 +22,13 @@
                 <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome Back</h2>
                 <p class="text-gray-600">Sign in to your account</p>
             </div>
+           {% if messages %}
+           {% for message in messages %}
+         <p style="color: red; font-weight: bold; text-align:center;">
+            {{ message }}
+           </p>
+        {% endfor %}
+     {% endif %}
 
             <!-- Login Form -->
             <form method="POST">
@@ -57,7 +64,7 @@
 
                 <!-- Forgot Password -->
                 <div class="text-right mb-6">
-                    <a href="#" class="text-purple-600 hover:text-purple-700 text-sm font-medium">Forgot your password?</a>
+                    <a href="{% url 'forgott_password' %}" class="text-purple-600 hover:text-purple-700 text-sm font-medium">Forgot your password?</a>
                 </div>
 
                 <!-- Submit Button -->

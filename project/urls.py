@@ -35,6 +35,7 @@ urlpatterns = [
     path('seller/order/<int:id>/', views_seller.order_single_list, name='orderlist_single'),
     path('seller/product_single/<slug:slug>',views_seller.product_single, name='product_single'),
     path('seller/profile',views_seller.seller_profile,name='profile_update'),
+    path('seller/forgott',views_seller.seller_forgott,name='forgott_password'),
 
 
 ]
