@@ -12,8 +12,18 @@ from django.contrib.auth import authenticate,login,logout
 
 # Create your views here.
 
+from django.contrib import messages
+
 def user_register(request):
     if request.method == "POST":
+
+
+        required = ['username', 'email', 'password', 'contact', 'shop_name', 'address']
+        for field in required:
+            if not request.POST.get(field):
+                messages.error(request, f"{field.replace('_',' ').title()} is required")
+                return redirect('seller_register')
+
         seller = User()
         seller.username = request.POST.get('username')
         seller.email = request.POST.get('email')
@@ -22,15 +32,20 @@ def user_register(request):
         seller.contact = request.POST.get('contact')
         seller.role = "seller"
         seller.save()
-        seller_user=Seller()
+
+        seller_user = Seller()
         seller_user.user = seller
-        seller_user.shop_name=request.POST.get('shop_name')
-        seller_user.image=request.POST.get('profile_img')
-        seller_user.website=request.POST.get('website')
+        seller_user.shop_name = request.POST.get('shop_name')
+        seller_user.image = request.POST.get('profile_img')
+        seller_user.website = request.POST.get('website')
         seller_user.address = request.POST.get('address')
         seller_user.save()
 
+        messages.success(request, "Registration successful!")
+        return redirect('seller_login')
+
     return render(request,'seller/seller_register.html')
+
 
 @login_required(login_url='seller/login')
 @role_required("seller", login_url="/seller/login")
