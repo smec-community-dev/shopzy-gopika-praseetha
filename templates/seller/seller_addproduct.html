@@ -82,10 +82,10 @@
                           class="mt-2 p-2 block w-full border rounded-md">{% if edit %}{{ product.description }}{% endif %}</textarea>
             </div>
 
-            {% if edit and product.productimage_set.first %}
+            {% if edit and product.images.first %}
             <div class="sm:col-span-2">
-                <p>Current Image:</p>
-                <img src="{{ product.productimage_set.first.product_img.url }}"
+                <p class="font-semibold">Current Image:</p>
+                <img src="{{ product.images.first.product_img.url }}"
                      class="h-24 w-24 object-cover rounded-md mt-2"/>
             </div>
             {% endif %}
@@ -111,7 +111,7 @@
 
     </form>
 
-    {% endif %} <!-- END form hide condition -->
+    {% endif %}
 
     <!-- Product List -->
     <div class="mt-10">
@@ -125,6 +125,7 @@
                 <th class="p-3">Price</th>
                 <th class="p-3">Stock</th>
                 <th class="p-3">Actions</th>
+                <th>View</th>
             </tr>
             </thead>
 
@@ -132,9 +133,11 @@
             {% for p in products %}
             <tr class="border-b">
                 <td class="p-3 text-center">
-                    {% if p.productimage_set.first %}
-                    <img src="{{ p.productimage_set.first.product_img.url }}"
-                         class="h-14 w-14 object-cover rounded-md inline-block"/>
+                    {% if p.images.first %}
+                        <img src="{{ p.images.first.product_img.url }}"
+                             class="h-14 w-14 object-cover rounded-md inline-block" />
+                    {% else %}
+                        <span class="text-gray-400 text-sm">No Image</span>
                     {% endif %}
                 </td>
 
@@ -148,7 +151,10 @@
                     <a href="{% url 'product_delete' p.slug %}"
                        onclick="return confirm('Are you sure want to delete?')"
                        class="text-red-600 hover:text-red-800"><i class="fa fa-trash"></i></a>
-                </td>
+
+                <td>
+                <a href="{% url 'product_single' p.slug %}">View</a>
+            </td>
             </tr>
             {% endfor %}
             </tbody>

@@ -32,6 +32,11 @@ urlpatterns = [
     path('delete_product/<slug:slug>/', views_seller.product_delete, name='product_delete'),
     path('edit_product/<slug:slug>/', views_seller.edit_product, name='edit_product'),
     path('seller/orders',views_seller.order_list,name='oderslist'),
+    path('seller/order/<int:id>/', views_seller.order_single_list, name='orderlist_single'),
+    path('seller/product_single/<slug:slug>',views_seller.product_single, name='product_single'),
+    path('seller/profile',views_seller.seller_profile,name='profile_update'),
+
+
 ]
 
 if settings.DEBUG:
