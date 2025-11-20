@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.core.mail import message
 from django.core.paginator import Paginator
 from django.shortcuts import render,redirect
 from django.utils.text import slugify
@@ -61,18 +62,29 @@ def seller_dashboard(request):
         'products': products,
         'total_products': total_products,'total_order':total_order,'productsvalues':productsvalues})
 
-def user_login(request):
-    if request.method=="POST":
-        name=request.POST.get('username')
-        password=request.POST.get('password')
-        seller=authenticate(request,username=name,password=password)
-        if seller.role=="seller":
-            login(request,seller)
-            return redirect('/sellerdashboard')
-        else:
-            return render(request,'seller/seller_login.html',{'error':'invalid username or password'})
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
 
-    return render(request,'seller/seller_login.html')
+def user_login(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is None:
+            messages.error(request, "Invalid username or password")
+            return redirect("seller_login")
+
+        if user.role != "seller":
+            messages.error(request, "You are not a seller")
+            return redirect("seller_login")
+
+        login(request, user)
+        return redirect("seller_dashboard")
+
+    return render(request, "seller/seller_login.html")
+
 @login_required(login_url='/seller/login')
 @role_required("seller", login_url="/seller/login")
 def Create_Product(request):
@@ -179,3 +191,5 @@ def seller_profile(request):
     seller=Seller.objects.get(user=request.user)
     print(seller)
     return render(request,'seller/seller_profile.html',{'seller':seller})
+def seller_forgott(request):
+    return render(request,'seller/seller_forgott.html')

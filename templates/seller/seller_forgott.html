@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Your Password</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-blue-500 to-purple-600 min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white text-center">
+            <h1 class="text-2xl font-bold">YourApp</h1>
+            <h2 class="text-xl mt-2">Reset Your Password</h2>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6">
+            <p class="text-gray-600 mb-6 text-center">
+                Enter your details to reset your password
+            </p>
+
+            <!-- Form -->
+            <form method="POST" action="/reset-password/">
+                <!-- Email -->
+               <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">
+                        Email
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-key text-gray-400"></i>
+                        </div>
+                        <input
+                            type="text"
+                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Current Password -->
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">
+                        Current Password
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input
+                            type="text"
+                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- New Password -->
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">
+                        New Password
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-key text-gray-400"></i>
+                        </div>
+                        <input
+                            type="password"
+                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Confirm New Password -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-medium mb-2">
+                        Confirm New Password
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input
+                            type="password"
+                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <button
+                    type="submit"
+                    class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium py-3 px-4 rounded-lg hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-all transform hover:-translate-y-0.5 shadow-md hover:shadow-lg"
+                >
+                    Reset Password
+                </button>
+            </form>
+
+            <!-- Password Requirements -->
+            <div class="mt-6 bg-blue-50 border border-blue-100 rounded-lg p-4">
+                <h3 class="font-medium text-blue-800 flex items-center">
+                    <i class="fas fa-shield-alt mr-2"></i> Password Requirements
+                </h3>
+                <ul class="text-blue-700 text-sm mt-2 list-none pl-0 space-y-1">
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-green-500 mt-0.5 mr-2"></i>
+                        <span>At least 8 characters long</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-green-500 mt-0.5 mr-2"></i>
+                        <span>Contains at least one uppercase letter</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-green-500 mt-0.5 mr-2"></i>
+                        <span>Contains at least one number</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-green-500 mt-0.5 mr-2"></i>
+                        <span>Contains at least one special character</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Back to login -->
+            <div class="mt-6 text-center">
+                <p class="text-gray-600">
+                    Remember your password?
+                    <a href="/login/" class="text-blue-600 font-medium hover:text-blue-800 hover:underline transition-colors">
+                        Back to Login
+                    </a>
+                </p>
+            </div>
+        </div>
+
+
+        <div class="bg-gray-50 px-6 py-4 border-t border-gray-100">
+            <p class="text-xs text-gray-500 text-center">
+                &copy; 2023 YourApp. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>
