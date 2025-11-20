@@ -588,28 +588,57 @@
         </div>
     </footer>
 
-    <script>
-        // Address selection styling
-        document.addEventListener('DOMContentLoaded', function() {
-            const addressOptions = document.querySelectorAll('.address-option');
+   <script>
+    document.addEventListener('DOMContentLoaded', function () {
 
-            addressOptions.forEach(option => {
-                const radio = option.querySelector('input[type="radio"]');
+    const form = document.querySelector("form[action='{% url 'place_order' %}']");
+    const savedRadios = document.querySelectorAll("input[name='selected_address']");
+    const newFields = document.querySelectorAll(".new-address-field");
 
-                // Set initial selected state
-                if (radio.checked) {
-                    option.classList.add('selected');
-                }
+    // Function to disable new address inputs
+    function disableNewFields(state) {
+        newFields.forEach(field => field.disabled = state);
+    }
 
-                // Update on change
-                radio.addEventListener('change', function() {
-                    addressOptions.forEach(opt => opt.classList.remove('selected'));
-                    if (this.checked) {
-                        option.classList.add('selected');
-                    }
-                });
-            });
+    // If a saved address is selected → disable new address fields
+    savedRadios.forEach(radio => {
+        radio.addEventListener("change", function () {
+            if (this.checked) {
+                disableNewFields(true);
+            }
         });
-    </script>
+    });
+
+    // If user clicks new address field → unselect saved address
+    newFields.forEach(field => {
+        field.addEventListener("focus", function () {
+            savedRadios.forEach(r => r.checked = false);
+            disableNewFields(false);
+        });
+    });
+
+    // Validate on submit
+    form.addEventListener("submit", function (e) {
+        const selectedAddress = document.querySelector("input[name='selected_address']:checked");
+
+        // If saved address selected → allow
+        if (selectedAddress) return;
+
+        // Validate new address fields
+        const required = ["full_name", "phone", "address_line1", "city", "state", "pincode", "country"];
+
+        for (let name of required) {
+            let field = form.querySelector(`[name='${name}']`);
+            if (!field.value.trim()) {
+                e.preventDefault();
+                alert("Please fill all required address fields.");
+                field.focus();
+                return;
+            }
+        }
+    });
+
+});
+</script>
 </body>
 </html>

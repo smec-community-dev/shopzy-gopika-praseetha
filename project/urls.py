@@ -27,11 +27,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',view_user.user_home),
     path('user_register/',view_user.user_register,name='user_register'),
-
     path('user_login/',view_user.user_login,name='user_login'),
     path('user_home/',view_user.user_home,name='user_home'),
     path('user_single_product/<slug:slug>/',view_user.user_single_product,name='user_single_product'),
-    path('add_review/<slug:slug>/', view_user.user_add_review, name='user_add_review'),
     path('add_wishlist/<slug:slug>/', view_user.user_add_wishlist, name='add_wishlist'),
     path('user_view_wishlist/', view_user.user_view_wishlist, name='user_view_wishlist'),
     path('user_remove_wishlist/<int:id>/', view_user.user_remove_wishlist, name='user_remove_wishlist'),
@@ -40,17 +38,14 @@ urlpatterns = [
     path('user_view_cart/',view_user.user_view_cart,name='user_view_cart'),
     path('user_remove_from_cart/<int:id>/',view_user.user_remove_from_cart,name='user_remove_from_cart'),
     path('user_update_cart/<int:id>/',view_user.user_update_cart,name='user_update_cart'),
-    # path('user_move_to_cart/<int:id>/',view_user.user_move_to_cart,name='user_move_to_cart'),
-    # path('user_review_cartitem/',view_user.user_review_cartitem,name='user_review_cartitem'),
-    # path('user_order_details/<int:id>/',view_user.user_order_details,name='user_order_details'),
     path('user_checkout/', view_user.user_checkout, name='user_checkout'),
     path('update_checkout_qty/<int:id>/', view_user.user_update_checkout_quantity, name='user_update_checkout_quantity'),
-
-    # ORDER
     path('place_order/', view_user.place_order, name='place_order'),
-    path('order_summary/<int:id>/', view_user.order_summary, name='order_summary'),
-
+    path("dummy_payment/<slug:slug>/", view_user.dummy_payment, name="dummy_payment"),
     path('user_dashboard/', view_user.user_dashboard, name='user_dashboard'),
+    path('user_orders/', view_user.user_orders, name='user_orders'),
+    path("add_review/<slug:slug>/", view_user.add_review, name="add_review"),
+
 ]
 
 if settings.DEBUG:

@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart - ShopSphere</title>
+    <title>Add Review - ShopSphere</title>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -25,8 +27,6 @@
                     animation: {
                         'fade-in': 'fadeIn 0.5s ease-in-out',
                         'slide-up': 'slideUp 0.5s ease-out',
-                        'float': 'float 6s ease-in-out infinite',
-                        'float-card': 'floatCard 5s ease-in-out infinite',
                     },
                     keyframes: {
                         fadeIn: {
@@ -37,19 +37,12 @@
                             '0%': { transform: 'translateY(20px)', opacity: '0' },
                             '100%': { transform: 'translateY(0)', opacity: '1' },
                         },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        },
-                        floatCard: {
-                            '0%, 100%': { transform: 'perspective(1000px) rotateY(15deg) rotateX(10deg) translateY(0)' },
-                            '50%': { transform: 'perspective(1000px) rotateY(15deg) rotateX(10deg) translateY(-10px)' },
-                        }
                     }
                 }
             }
         }
     </script>
+
     <style>
         .logo-hover i {
             transition: transform 0.5s ease;
@@ -92,76 +85,6 @@
             transform: translateY(-5px);
         }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            top: -150px;
-            right: -100px;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            bottom: -100px;
-            left: -50px;
-            animation: float 8s ease-in-out infinite;
-        }
-
-        .floating-card {
-            transform-style: preserve-3d;
-            transform: perspective(1000px) rotateY(15deg) rotateX(10deg);
-            transition: transform 0.5s ease;
-        }
-
-        .floating-card:hover {
-            transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
-            animation: none;
-        }
-
-        .product-card {
-            transform-style: preserve-3d;
-            transition: all 0.3s ease;
-        }
-
-        .product-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #5d5fef 0%, #4ecdc4 100%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: -1;
-            border-radius: 15px;
-        }
-
-        .product-card:hover::before {
-            opacity: 0.05;
-        }
-
-        .product-card:hover {
-            transform: translateY(-10px) rotateY(5deg);
-        }
-
-        .product-img img {
-            transition: transform 0.5s ease;
-        }
-
-        .product-card:hover .product-img img {
-            transform: scale(1.1);
-        }
-
         .btn {
             position: relative;
             overflow: hidden;
@@ -182,24 +105,7 @@
             left: 100%;
         }
 
-        .section-title h2 {
-            position: relative;
-            display: inline-block;
-        }
-
-        .section-title h2::after {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 4px;
-            background: #5d5fef;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 2px;
-        }
-
-        /* Mobile Navigation with CSS-only toggle */
+        /* Mobile Navigation */
         #nav-toggle {
             display: none;
         }
@@ -215,36 +121,57 @@
             transition: all 0.4s ease;
         }
 
-        /* Search bar focus effect */
-        .search-bar input:focus {
+        /* Form styling */
+        .form-input:focus {
             box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.1);
         }
 
-        /* Cart item styling */
-        .cart-item {
-            transition: all 0.3s ease;
+        .review-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        .cart-item:hover {
+        .review-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
 
-        /* Quantity input styling */
-        .quantity-input {
-            -moz-appearance: textfield;
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 4px;
         }
 
-        .quantity-input::-webkit-outer-spin-button,
-        .quantity-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+        .star-rating input {
+            display: none;
+        }
+
+        .star-rating label {
+            font-size: 24px;
+            color: #d1d5db;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .star-rating input:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: #fbbf24;
+        }
+        .submit-btn {
+        transition: 0.3s ease;
+       }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
         }
     </style>
 </head>
+
 <body class="bg-gray-50 text-dark">
-    <!-- Header & Navigation -->
-    <header class="bg-white shadow-lg sticky top-0 z-50">
+    <!-- HEADER -->
+<header class="bg-white shadow-lg sticky top-0 z-50">
     <div class="container mx-auto px-4">
         <nav class="flex justify-between items-center py-4">
             <a href="{% url 'user_home' %}" class="logo-hover flex items-center text-2xl font-bold text-primary">
@@ -355,7 +282,7 @@
             {% else %}
             <div class="border-t border-gray-200 mt-4 pt-4">
                 <a href="{% url 'user_home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Profile</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Orders</a>
+                <a href="{% url 'user_orders' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Orders</a>
                 <a href="{% url 'user_view_wishlist' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Wishlist</a>
                 <a href="#" class="block py-3 hover:text-primary transition-colors">Logout</a>
             </div>
@@ -364,109 +291,136 @@
     </div>
 </header>
 
-    <!-- Shopping Cart Section -->
-    <section class="container mx-auto px-4 py-10 animate-fade-in">
-    <h1 class="text-4xl font-bold mb-6">Shopping Cart</h1>
+    <!-- REVIEW SECTION -->
+    <section class="container mx-auto px-4 py-12 animate-fade-in">
+        <div class="max-w-2xl mx-auto">
+            <!-- Page Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold text-dark mb-2">Add Your Review</h1>
+                <p class="text-gray-600">Share your experience with this product</p>
+            </div>
 
-    {% if items %}
-    <div class="bg-white shadow-xl rounded-2xl p-6">
-
-        {% for item in items %}
-        <div class="cart-item flex flex-col md:flex-row items-center justify-between
-                    border-b py-6 px-4 rounded-lg mb-4 bg-light transition-all duration-300">
-
-            <!-- PRODUCT INFO -->
-            <div class="flex items-center gap-6 mb-4 md:mb-0 w-full md:w-auto">
-                {% if item.product.images.first %}
-                    <img src="{{ item.product.images.first.product_img.url }}"
-                         class="w-24 h-24 object-contain bg-white rounded-xl shadow-sm"
-                         alt="{{ item.product.product_name }}">
-                {% else %}
-                    <div class="w-24 h-24 bg-gray-200 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-image text-gray-400 text-2xl"></i>
+            <!-- Product Info -->
+            <div class="review-card bg-white rounded-2xl shadow-lg p-6 mb-8">
+                <div class="flex items-center gap-4">
+                    <!-- Product Image -->
+                    <div class="flex-shrink-0">
+                        {% if product.images.first %}
+                            <img src="{{ product.images.first.product_img.url }}"
+                                 alt="{{ product.product_name }}"
+                                 class="w-16 h-16 md:w-20 md:h-20 object-cover rounded-xl shadow">
+                        {% else %}
+                            <div class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
+                                <i class="fas fa-box text-gray-400 text-xl"></i>
+                            </div>
+                        {% endif %}
                     </div>
-                {% endif %}
 
-                <div>
-                    <h2 class="text-xl font-semibold">{{ item.product.product_name }}</h2>
-                    <p class="text-secondary font-bold text-lg">₹{{ item.product.price }}</p>
-
-                    <p class="text-gray-600">
-                        Subtotal: ₹{{ item.product.price|floatformat:2 }} × {{ item.quantity }} =
-                        ₹{{ item.subtotal|floatformat:2 }}
-                    </p>
+                    <!-- Product Details -->
+                    <div class="flex-1">
+                        <h2 class="text-xl font-bold text-dark">{{ product.product_name }}</h2>
+                        <p class="text-gray-600 text-sm mt-1">Product ID: #{{ product.id }}</p>
+                        <p class="text-primary font-bold text-lg mt-2">₹{{ product.price }}</p>
+                    </div>
                 </div>
             </div>
 
-            <!-- QUANTITY UPDATE FORM -->
-            <form method="POST" action="{% url 'user_update_cart' item.id %}"
-                  class="flex items-center gap-3 mb-4 md:mb-0">
-                {% csrf_token %}
-                <div class="flex items-center">
-                    <label for="quantity-{{ item.id }}" class="mr-2 font-medium text-gray-700">Qty:</label>
-                    <input type="number"
-                           id="quantity-{{ item.id }}"
-                           name="quantity"
-                           value="{{ item.quantity }}"
-                           min="1"
-                           class="quantity-input w-20 border border-gray-300 rounded-lg px-3 py-2
-                                  text-center shadow-sm focus:ring-2 focus:ring-primary
-                                  focus:border-transparent">
-                </div>
+            <!-- Review Form -->
+            <div class="review-card bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
 
-                <button type="submit"
-                        class="btn bg-primary text-white px-4 py-2 rounded-lg shadow
-                               hover:bg-primary-dark transition-all">
-                    Update
-                </button>
-            </form>
+                    <!-- Rating -->
+                    <div>
+                        <label class="block text-lg font-semibold text-dark mb-4 flex items-center">
+                            <i class="fas fa-star mr-2 text-yellow-500"></i> Your Rating
+                        </label>
 
-            <!-- DELETE BUTTON -->
-            <a href="{% url 'user_remove_from_cart' item.id %}"
-               class="text-red-500 text-2xl hover:text-red-700 p-2"
-               onclick="return confirm('Remove this item?')">
-                <i class="fas fa-trash"></i>
-            </a>
+                        <!-- Star Rating -->
+                        <div class="star-rating mb-4">
+                            <input type="radio" id="star5" name="rating" value="5" required>
+                            <label for="star5">★</label>
+                            <input type="radio" id="star4" name="rating" value="4">
+                            <label for="star4">★</label>
+                            <input type="radio" id="star3" name="rating" value="3">
+                            <label for="star3">★</label>
+                            <input type="radio" id="star2" name="rating" value="2">
+                            <label for="star2">★</label>
+                            <input type="radio" id="star1" name="rating" value="1">
+                            <label for="star1">★</label>
+                        </div>
 
-        </div>
-        {% endfor %}
+                        <!-- Alternative Select Dropdown -->
 
-        <!-- CART TOTAL -->
-        <div class="text-right mt-8 pt-6 border-t border-gray-200">
-            <p class="text-2xl font-bold mb-4">Total: ₹{{ total|floatformat:2 }}</p>
+                    </div>
 
-            <div class="flex flex-col md:flex-row gap-4 justify-end">
-                <a href="{% url 'user_home' %}"
-                   class="inline-block btn bg-accent text-white px-8 py-3 rounded-lg
-                          text-lg font-semibold shadow hover:bg-blue-500 transition-all">
-                    Continue Shopping
-                </a>
+                    <!-- Review Text -->
+                    <div>
+                        <label class="block text-lg font-semibold text-dark mb-4 flex items-center">
+                            <i class="fas fa-edit mr-2 text-primary"></i> Your Review
+                        </label>
+                        <textarea name="review" rows="5" required
+                                  class="w-full border rounded-xl p-4 form-input focus:outline-none focus:ring-2 focus:ring-primary"
+                                  placeholder="Share your experience with this product... What did you like or dislike? How was the quality?"></textarea>
+                        <p class="text-gray-500 text-sm mt-2">Minimum 10 characters required</p>
+                    </div>
 
-                <a href="{% url 'place_order' %}"
-                   class="inline-block btn bg-primary text-white px-8 py-3 rounded-lg
-                          text-lg font-semibold shadow hover:bg-primary-dark transition-all">
-                    Place order
-                </a>
+                    <!-- Images -->
+                    <div>
+                        <label class="block text-lg font-semibold text-dark mb-4 flex items-center">
+                            <i class="fas fa-images mr-2 text-primary"></i> Upload Images
+                        </label>
+                        <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary transition-colors">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-3"></i>
+                            <p class="text-gray-600 mb-2">Drag & drop images or click to browse</p>
+                            <p class="text-gray-500 text-sm mb-4">Supports JPG, PNG (Max 5 images, 5MB each)</p>
+                            <input type="file" name="images" multiple accept="image/*"
+                                   class="w-full border p-3 rounded-lg bg-light cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                        <button type="submit" class="bg-primary hover:bg-primary-dark text-white py-3 px-6 rounded-xl font-semibold">
+                            <i class="fas fa-paper-plane"></i> Submit Review
+                        </button>
+
+                        <a href="{% url 'user_orders' %}"
+                           class="btn bg-light hover:bg-gray-200 text-dark py-3 px-6 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 flex-1">
+                            <i class="fas fa-arrow-left"></i> Back to Orders
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Review Guidelines -->
+            <div class="mt-8 bg-blue-50 border border-blue-200 rounded-2xl p-6">
+                <h3 class="text-lg font-semibold text-blue-800 mb-3 flex items-center">
+                    <i class="fas fa-info-circle mr-2"></i> Review Guidelines
+                </h3>
+                <ul class="text-blue-700 space-y-2 text-sm">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle mt-1 mr-2 text-blue-500"></i>
+                        <span>Be honest and specific about your experience</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle mt-1 mr-2 text-blue-500"></i>
+                        <span>Focus on the product quality and features</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle mt-1 mr-2 text-blue-500"></i>
+                        <span>Include photos to help other customers</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle mt-1 mr-2 text-blue-500"></i>
+                        <span>Avoid personal information in your review</span>
+                    </li>
+                </ul>
             </div>
         </div>
+    </section>
 
-    </div>
-
-    {% else %}
-    <!-- EMPTY CART -->
-    <div class="text-center py-20 bg-white rounded-2xl shadow-xl">
-        <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
-        <p class="text-gray-600 text-xl mb-6">Your cart is empty.</p>
-        <a href="{% url 'user_home' %}"
-           class="mt-6 inline-block btn bg-primary text-white px-8 py-3 rounded-lg
-                  shadow hover:bg-primary-dark transition-all">
-            Continue Shopping
-        </a>
-    </div>
-    {% endif %}
-</section>
-
-    <!-- Footer -->
+    <!-- FOOTER -->
     <footer class="bg-dark text-white pt-16 pb-8 mt-16">
         <div class="container mx-auto px-4">
             <div class="footer-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
@@ -538,27 +492,36 @@
     </footer>
 
     <script>
-        // Add some interactive functionality
+        // Star rating interaction
         document.addEventListener('DOMContentLoaded', function() {
-            // Quantity input validation
-            const quantityInputs = document.querySelectorAll('.quantity-input');
-            quantityInputs.forEach(input => {
-                input.addEventListener('change', function() {
-                    if (this.value < 1) {
-                        this.value = 1;
+            const stars = document.querySelectorAll('.star-rating label');
+
+            stars.forEach((star, index) => {
+                star.addEventListener('click', function() {
+                    // Remove all previous selections
+                    stars.forEach(s => s.style.color = '#d1d5db');
+
+                    // Select this star and all stars before it
+                    for (let i = 0; i <= index; i++) {
+                        stars[i].style.color = '#fbbf24';
                     }
+
+                    // Set the corresponding radio button as checked
+                    const radio = document.getElementById(`star${5 - index}`);
+                    if (radio) radio.checked = true;
                 });
             });
 
-            // Smooth scrolling for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
+            // File input styling
+            const fileInput = document.querySelector('input[type="file"]');
+            if (fileInput) {
+                fileInput.addEventListener('change', function() {
+                    if (this.files.length > 0) {
+                        this.parentElement.style.borderColor = '#5d5fef';
+                        this.parentElement.style.backgroundColor = 'rgba(93, 95, 239, 0.05)';
+                    }
                 });
-            });
+            }
         });
     </script>
 </body>

@@ -233,9 +233,7 @@
 
             <ul class="hidden md:flex space-x-8">
                 <li><a href="{% url 'user_home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
-                <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Shop</a></li>
                 <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Categories</a></li>
-                <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Deals</a></li>
                 <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
                 <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
             </ul>
@@ -285,7 +283,7 @@
                             <a href="{% url 'user_dashboard' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
                                 <i class="fas fa-user-circle mr-2"></i>My Profile
                             </a>
-                            <a href="#" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                            <a href="{% url 'user_orders' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
                                 <i class="fas fa-shopping-bag mr-2"></i>My Orders
                             </a>
                             <a href="{% url 'user_view_wishlist' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
