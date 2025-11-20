@@ -3,9 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart - ShopSphere</title>
+    <title>My Orders - ShopSphere</title>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -25,8 +27,6 @@
                     animation: {
                         'fade-in': 'fadeIn 0.5s ease-in-out',
                         'slide-up': 'slideUp 0.5s ease-out',
-                        'float': 'float 6s ease-in-out infinite',
-                        'float-card': 'floatCard 5s ease-in-out infinite',
                     },
                     keyframes: {
                         fadeIn: {
@@ -37,19 +37,12 @@
                             '0%': { transform: 'translateY(20px)', opacity: '0' },
                             '100%': { transform: 'translateY(0)', opacity: '1' },
                         },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-20px)' },
-                        },
-                        floatCard: {
-                            '0%, 100%': { transform: 'perspective(1000px) rotateY(15deg) rotateX(10deg) translateY(0)' },
-                            '50%': { transform: 'perspective(1000px) rotateY(15deg) rotateX(10deg) translateY(-10px)' },
-                        }
                     }
                 }
             }
         }
     </script>
+
     <style>
         .logo-hover i {
             transition: transform 0.5s ease;
@@ -92,76 +85,6 @@
             transform: translateY(-5px);
         }
 
-        .hero::before {
-            content: '';
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            top: -150px;
-            right: -100px;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
-            bottom: -100px;
-            left: -50px;
-            animation: float 8s ease-in-out infinite;
-        }
-
-        .floating-card {
-            transform-style: preserve-3d;
-            transform: perspective(1000px) rotateY(15deg) rotateX(10deg);
-            transition: transform 0.5s ease;
-        }
-
-        .floating-card:hover {
-            transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
-            animation: none;
-        }
-
-        .product-card {
-            transform-style: preserve-3d;
-            transition: all 0.3s ease;
-        }
-
-        .product-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #5d5fef 0%, #4ecdc4 100%);
-            opacity: 0;
-            transition: opacity 0.3s;
-            z-index: -1;
-            border-radius: 15px;
-        }
-
-        .product-card:hover::before {
-            opacity: 0.05;
-        }
-
-        .product-card:hover {
-            transform: translateY(-10px) rotateY(5deg);
-        }
-
-        .product-img img {
-            transition: transform 0.5s ease;
-        }
-
-        .product-card:hover .product-img img {
-            transform: scale(1.1);
-        }
-
         .btn {
             position: relative;
             overflow: hidden;
@@ -182,24 +105,7 @@
             left: 100%;
         }
 
-        .section-title h2 {
-            position: relative;
-            display: inline-block;
-        }
-
-        .section-title h2::after {
-            content: '';
-            position: absolute;
-            width: 80px;
-            height: 4px;
-            background: #5d5fef;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            border-radius: 2px;
-        }
-
-        /* Mobile Navigation with CSS-only toggle */
+        /* Mobile Navigation */
         #nav-toggle {
             display: none;
         }
@@ -215,35 +121,26 @@
             transition: all 0.4s ease;
         }
 
-        /* Search bar focus effect */
-        .search-bar input:focus {
-            box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.1);
-        }
-
-        /* Cart item styling */
-        .cart-item {
+        /* Order Card Styles */
+        .order-card {
             transition: all 0.3s ease;
+            border-left: 4px solid #5d5fef;
         }
 
-        .cart-item:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        .order-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-left-color: #ff6b6b;
         }
 
-        /* Quantity input styling */
-        .quantity-input {
-            -moz-appearance: textfield;
-        }
-
-        .quantity-input::-webkit-outer-spin-button,
-        .quantity-input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+        .status-badge {
+            transition: all 0.3s ease;
         }
     </style>
 </head>
+
 <body class="bg-gray-50 text-dark">
-    <!-- Header & Navigation -->
+    <!-- HEADER -->
     <header class="bg-white shadow-lg sticky top-0 z-50">
     <div class="container mx-auto px-4">
         <nav class="flex justify-between items-center py-4">
@@ -364,109 +261,145 @@
     </div>
 </header>
 
-    <!-- Shopping Cart Section -->
-    <section class="container mx-auto px-4 py-10 animate-fade-in">
-    <h1 class="text-4xl font-bold mb-6">Shopping Cart</h1>
+    <!-- ORDERS SECTION -->
+    <section class="container mx-auto px-4 py-8 animate-fade-in">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-dark mb-2">My Orders</h1>
+            <p class="text-gray-600">Track and manage all your orders in one place</p>
+        </div>
 
-    {% if items %}
-    <div class="bg-white shadow-xl rounded-2xl p-6">
+        {% if orders %}
+            <div class="space-y-6">
+                {% for order in orders %}
+                {% for item in order.order_items.all %}
+                <!-- PRODUCT CARD (One product per card) -->
+                <div class="order-card bg-white rounded-2xl shadow-lg p-6 animate-slide-up">
+                    <!-- Order Header + Status -->
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
+                        <div class="flex-1">
+                            <h2 class="text-xl font-bold text-dark mb-1">Order #{{ order.id }}</h2>
+                            <p class="text-gray-600 text-sm mb-2">
+                                <i class="far fa-calendar mr-1"></i>
+                                {{ order.order_date|date:"M d, Y" }}
+                            </p>
+                            <p class="text-gray-600 text-sm">
+                                <i class="fas fa-credit-card mr-1"></i>
+                                Payment: {{ order.payment_method|default:"Cash on Delivery" }}
+                            </p>
+                        </div>
 
-        {% for item in items %}
-        <div class="cart-item flex flex-col md:flex-row items-center justify-between
-                    border-b py-6 px-4 rounded-lg mb-4 bg-light transition-all duration-300">
-
-            <!-- PRODUCT INFO -->
-            <div class="flex items-center gap-6 mb-4 md:mb-0 w-full md:w-auto">
-                {% if item.product.images.first %}
-                    <img src="{{ item.product.images.first.product_img.url }}"
-                         class="w-24 h-24 object-contain bg-white rounded-xl shadow-sm"
-                         alt="{{ item.product.product_name }}">
-                {% else %}
-                    <div class="w-24 h-24 bg-gray-200 rounded-xl flex items-center justify-center">
-                        <i class="fas fa-image text-gray-400 text-2xl"></i>
+                        <div class="flex sm:flex-col sm:items-end gap-2">
+                            <!-- Status Badge -->
+                            {% if order.status == "placed" %}
+                                <span class="status-badge inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
+                                    <i class="fas fa-clock mr-2"></i>Placed
+                                </span>
+                            {% elif order.status == "processing" %}
+                                <span class="status-badge inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold">
+                                    <i class="fas fa-cog mr-2"></i>Processing
+                                </span>
+                            {% elif order.status == "shipped" %}
+                                <span class="status-badge inline-flex items-center px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
+                                    <i class="fas fa-shipping-fast mr-2"></i>Shipped
+                                </span>
+                            {% elif order.status == "delivered" %}
+                                <span class="status-badge inline-flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+                                    <i class="fas fa-check mr-2"></i>Delivered
+                                </span>
+                            {% endif %}
+                        </div>
                     </div>
-                {% endif %}
 
-                <div>
-                    <h2 class="text-xl font-semibold">{{ item.product.product_name }}</h2>
-                    <p class="text-secondary font-bold text-lg">₹{{ item.product.price }}</p>
+                    <!-- PRODUCT DETAILS -->
+                    <div class="flex flex-col md:flex-row gap-6 items-start md:items-center">
+                        <!-- Product Image -->
+                        <div class="flex-shrink-0">
+                            {% if item.product.images.first %}
+                                <img src="{{ item.product.images.first.product_img.url }}"
+                                     alt="{{ item.product.product_name }}"
+                                     class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-xl shadow">
+                            {% else %}
+                                <div class="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-box text-gray-400 text-xl"></i>
+                                </div>
+                            {% endif %}
+                        </div>
 
-                    <p class="text-gray-600">
-                        Subtotal: ₹{{ item.product.price|floatformat:2 }} × {{ item.quantity }} =
-                        ₹{{ item.subtotal|floatformat:2 }}
-                    </p>
+                        <!-- Product Info -->
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg font-semibold text-dark mb-2">{{ item.product.product_name }}</h3>
+                            <div class="flex flex-wrap gap-4 text-sm text-gray-600">
+
+                                <p class="flex items-center">
+                                    <i class="fas fa-layer-group mr-2 text-primary"></i>
+                                    Quantity: {{ item.quantity }}
+                                </p>
+                                <p class="flex items-center">
+                                    <i class="fas fa-tag mr-2 text-primary"></i>
+                                    ₹{{ item.product.price }} each
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Price & Actions -->
+                        <div class="flex flex-col sm:flex-row md:flex-col items-start sm:items-center md:items-end gap-4 w-full md:w-auto">
+                            <div class="text-right">
+                                <p class="text-gray-600 text-sm mb-1">Subtotal</p>
+                                <p class="text-xl font-bold text-secondary">₹{{ item.subtotal }}</p>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex flex-col sm:flex-row gap-2 w-full">
+
+                                <!-- Cancel Order Button - Only show for placed/processing orders -->
+                                {% if order.status == "placed" or order.status == "processing" %}
+                                <a href="#"
+                                   class="btn bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-all flex items-center justify-center flex-1">
+                                    <i class="fas fa-times-circle mr-2"></i> Cancel Order
+                                </a>
+                                {% endif %}
+
+                                <!-- Add Review Button - Only show for delivered orders -->
+                                {% if order.status == "delivered" %}
+                                <a href="{% url 'add_review' item.product.slug %}"
+                                   class="btn bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all flex items-center justify-center flex-1">
+                                    <i class="fas fa-star mr-2"></i> Add Review
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                {% endfor %}
+                {% endfor %}
             </div>
 
-            <!-- QUANTITY UPDATE FORM -->
-            <form method="POST" action="{% url 'user_update_cart' item.id %}"
-                  class="flex items-center gap-3 mb-4 md:mb-0">
-                {% csrf_token %}
-                <div class="flex items-center">
-                    <label for="quantity-{{ item.id }}" class="mr-2 font-medium text-gray-700">Qty:</label>
-                    <input type="number"
-                           id="quantity-{{ item.id }}"
-                           name="quantity"
-                           value="{{ item.quantity }}"
-                           min="1"
-                           class="quantity-input w-20 border border-gray-300 rounded-lg px-3 py-2
-                                  text-center shadow-sm focus:ring-2 focus:ring-primary
-                                  focus:border-transparent">
+        {% else %}
+            <!-- Empty State -->
+            <div class="bg-white rounded-2xl shadow-xl text-center py-16 px-6 max-w-2xl mx-auto">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full mb-6">
+                    <i class="fas fa-box-open text-white text-2xl"></i>
                 </div>
-
-                <button type="submit"
-                        class="btn bg-primary text-white px-4 py-2 rounded-lg shadow
-                               hover:bg-primary-dark transition-all">
-                    Update
-                </button>
-            </form>
-
-            <!-- DELETE BUTTON -->
-            <a href="{% url 'user_remove_from_cart' item.id %}"
-               class="text-red-500 text-2xl hover:text-red-700 p-2"
-               onclick="return confirm('Remove this item?')">
-                <i class="fas fa-trash"></i>
-            </a>
-
-        </div>
-        {% endfor %}
-
-        <!-- CART TOTAL -->
-        <div class="text-right mt-8 pt-6 border-t border-gray-200">
-            <p class="text-2xl font-bold mb-4">Total: ₹{{ total|floatformat:2 }}</p>
-
-            <div class="flex flex-col md:flex-row gap-4 justify-end">
-                <a href="{% url 'user_home' %}"
-                   class="inline-block btn bg-accent text-white px-8 py-3 rounded-lg
-                          text-lg font-semibold shadow hover:bg-blue-500 transition-all">
-                    Continue Shopping
-                </a>
-
-                <a href="{% url 'place_order' %}"
-                   class="inline-block btn bg-primary text-white px-8 py-3 rounded-lg
-                          text-lg font-semibold shadow hover:bg-primary-dark transition-all">
-                    Place order
-                </a>
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">No Orders Found</h3>
+                <p class="text-gray-600 text-lg mb-8">
+                    You haven't ordered anything yet. Start shopping to discover amazing products!
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="{% url 'user_home' %}"
+                       class="btn bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2">
+                        <i class="fas fa-shopping-bag"></i> Start Shopping
+                    </a>
+                    <a href="#"
+                       class="btn bg-white hover:bg-gray-50 text-primary border-2 border-primary px-8 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2">
+                        <i class="fas fa-star"></i> Browse Deals
+                    </a>
+                </div>
             </div>
-        </div>
+        {% endif %}
+    </section>
 
-    </div>
-
-    {% else %}
-    <!-- EMPTY CART -->
-    <div class="text-center py-20 bg-white rounded-2xl shadow-xl">
-        <i class="fas fa-shopping-cart text-6xl text-gray-300 mb-4"></i>
-        <p class="text-gray-600 text-xl mb-6">Your cart is empty.</p>
-        <a href="{% url 'user_home' %}"
-           class="mt-6 inline-block btn bg-primary text-white px-8 py-3 rounded-lg
-                  shadow hover:bg-primary-dark transition-all">
-            Continue Shopping
-        </a>
-    </div>
-    {% endif %}
-</section>
-
-    <!-- Footer -->
+    <!-- FOOTER -->
     <footer class="bg-dark text-white pt-16 pb-8 mt-16">
         <div class="container mx-auto px-4">
             <div class="footer-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
@@ -538,25 +471,18 @@
     </footer>
 
     <script>
-        // Add some interactive functionality
+        // Add interactive elements
         document.addEventListener('DOMContentLoaded', function() {
-            // Quantity input validation
-            const quantityInputs = document.querySelectorAll('.quantity-input');
-            quantityInputs.forEach(input => {
-                input.addEventListener('change', function() {
-                    if (this.value < 1) {
-                        this.value = 1;
-                    }
-                });
-            });
+            // Add hover effects to order cards
+            const orderCards = document.querySelectorAll('.order-card');
 
-            // Smooth scrolling for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
+            orderCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.borderLeftColor = '#ff6b6b';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.borderLeftColor = '#5d5fef';
                 });
             });
         });
