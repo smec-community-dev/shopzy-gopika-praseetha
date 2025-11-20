@@ -21,8 +21,12 @@
                     <tr class="bg-gray-200 text-left text-sm font-semibold">
                         <th class="py-3 px-4 border">Order ID</th>
                         <th class="py-3 px-4 border">Customer</th>
+                        <th class="py-3 px-4 border">Address</th>
                         <th class="py-3 px-4 border">Total Amount</th>
                         <th class="py-3 px-4 border">Order Date</th>
+                        <th class="py-3 px-4 border">Product</th>
+                        <th class="py-3 px-4 border">Quantity</th>
+                        <th class="py-3 px-4 border">Staus</th>
                         <th class="py-3 px-4 border">View</th>
                     </tr>
                 </thead>
@@ -30,9 +34,20 @@
                     {% for order in orders %}
                     <tr class="hover:bg-gray-100 text-sm">
                         <td class="py-3 px-4 border">{{ order.id }}</td>
-                        <td class="py-3 px-4 border">{{ order.user.username }}</td>
-                        <td class="py-3 px-4 border">₹{{ order.total_amount }}</td>
-                        <td class="py-3 px-4 border">{{ order.order_date|date:"Y-m-d H:i" }}</td>
+                        <td class="py-3 px-4 border">{{ order.order.user.username }}</td>
+                          <td class="py-3 px-4 border">{{ order.order.shipping_address}}</td>
+                        <td class="py-3 px-4 border">₹{{ order.order.total_amount }}</td>
+                        <td class="py-3 px-4 border">{{ order.order.order_date|date:"Y-m-d H:i" }}</td>
+                        <td class="py-3 px-4 border">{{ order.product }}</td>
+                        <td class="py-3 px-4 border">₹{{ order.quantity }}</td>
+                        <td class="py-3 px-4 border">{{ order.order.status }}</td>
+                        <td><a href="{% url 'orderlist_single' order.order.id %}">View</a></td>
+
+
+
+
+
+
                         <td class="py-3 px-4 border">
 
                         </td>
