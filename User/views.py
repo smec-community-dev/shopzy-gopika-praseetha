@@ -371,6 +371,3 @@ def add_review(request, slug):
     return render(request, "user/add_review.html", {"product": product,"order_slug": order.slug})
 
 
-
-
-
