@@ -324,27 +324,6 @@ def user_orders(request):
             item.subtotal = item.quantity * item.product.price
     return render(request, "user/orders_table.html", {"orders": orders})
 
-# @role_required("customer", login_url="/user_login")
-# def add_review(request, slug):
-#     try:
-#         product = Product.objects.get(slug=slug)
-#     except:
-#         dj_messages.error(request, "Product not found.")
-#         return redirect("user_orders")
-#
-#     if request.method == "POST":
-#         review_text = request.POST.get("review")
-#         rating = request.POST.get("rating")
-#         review = Review.objects.create(user=request.user,product=product,review=review_text,rating=rating)
-#         if request.FILES:
-#             for img in request.FILES.getlist("images"):
-#                 ReviewImage.objects.create(review=review, review_img=img)
-#
-#         dj_messages.success(request, "Review added!")
-#         return redirect("user_orders")
-#
-#     return render(request, "user/add_review.html", {"product": product})
-
 def add_review(request, slug):
     try:
         product = Product.objects.get(slug=slug)
@@ -369,5 +348,4 @@ def add_review(request, slug):
         return redirect("user_orders")
 
     return render(request, "user/add_review.html", {"product": product,"order_slug": order.slug})
-
 
