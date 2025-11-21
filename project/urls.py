@@ -36,7 +36,8 @@ urlpatterns = [
     path('seller/product_single/<slug:slug>',views_seller.product_single, name='product_single'),
     path('seller/profile',views_seller.seller_profile,name='profile_update'),
     path('seller/forgott',views_seller.seller_forgott,name='forgott_password'),
-    path('seller/logout',views_seller.seller_logout,name='seller_logout')
+    path('seller/logout',views_seller.seller_logout,name='seller_logout'),
+    path('seller/addform',views_seller.Create_products_form,name='addform'),
 
 
 ]
