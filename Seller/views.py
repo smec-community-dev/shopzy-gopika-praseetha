@@ -10,7 +10,7 @@ from django.core.mail import message
 from django.core.paginator import Paginator
 from django.db.models import Sum, Avg, Prefetch, F, Count
 
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.defaultfilters import date
 from django.utils import timezone
 from django.utils.text import slugify
@@ -185,9 +185,17 @@ def Create_Product(request):
     page_number = request.GET.get('page')
     products = paginator.get_page(page_number)
 
+
+
+    return render(request, 'seller/seller_addproduct.html', {
+        'subcategories': subcategories,
+        'products': products,
+    })
+def Create_products_form(request):
+    subcategories = SubCategory.objects.all()
+    seller = Seller.objects.get(user=request.user)
     if request.method == "POST":
         product = Product()
-
 
         product.seller = seller
 
@@ -204,13 +212,8 @@ def Create_Product(request):
         print("imagefound")
         if image:
             ProductImage.objects.create(product=product, product_img=image)
-
         return redirect('/seller/product')
-
-    return render(request, 'seller/seller_addproduct.html', {
-        'subcategories': subcategories,
-        'products': products,
-    })
+    return render(request,'seller/add_form.html', {'subcategories': subcategories})
 @login_required(login_url='/seller/login')
 @role_required("seller", login_url="/seller/login")
 def product_delete(request, slug):
@@ -270,17 +273,72 @@ def order_single_list(request, id):
     print(order)
     print(id)
     return render(request, 'seller/seller_order_single.html', {'order': order})
-def product_single(request,slug):
-    product=Product.objects.get(slug=slug)
-    review=Review.objects.filter(product=product)
-    print(review)
-    return render(request,'seller/product_details.html',{'product':product,'review':review})
+# def product_single(request,slug):
+#     product=Product.objects.get(slug=slug)
+#     review=Review.objects.filter(product=product)
+#     print(review)
+#     return render(request,'seller/product_details.html',{'product':product,'review':review})
 # def product_all(request):
 #     seller=Seller.objects.filter(seller=request.user)
 #     reviews = Review.objects.filter(product__seller=seller).prefetch_related(
 #         Prefetch('reviewimage_set', to_attr='images')
 #     ).order_by('-id')
+def product_single(request, slug):
+    product = Product.objects.get(slug=slug)
+    review = Review.objects.filter(product=product)
 
+    # Calculate metrics for the dashboard
+    # Total sales count (number of order items for this product)
+    total_sales = OrderItem.objects.filter(product=product).count()
+
+    # Calculate total quantity sold
+    total_quantity_sold = OrderItem.objects.filter(product=product).aggregate(
+        total_quantity=Sum('quantity')
+    )['total_quantity'] or 0
+
+    # Calculate revenue (quantity sold × product price)
+    revenue = total_quantity_sold * product.price
+
+    # Get weekly sales data (last 7 days)
+    end_date = timezone.now()
+    start_date = end_date - timedelta(days=7)
+
+    weekly_sales = []
+    week_days = []
+
+    for i in range(7):
+        day = start_date + timedelta(days=i)
+        day_sales = OrderItem.objects.filter(
+            product=product,
+            order__order_date__date=day.date()
+        ).aggregate(day_total=Sum('quantity'))['day_total'] or 0
+        weekly_sales.append(day_sales)
+        week_days.append(day.strftime('%a'))  # Mon, Tue, etc.
+
+    # Get return count (assuming returns are orders with status 'returned')
+    # Since we don't have return status, we'll calculate based on some logic
+    # For now, let's assume no returns or use a placeholder
+    returns_count = 0
+
+    # Calculate review statistics
+    review_stats = {
+        'total_reviews': review.count(),
+        'average_rating': review.aggregate(Avg('rating'))['rating__avg'] or 0,
+    }
+
+    context = {
+        'product': product,
+        'review': review,
+        'total_sales': total_sales,
+        'total_quantity_sold': total_quantity_sold,
+        'revenue': revenue,
+        'weekly_sales': weekly_sales,
+        'week_days': week_days,
+        'returns_count': returns_count,
+        'review_stats': review_stats,
+    }
+
+    return render(request, 'seller/product_details.html', context)
 def seller_profile(request):
     seller=Seller.objects.get(user=request.user)
     print(seller)
