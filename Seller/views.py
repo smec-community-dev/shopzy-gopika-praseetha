@@ -8,7 +8,7 @@ import json
 from django.contrib.auth.decorators import login_required
 from django.core.mail import message
 from django.core.paginator import Paginator
-from django.db.models import Sum, Avg, Prefetch, F, Count
+from django.db.models import Sum, Avg, Prefetch, F, Count, Q
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.defaultfilters import date
@@ -254,25 +254,112 @@ def edit_product(request, slug):
     })
 @login_required(login_url='/seller/login')
 @role_required("seller", login_url="/seller/login")
+# def order_list(request):
+#     seller = Seller.objects.get(user=request.user)
+#
+#
+#     order_items = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product')
+#
+#     paginator = Paginator(order_items, 10)
+#     page_number = request.GET.get('page')
+#     orders = paginator.get_page(page_number)
+#
+#     return render(request, 'seller/seller_orders.html', {
+#         'orders': orders
+#     })
 def order_list(request):
     seller = Seller.objects.get(user=request.user)
 
-
+    # Base queryset
     order_items = OrderItem.objects.filter(product__seller=seller).select_related('order', 'product')
 
+    # Handle search
+    search_query = request.GET.get('search', '')
+    if search_query:
+        order_items = order_items.filter(
+            Q(order__user__username__icontains=search_query) |
+            Q(product__product_name__icontains=search_query) |
+            Q(order__shipping_address__icontains=search_query)
+        )
+
+    # Handle status filter
+    status_filter = request.GET.get('status', '')
+    if status_filter:
+        order_items = order_items.filter(order__status=status_filter.lower())
+
+    # Calculate stats for the cards
+    total_orders = order_items.count()
+    placed_orders = order_items.filter(order__status='placed').count()
+    completed_orders = order_items.filter(order__status='delivered').count()
+    processing_orders = order_items.filter(order__status='processing').count()
+
+    # Calculate total revenue
+    total_revenue = order_items.aggregate(
+        total=Sum('order__total_amount')
+    )['total'] or 0
+
+    # Pagination
     paginator = Paginator(order_items, 10)
     page_number = request.GET.get('page')
     orders = paginator.get_page(page_number)
 
     return render(request, 'seller/seller_orders.html', {
-        'orders': orders
+        'orders': orders,
+        'total_orders': total_orders,
+        'placed_orders': placed_orders,
+        'completed_orders': completed_orders,
+        'processing_orders': processing_orders,
+        'total_revenue': total_revenue,
+        'current_status_filter': status_filter,
+        'search_query': search_query,
     })
+
+
 def order_single_list(request, id):
     seller = Seller.objects.get(user=request.user)
-    order = OrderItem.objects.get(id=id, product__seller=seller)
-    print(order)
-    print(id)
+
+    # Optimized query with related data
+    order = get_object_or_404(
+        OrderItem.objects.select_related(
+            'order',
+            'product',
+            'order__user',
+            'product__sub_category'
+        ).prefetch_related(
+            Prefetch(
+                'product__images',
+                queryset=ProductImage.objects.all(),
+                to_attr='product_images'
+            )
+        ),
+        id=id,
+        product__seller=seller
+    )
+
     return render(request, 'seller/seller_order_single.html', {'order': order})
+
+
+def update_order_status(request, order_id):
+    if request.method == 'POST':
+        order = get_object_or_404(Order, id=order_id)
+        new_status = request.POST.get('status')
+
+        # Validate status transition
+        valid_statuses = ['placed', 'processing', 'shipped', 'delivered']
+        if new_status in valid_statuses:
+            order.status = new_status
+            order.save()
+            messages.success(request, f'Order status updated to {new_status}.')
+        else:
+            messages.error(request, 'Invalid status.')
+
+        return redirect('orderlist_single', id=order_id)
+# def order_single_list(request, id):
+#     seller = Seller.objects.get(user=request.user)
+#     order = OrderItem.objects.get(id=id, product__seller=seller)
+#     print(order)
+#     print(id)
+#     return render(request, 'seller/seller_order_single.html', {'order': order})
 # def product_single(request,slug):
 #     product=Product.objects.get(slug=slug)
 #     review=Review.objects.filter(product=product)
