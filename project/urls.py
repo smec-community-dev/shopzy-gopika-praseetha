@@ -39,6 +39,9 @@ urlpatterns = [
     path('seller/logout',views_seller.seller_logout,name='seller_logout'),
     path('seller/addform',views_seller.Create_products_form,name='addform'),
     path('order/<int:order_id>/update-status/', views_seller.update_order_status, name='update_order_status'),
+    path('profile/password_change/', views_seller.seller_password_change, name='seller_password_change'),
+    path('profile/update/', views_seller.seller_profile_update, name='seller_profile_update'),
+    path('profile/delete/', views_seller.seller_delete_profile, name='seller_delete_profile'),
 
 
 ]
