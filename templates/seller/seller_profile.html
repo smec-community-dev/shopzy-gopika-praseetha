@@ -1,48 +1,37 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seller Profile</title>
+    <title>Seller Profile - Dashboard Layout</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         .profile-image-placeholder {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        .stats-card {
-            transition: all 0.3s ease;
-        }
-        .stats-card:hover {
-            transform: translateY(-5px);
-        }
+        [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 min-h-screen" x-data="{ editingProfile: false, sidebarOpen: false, deletingProfile: false }">
 
-    <!-- Navigation Bar -->
-    <nav class="bg-white shadow-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav class="bg-white shadow-md fixed w-full z-30">
+        <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <div class="flex-shrink-0 flex items-center">
-                        <i class="fas fa-store text-blue-500 text-2xl mr-2"></i>
-                        <span class="text-xl font-bold text-gray-800">MarketPlace</span>
-                    </div>
-                    <div class="hidden md:ml-6 md:flex md:space-x-8">
-                        <a href="#" class="text-gray-500 hover:text-blue-500 px-3 py-2 text-sm font-medium">Dashboard</a>
-                        <a href="#" class="text-blue-500 border-b-2 border-blue-500 px-3 py-2 text-sm font-medium">Profile</a>
-                        <a href="#" class="text-gray-500 hover:text-blue-500 px-3 py-2 text-sm font-medium">Products</a>
-                        <a href="#" class="text-gray-500 hover:text-blue-500 px-3 py-2 text-sm font-medium">Orders</a>
-                        <a href="#" class="text-gray-500 hover:text-blue-500 px-3 py-2 text-sm font-medium">Analytics</a>
-                    </div>
+                    <button @click="sidebarOpen = !sidebarOpen" class="md:hidden p-2 text-gray-500 hover:text-gray-700">
+                        <i x-show="!sidebarOpen" class="fas fa-bars h-6 w-6"></i>
+                        <i x-show="sidebarOpen" class="fas fa-times h-6 w-6"></i>
+                    </button>
+                    <i class="fas fa-store text-blue-500 text-2xl mr-2 ml-4 md:ml-0"></i>
+                    <span class="text-xl font-bold text-gray-800">Shop Dashboard</span>
                 </div>
                 <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <button type="button" class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-500 shadow-sm hover:bg-blue-600 focus:outline-none">
-                            <i class="fas fa-plus mr-2"></i> Add Product
-                        </button>
-                    </div>
+                    <a href="{% url 'seller_addproduct' %}" class="relative inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-500 shadow-sm hover:bg-blue-600 focus:outline-none">
+                        <i class="fas fa-plus mr-2"></i> Add Product
+                    </a>
                     <div class="ml-4 flex items-center md:ml-6">
                         <button class="bg-white p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none">
                             <i class="fas fa-bell h-6 w-6"></i>
@@ -50,9 +39,9 @@
                         <div class="ml-3 relative">
                             <div class="flex items-center">
                                 <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
-                                    J
+                                    {{seller.user.username|first|upper}}
                                 </div>
-                                <span class="ml-2 text-sm font-medium text-gray-700">{{seller.user.username}}</span>
+                                <span class="ml-2 text-sm font-medium text-gray-700 hidden sm:inline">{{seller.user.username}}</span>
                             </div>
                         </div>
                     </div>
@@ -61,221 +50,217 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
-    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div class="px-4 py-6 sm:px-0">
+    <div class="flex pt-16">
+        <div :class="{'translate-x-0 ease-out': sidebarOpen, '-translate-x-full ease-in': !sidebarOpen}"
+             class="fixed inset-y-0 left-0 transform md:relative md:translate-x-0 transition duration-200 w-64 bg-white shadow-xl z-20">
+            <div class="p-4 space-y-2 font-medium text-gray-600">
+                <a href="{% url 'seller_dashboard' %}" class="flex items-center p-2 rounded-lg hover:bg-gray-100"><i class="fas fa-tachometer-alt w-5 mr-3"></i> Dashboard</a>
+                <a href="{% url 'profile_update' %}" class="flex items-center p-2 rounded-lg text-blue-600 bg-blue-50"><i class="fas fa-user-circle w-5 mr-3"></i> Profile</a>
+                <a href="{% url 'seller_addproduct' %}" class="flex items-center p-2 rounded-lg hover:bg-gray-100"><i class="fas fa-box w-5 mr-3"></i> Products</a>
+                <a href="{% url 'oderslist' %}" class="flex items-center p-2 rounded-lg hover:bg-gray-100"><i class="fas fa-shopping-bag w-5 mr-3"></i> Orders</a>
+                <a href="#" class="flex items-center p-2 rounded-lg hover:bg-gray-100"><i class="fas fa-chart-line w-5 mr-3"></i> Analytics</a>
+            </div>
+        </div>
 
-            <!-- Page Header -->
-            <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8">
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900">Seller Profile</h1>
-                    <p class="mt-2 text-sm text-gray-700">Manage your profile and shop information</p>
+                    <p class="mt-1 text-sm text-gray-700">Manage your shop and account details.</p>
                 </div>
-                <div class="mt-4 md:mt-0 flex space-x-3">
-                    <a href="#"
+                <div class="mt-4 md:mt-0">
+                    <button @click="editingProfile = !editingProfile"
                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none">
-                        <i class="fas fa-edit mr-2"></i> Edit Profile
-                    </a>
-                    <button class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
-                        <i class="fas fa-download mr-2"></i> Export Data
+                        <i class="fas fa-edit mr-2"></i> <span x-text="editingProfile ? 'Close Edit Form' : 'Edit Shop Details'"></span>
                     </button>
                 </div>
             </div>
 
-            <!-- Profile Card -->
-            <div class="bg-white shadow-lg rounded-lg overflow-hidden hover:shadow-xl transition duration-300 mb-8">
+            {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                <div class="bg-{{ message.tags|default:'blue' }}-100 border-l-4 border-{{ message.tags|default:'blue' }}-500 text-{{ message.tags|default:'blue' }}-700 p-4 rounded-lg" role="alert">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden transition duration-300 mb-6">
                 <div class="p-6">
                     <div class="flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-6">
-                        <!-- Profile Image -->
-                        <div class="w-32 h-32 rounded-full profile-image-placeholder flex items-center justify-center text-white text-4xl font-bold">
-                            J
+                        <div class="w-24 h-24 rounded-full flex-shrink-0">
+                            {% if seller.profile_image %}
+                                <img src="{{ seller.profile_image.url }}" alt="Profile Image" class="w-full h-full object-cover rounded-full border-4 border-gray-100 shadow-md">
+                            {% else %}
+                                <div class="w-full h-full rounded-full profile-image-placeholder flex items-center justify-center text-white text-3xl font-bold border-4 border-gray-100 shadow-md">
+                                    {{seller.user.username|first|upper}}
+                                </div>
+                            {% endif %}
                         </div>
-                        <div class="text-center md:text-left">
-                            <h2 class="text-2xl font-semibold text-gray-800">{{seller.user.username}}</h2>
-                            <p class="text-gray-600 mt-1">{{seller.user.email}}</p>
+
+                        <div class="text-center md:text-left flex-1">
+                            <h2 class="text-xl font-semibold text-gray-800">{{seller.shop_name}}</h2>
+                            <p class="text-gray-600 mt-1"><i class="fas fa-user-circle mr-2 text-blue-500"></i>{{seller.user.username}} (Account)</p>
                             <p class="text-gray-600 mt-2">
-                                <i class="fas fa-map-marker-alt mr-2 text-blue-500"></i>
-                                {{seller.shop_name}}
+                                <i class="fas fa-envelope mr-2 text-blue-500"></i>
+                                {{seller.user.email}}
                             </p>
-                            <div class="mt-4 flex flex-wrap gap-2">
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    Electronics
-                                </span>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                    Verified Seller
-                                </span>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                    Premium
-                                </span>
-                            </div>
                         </div>
                     </div>
 
-                    <!-- Shop Description -->
                     <div class="mt-6 border-t border-gray-200 pt-6">
-                        <h3 class="text-lg font-medium text-gray-900">About Our Shop</h3>
-                        <p class="mt-2 text-gray-600">
-                            We specialize in high-quality electronics and gadgets. With over 5 years of experience,
-                            we provide the latest tech products with excellent customer service and fast shipping.
+                        <h3 class="text-lg font-medium text-gray-900 mb-4 border-b pb-2">
+                            <i class="fas fa-info-circle mr-2 text-blue-500"></i>Current Shop Details
+                        </h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-start">
+                                <i class="fas fa-map-marker-alt text-gray-500 w-5 mr-3 mt-1"></i>
+                                <div>
+                                    <p class="font-medium text-gray-900">Address:</p>
+                                    <p class="text-gray-700">{{seller.address|linebreaksbr|default:"N/A - Please update profile"}}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-globe text-gray-500 w-5 mr-3"></i>
+                                <div>
+                                    <p class="font-medium text-gray-900">Website:</p>
+                                    <a href="{{seller.website}}" target="_blank" class="text-blue-600 hover:text-blue-700 underline">{{seller.website|default:"N/A"}}</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div x-show="editingProfile" x-cloak class="bg-white shadow-lg rounded-lg overflow-hidden transition duration-300 mb-8 p-6 border-2 border-blue-200">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
+                    <i class="fas fa-pen-to-square mr-2 text-blue-500"></i>Update Shop Information
+                </h3>
+                <p class="text-gray-600 mb-4 text-sm">Update your public shop name, address, website URL, and profile image below.</p>
+
+                <form method="post" action="{% url 'seller_profile_update' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="mb-4">
+                        <label for="id_shop_name" class="block text-sm font-medium text-gray-700">Shop Name</label>
+                        <input type="text" name="shop_name" id="id_shop_name"
+                               value="{{ seller.shop_name }}" required
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_address" class="block text-sm font-medium text-gray-700">Address</label>
+                        <textarea name="address" id="id_address" rows="3" required
+                                  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">{{ seller.address }}</textarea>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="id_website" class="block text-sm font-medium text-gray-700">Website URL (Optional)</label>
+                        <input type="url" name="website" id="id_website"
+                               value="{{ seller.website|default:"" }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+
+                    <div class="mb-6">
+                        <label for="id_profile_image" class="block text-sm font-medium text-gray-700">Profile Image</label>
+                        <input type="file" name="profile_image" id="id_profile_image" accept="image/*"
+                               class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                         {% if seller.profile_image %}
+                            <p class="text-xs text-gray-500 mt-2">Current image: <a href="{{ seller.profile_image.url }}" target="_blank" class="text-blue-500 underline">View</a></p>
+                         {% endif %}
+                    </div>
+
+                    <button type="submit"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none">
+                        <i class="fas fa-save mr-2"></i> Save Changes
+                    </button>
+                    <button type="button" @click="editingProfile = false"
+                        class="ml-3 inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                        <i class="fas fa-xmark mr-2"></i> Cancel
+                    </button>
+                </form>
+            </div>
+
+
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden transition duration-300 mb-6">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
+                        <i class="fas fa-lock mr-2 text-red-500"></i>Change Account Password
+                    </h3>
+                    <p class="text-gray-600 mb-4 text-sm">Use this form to securely update your account password.</p>
+
+                    <form method="post" action="{% url 'seller_password_change' %}">
+                        {% csrf_token %}
+
+                        {% for field in password_form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
+                                {{ field }}
+
+                                {% if field.errors %}
+                                    <p class="text-red-500 text-xs mt-1">{{ field.errors|striptags }}</p>
+                                {% endif %}
+                                {% if field.help_text %}
+                                    <p class="text-gray-500 text-xs mt-1">{{ field.help_text|striptags }}</p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <button type="submit"
+                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-500 hover:bg-red-600 focus:outline-none mt-4">
+                            <i class="fas fa-key mr-2"></i> Update Password
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden transition duration-300 mb-8 border-l-4 border-red-500">
+                <div class="p-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2 text-red-600">
+                        <i class="fas fa-user-slash mr-2"></i> Delete Profile and Account
+                    </h3>
+                    <p class="text-gray-600 mb-4 text-sm">
+                        This action is irreversible. Deleting your profile will permanently remove your seller account, all products, and associated data.
+                    </p>
+
+                    <button @click="deletingProfile = true"
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none">
+                        <i class="fas fa-trash-alt mr-2"></i> Initiate Deletion
+                    </button>
+
+                    <div x-show="deletingProfile" x-cloak class="mt-6 p-4 bg-red-50 rounded-lg border border-red-200">
+                        <h4 class="font-medium text-red-700 mb-3">Confirm Account Deletion</h4>
+                        <p class="text-sm text-red-600 mb-4">
+                            **WARNING:** This will immediately delete all your data. To proceed, please confirm the action.
                         </p>
-                    </div>
-                </div>
 
-                <!-- Stats Section -->
-                <div class="bg-gray-50 p-4 grid grid-cols-1 md:grid-cols-4 gap-4 text-center text-gray-700">
-                    <div class="stats-card bg-white p-4 rounded-lg shadow">
-                        <p class="font-bold text-2xl text-gray-900">24</p>
-                        <p class="text-sm text-gray-600">Products</p>
-                        <div class="mt-2 text-xs text-green-500">
-                            <i class="fas fa-arrow-up mr-1"></i> 12% from last month
-                        </div>
-                    </div>
-                    <div class="stats-card bg-white p-4 rounded-lg shadow">
-                        <p class="font-bold text-2xl text-gray-900">156</p>
-                        <p class="text-sm text-gray-600">Orders</p>
-                        <div class="mt-2 text-xs text-green-500">
-                            <i class="fas fa-arrow-up mr-1"></i> 8% from last month
-                        </div>
-                    </div>
-                    <div class="stats-card bg-white p-4 rounded-lg shadow">
-                        <p class="font-bold text-2xl text-gray-900">$12,450</p>
-                        <p class="text-sm text-gray-600">Revenue</p>
-                        <div class="mt-2 text-xs text-green-500">
-                            <i class="fas fa-arrow-up mr-1"></i> 15% from last month
-                        </div>
-                    </div>
-                    <div class="stats-card bg-white p-4 rounded-lg shadow">
-                        <p class="font-bold text-2xl text-gray-900">4.8</p>
-                        <p class="text-sm text-gray-600">Rating</p>
-                        <div class="mt-2 text-yellow-400">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
-                        </div>
+                        <form method="post" action="{% url 'seller_delete_profile' %}">
+                            {% csrf_token %}
+
+                            <div class="flex space-x-3">
+                                <button type="submit"
+                                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-700 hover:bg-red-800 focus:outline-none">
+                                    I Understand, Delete My Account
+                                </button>
+                                <button type="button" @click="deletingProfile = false"
+                                    class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-
-            <!-- Additional Information Section -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <!-- Contact Information -->
-                <div class="bg-white shadow rounded-lg p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Contact Information</h3>
-                    <div class="space-y-3">
-                        <div class="flex items-center">
-                            <i class="fas fa-phone text-blue-500 w-5 mr-3"></i>
-                            <span class="text-gray-700">+1 (555) 123-4567</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-envelope text-blue-500 w-5 mr-3"></i>
-                            <span class="text-gray-700">{{seller.user.email}}</span>
-                        </div>
-                        <div class="flex items-center">
-                            <i class="fas fa-globe text-blue-500 w-5 mr-3"></i>
-                            <span class="text-gray-700">{{seller.website}}</span>
-                        </div>
-                        <div class="flex items-start">
-                            <i class="fas fa-map-marker-alt text-blue-500 w-5 mr-3 mt-1"></i>
-                            <span class="text-gray-700">123 Tech Street, Suite 101<br>New York, NY 10001</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Business Hours -->
-                <div class="bg-white shadow rounded-lg p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Business Hours</h3>
-                    <div class="space-y-2">
-                        <div class="flex justify-between">
-                            <span class="text-gray-700">Monday - Friday</span>
-                            <span class="text-gray-900 font-medium">9:00 AM - 6:00 PM</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-700">Saturday</span>
-                            <span class="text-gray-900 font-medium">10:00 AM - 4:00 PM</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-700">Sunday</span>
-                            <span class="text-gray-900 font-medium">Closed</span>
-                        </div>
-                    </div>
-                    <div class="mt-6 pt-4 border-t border-gray-200">
-                        <h4 class="text-sm font-medium text-gray-900 mb-2">Response Time</h4>
-                        <p class="text-sm text-gray-600">We typically respond to inquiries within 2 hours during business hours.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Recent Activity -->
-            <div class="bg-white shadow rounded-lg p-6 mb-8">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
-                <div class="space-y-4">
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0">
-                            <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                                <i class="fas fa-shopping-cart text-green-600 text-xs"></i>
-                            </div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-900">New order received</p>
-                            <p class="text-sm text-gray-500">Order #2849 for $245.99</p>
-                            <p class="text-xs text-gray-400 mt-1">2 hours ago</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0">
-                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                                <i class="fas fa-star text-blue-600 text-xs"></i>
-                            </div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-900">New review received</p>
-                            <p class="text-sm text-gray-500">5-star rating for "Wireless Earbuds"</p>
-                            <p class="text-xs text-gray-400 mt-1">5 hours ago</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start">
-                        <div class="flex-shrink-0">
-                            <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center">
-                                <i class="fas fa-box text-yellow-600 text-xs"></i>
-                            </div>
-                        </div>
-                        <div class="ml-4">
-                            <p class="text-sm font-medium text-gray-900">Product restocked</p>
-                            <p class="text-sm text-gray-500">"Smart Watch Series 5" is now back in stock</p>
-                            <p class="text-xs text-gray-400 mt-1">1 day ago</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+            </main>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-gray-200 mt-12">
-        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-            <div class="md:flex md:items-center md:justify-between">
-                <div class="flex justify-center md:justify-start space-x-6 md:order-2">
-                    <a href="#" class="text-gray-400 hover:text-gray-500">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-gray-500">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-gray-500">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="#" class="text-gray-400 hover:text-gray-500">
-                        <i class="fab fa-linkedin-in"></i>
-                    </a>
-                </div>
-                <div class="mt-8 md:mt-0 md:order-1">
-                    <p class="text-center text-sm text-gray-500">
-                        &copy; 2023 MarketPlace. All rights reserved.
-                    </p>
-                </div>
-            </div>
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="max-w-full mx-auto py-4 px-6 sm:px-8">
+            <p class="text-center text-sm text-gray-500">
+                &copy; 2025 {{ seller.shop_name|default:"MarketPlace" }}. All rights reserved.
+            </p>
         </div>
     </footer>
 
