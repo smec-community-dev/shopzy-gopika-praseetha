@@ -64,8 +64,7 @@ def user_register(request):
     return render(request,'seller/seller_register.html')
 
 
-@login_required(login_url='seller/login')
-@role_required("seller", login_url="/seller/login")
+
 # def seller_dashboard(request):
 #     seller = Seller.objects.get(user=request.user)
 #
@@ -155,6 +154,8 @@ def user_register(request):
 #
 #
 #     })
+@login_required(login_url='seller/login')
+@role_required("seller", login_url="/seller/login")
 def seller_dashboard(request):
     seller = Seller.objects.get(user=request.user)
 

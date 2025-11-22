@@ -9,11 +9,9 @@
 </head>
 <body class="bg-gray-50 min-h-screen flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
-        <!-- Header Gradient Bar -->
         <div class="h-2 bg-gradient-to-r from-purple-600 to-teal-400"></div>
 
         <div class="p-8">
-            <!-- Logo & Header -->
             <div class="text-center mb-8">
                 <div class="flex items-center justify-center mb-4">
                     <i class="fas fa-shopping-bag text-3xl text-purple-600 mr-2 transform -rotate-12"></i>
@@ -22,19 +20,18 @@
                 <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome Back</h2>
                 <p class="text-gray-600">Sign in to your account</p>
             </div>
-           {% if messages %}
-           {% for message in messages %}
-         <p style="color: red; font-weight: bold; text-align:center;">
-            {{ message }}
-           </p>
-        {% endfor %}
-     {% endif %}
 
-            <!-- Login Form -->
+            {% load socialaccount %}
+
+            {% if messages %}
+                {% for message in messages %}
+                    <p class="text-center text-red-600 font-semibold">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+
             <form method="POST">
                 {% csrf_token %}
 
-                <!-- Role Selector -->
                 <div class="flex border border-gray-300 rounded-lg overflow-hidden mb-6">
                     <label class="flex-1 text-center py-3 bg-purple-600 text-white cursor-pointer">
                         <input type="radio" name="role" value="customer" class="hidden" checked>
@@ -46,40 +43,50 @@
                     </label>
                 </div>
 
-                <!-- Username -->
                 <div class="mb-4">
                     <label for="username" class="block text-gray-700 font-medium mb-2">Username</label>
                     <input type="text" id="username" name="username"
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                            placeholder="Enter your username" required>
                 </div>
 
-                <!-- Password -->
                 <div class="mb-4">
                     <label for="password" class="block text-gray-700 font-medium mb-2">Password</label>
                     <input type="password" id="password" name="password"
-                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                            placeholder="Enter your password" required>
                 </div>
 
-                <!-- Forgot Password -->
                 <div class="text-right mb-6">
                     <a href="{% url 'forgott_password' %}" class="text-purple-600 hover:text-purple-700 text-sm font-medium">Forgot your password?</a>
                 </div>
 
-                <!-- Submit Button -->
                 <button type="submit"
                         class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 transform hover:-translate-y-1">
                     Sign In
                 </button>
 
-                <!-- Footer Link -->
+                <!-- OR Divider -->
+                <div class="flex items-center my-6">
+                    <div class="flex-grow border-t border-gray-300"></div>
+                    <span class="mx-4 text-gray-500 font-medium">OR</span>
+                    <div class="flex-grow border-t border-gray-300"></div>
+                </div>
+
+                <!-- Google Login Button -->
+                <a href="{% provider_login_url 'google' %}"
+                   class="w-full flex items-center justify-center bg-white border border-gray-300 rounded-lg py-3 px-4 shadow-md hover:shadow-lg transition duration-200 hover:bg-gray-50">
+                    <i class="fab fa-google text-red-500 text-lg mr-3"></i>
+                    <span class="text-gray-700 font-medium">Continue with Google</span>
+                </a>
+
                 <div class="text-center mt-6">
                     <p class="text-gray-600">
                         Don't have an account?
                         <a href="{% url 'seller_register' %}" class="text-purple-600 font-medium hover:text-purple-700">Sign up here</a>
                     </p>
                 </div>
+
             </form>
         </div>
     </div>
