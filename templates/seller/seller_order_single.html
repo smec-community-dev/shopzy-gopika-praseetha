@@ -1,0 +1,433 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details | Seller Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        /* DASHBOARD LAYOUT STYLES (Copied from base) */
+        .notification-dropdown { display: none; }
+        .notification-button:focus + .notification-dropdown,
+        .notification-dropdown:hover { display: block; }
+        .profile-dropdown { display: none; }
+        .profile-button:focus + .profile-dropdown,
+        .profile-dropdown:hover { display: block; }
+
+        /* ORDER DETAIL CUSTOM STYLES - ADAPTED FOR TAILWIND COLORS/CLASSES */
+        .order-header {
+            /* Converted Bootstrap gradient to Tailwind/CSS background */
+            background-image: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%);
+            color: white;
+            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.3);
+        }
+        .order-card {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .order-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e5e7eb; /* bg-gray-200 */
+            border-radius: 50%;
+            margin-right: 15px;
+            color: #4b5563; /* text-gray-600 */
+        }
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        /* Adjusted status colors to fit Tailwind palette */
+        .status-placed { background-color: #eff6ff; color: #1d4ed8; } /* bg-blue-50/text-blue-700 */
+        .status-processing { background-color: #fffbeb; color: #b45309; } /* bg-amber-50/text-amber-700 */
+        .status-shipped { background-color: #ecfdf5; color: #059669; } /* bg-emerald-50/text-emerald-700 */
+        .status-delivered { background-color: #f5f3ff; color: #6d28d9; } /* bg-violet-50/text-violet-700 */
+
+        /* TIMELINE STYLES */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        .timeline:before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #d1d5db; /* bg-gray-300 */
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: -25px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #9ca3af; /* bg-gray-400 */
+            border: 2px solid white;
+        }
+        .timeline-item.active:before {
+            background-color: #10b981; /* bg-emerald-500 */
+        }
+        .timeline-item.current:before {
+            background-color: #f59e0b; /* bg-amber-500 */
+            animation: pulse 2s infinite;
+        }
+
+        .product-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+    <div class="flex flex-col lg:flex-row min-h-screen">
+        <header class="lg:hidden bg-white shadow-sm py-4 px-6 flex items-center justify-between">
+            <h1 class="text-xl font-bold text-indigo-600">Seller Dashboard</h1>
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <button class="profile-button p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <div class="profile-dropdown absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-10 border border-gray-200">
+                        <a href="{% url 'seller_logout' %}" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <aside class="w-full lg:w-64 bg-white shadow-lg lg:min-h-screen">
+            <div class="p-6 border-b border-gray-200">
+                <h1 class="text-xl font-bold text-indigo-600">Seller Dashboard</h1>
+            </div>
+
+            <nav class="mt-6 px-4">
+                <a href="{% url 'seller_dashboard' %}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl mb-2 transition-colors">
+                    <i class="fas fa-tachometer-alt mr-3 text-gray-500"></i> Dashboard
+                </a>
+                <a href="{% url 'seller_addproduct' %}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl mb-2 transition-colors">
+                    <i class="fas fa-plus-circle mr-3 text-gray-500"></i> Add Product
+                </a>
+                <a href="{% url 'oderslist' %}" class="flex items-center px-4 py-3 text-gray-700 bg-indigo-50 rounded-xl mb-2 font-medium">
+                    <i class="fas fa-box mr-3 text-indigo-600"></i> Orders
+                </a>
+
+                <a href="{% url 'profile_update' %}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl mb-2 transition-colors">
+                    <i class="fas fa-cog mr-3 text-gray-500"></i> Settings
+                </a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 flex flex-col bg-gray-50">
+            <header class="hidden lg:block bg-white shadow-sm py-4 px-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Order Details</h1>
+                        <p class="text-gray-500 text-sm mt-1">Review and manage order #{{ order.order.id }}</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                         <div class="relative">
+                            <button class="profile-button flex items-center space-x-2 p-2 text-gray-700 hover:text-gray-900 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                                <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold">
+                                     S
+                                </div>
+                                <span class="text-sm font-medium">{{seller.user.username}}</span>
+                                <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+                            </button>
+                             <div class="profile-dropdown absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-10 border border-gray-200">
+                                <a href="{% url 'seller_logout' %}" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                    <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-4 md:p-6 flex-1">
+                <div class="max-w-6xl mx-auto">
+
+                    {% if messages %}
+                    <div class="mb-4">
+                        {% for message in messages %}
+                        <div class="bg-{{ message.tags|default:'blue' }}-100 border-l-4 border-{{ message.tags|default:'blue' }}-500 text-{{ message.tags|default:'blue' }}-700 p-4 rounded-lg" role="alert">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="order-header rounded-xl p-6 mb-6">
+                        <div class="flex flex-col md:flex-row items-start md:items-center justify-between">
+                            <div>
+                                <h1 class="text-3xl font-bold mb-1">Order #{{ order.order.id }}</h1>
+                                <p class="text-white/80">Placed on {{ order.order.order_date|date:"F d, Y" }}</p>
+                            </div>
+                            <div class="mt-3 md:mt-0">
+                                <span class="status-badge status-{{ order.order.status }} text-lg">{{ order.order.status|title }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            <div class="bg-white order-card rounded-xl p-5 mb-6 border border-gray-100">
+                                <h5 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-3">
+                                    <i class="fas fa-box mr-2 text-indigo-600"></i>Product Information
+                                </h5>
+                                <div class="flex flex-col md:flex-row items-center">
+                                    <div class="mb-4 md:mb-0 mr-4 flex-shrink-0">
+                                        {% if order.product.product_images.first %}
+                                            <img src="{{ order.product.product_images.first.product_img.url }}" alt="{{ order.product.product_name }}" class="product-img">
+                                        {% else %}
+                                            <div class="product-img bg-gray-200 flex items-center justify-center text-gray-500">
+                                                <i class="fas fa-image fa-lg"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex-1 md:mr-6 mb-4 md:mb-0">
+                                        <h5 class="text-lg font-semibold text-gray-900">{{ order.product.product_name }}</h5>
+                                        <p class="text-gray-500 text-sm mb-2">{{ order.product.description|truncatewords:12 }}</p>
+                                        <div class="flex flex-wrap gap-2 text-xs">
+                                            <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full">SKU: {{ order.product.id }}</span>
+                                            <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full">Category: {{ order.product.sub_category.sub_category_name }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-left md:text-right flex-shrink-0">
+                                        <h4 class="text-2xl font-bold text-indigo-600 mb-1">₹{{ order.product.price }}</h4>
+                                        <p class="text-gray-600">Quantity: {{ order.quantity }}</p>
+                                        <p class="text-gray-600">Subtotal: ₹{% widthratio order.product.price 1 order.quantity %}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white order-card rounded-xl p-5 mb-6 border border-gray-100">
+                                <h5 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-3">
+                                    <i class="fas fa-history mr-2 text-indigo-600"></i>Order Timeline
+                                </h5>
+                                <div class="card-body">
+                                    <div class="timeline">
+                                        <div class="timeline-item {% if order.order.status == 'placed' %}current{% else %}active{% endif %}">
+                                            <h6 class="font-medium text-gray-900 mb-1">Order Placed</h6>
+                                            <p class="text-sm text-gray-500 mb-0">{{ order.order.order_date|date:"F d, Y H:i" }}</p>
+                                        </div>
+                                        <div class="timeline-item {% if order.order.status == 'processing' %}current{% elif order.order.status == 'shipped' or order.order.status == 'delivered' %}active{% endif %}">
+                                            <h6 class="font-medium text-gray-900 mb-1">Order Processing</h6>
+                                            <p class="text-sm text-gray-500 mb-0">
+                                                {% if order.order.status == 'processing' or order.order.status == 'shipped' or order.order.status == 'delivered' %}
+                                                    Processing started
+                                                {% else %}
+                                                    Pending
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                        <div class="timeline-item {% if order.order.status == 'shipped' %}current{% elif order.order.status == 'delivered' %}active{% endif %}">
+                                            <h6 class="font-medium text-gray-900 mb-1">Shipped</h6>
+                                            <p class="text-sm text-gray-500 mb-0">
+                                                {% if order.order.status == 'shipped' or order.order.status == 'delivered' %}
+                                                    Shipped to customer
+                                                {% else %}
+                                                    Pending
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                        <div class="timeline-item {% if order.order.status == 'delivered' %}active{% endif %}">
+                                            <h6 class="font-medium text-gray-900 mb-1">Delivered</h6>
+                                            <p class="text-sm text-gray-500 mb-0">
+                                                {% if order.order.status == 'delivered' %}
+                                                    Successfully delivered
+                                                {% else %}
+                                                    Pending
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-1">
+                            <div class="bg-white order-card rounded-xl p-5 mb-6 border border-gray-100">
+                                <h5 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-3">
+                                    <i class="fas fa-receipt mr-2 text-indigo-600"></i>Order Summary
+                                </h5>
+                                <div class="space-y-2 text-sm text-gray-700">
+                                    <div class="flex justify-between">
+                                        <span>Product Price:</span>
+                                        <span class="font-medium">₹{{ order.product.price }}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Quantity:</span>
+                                        <span class="font-medium">{{ order.quantity }}</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Shipping:</span>
+                                        <span class="font-medium">₹0.00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Tax:</span>
+                                        <span class="font-medium">₹0.00</span>
+                                    </div>
+                                    <div class="pt-3 border-t border-gray-200 flex justify-between">
+                                        <strong class="text-lg">Total:</strong>
+                                        <strong class="text-lg text-indigo-600">₹{{ order.order.total_amount }}</strong>
+                                    </div>
+                                    <div class="flex justify-between pt-2">
+                                        <span>Payment Method:</span>
+                                        <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded-full text-xs font-medium">Paid</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white order-card rounded-xl p-5 mb-6 border border-gray-100">
+                                <h5 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-3">
+                                    <i class="fas fa-user mr-2 text-indigo-600"></i>Customer Information
+                                </h5>
+                                <div class="space-y-4">
+                                    <div class="flex items-start p-3 bg-gray-50 rounded-lg">
+                                        <i class="fas fa-user info-icon"></i>
+                                        <div>
+                                            <h6 class="font-medium text-gray-900 mb-0">{{ order.order.user.username }}</h6>
+                                            <p class="text-sm text-gray-500 mb-0">Customer</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start p-3 bg-gray-50 rounded-lg">
+                                        <i class="fas fa-envelope info-icon"></i>
+                                        <div>
+                                            <h6 class="font-medium text-gray-900 mb-0">{{ order.order.user.email }}</h6>
+                                            <p class="text-sm text-gray-500 mb-0">Email Address</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-start p-3 bg-gray-50 rounded-lg">
+                                        <i class="fas fa-map-marker-alt info-icon"></i>
+                                        <div>
+                                            <h6 class="font-medium text-gray-900 mb-0">Shipping Address</h6>
+                                            <p class="text-sm text-gray-500 mb-0">{{ order.order.shipping_address }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white order-card rounded-xl p-5 mb-6 border border-gray-100">
+                                <h5 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-3">
+                                    <i class="fas fa-cog mr-2 text-indigo-600"></i>Order Actions
+                                </h5>
+                                <div class="flex flex-col space-y-3">
+                                    {% if order.order.status == 'placed' %}
+                                        <form method="POST" action="{% url 'update_order_status' order.order.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="status" value="processing">
+                                            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2.5 rounded-lg flex items-center justify-center transition-colors shadow-md">
+                                                <i class="fas fa-cog mr-2"></i>Start Processing
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                    {% if order.order.status == 'processing' %}
+                                        <form method="POST" action="{% url 'update_order_status' order.order.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="status" value="shipped">
+                                            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 rounded-lg flex items-center justify-center transition-colors shadow-md">
+                                                <i class="fas fa-shipping-fast mr-2"></i>Mark as Shipped
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                    {% if order.order.status == 'shipped' %}
+                                        <form method="POST" action="{% url 'update_order_status' order.order.id %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="status" value="delivered">
+                                            <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2.5 rounded-lg flex items-center justify-center transition-colors shadow-md">
+                                                <i class="fas fa-box mr-2"></i>Mark as Delivered
+                                            </button>
+                                        </form>
+                                    {% endif %}
+
+                                    <div x-data="{ open: false }" class="relative">
+                                        <button @click="open = !open" class="w-full border border-gray-300 text-gray-700 hover:bg-gray-100 font-semibold py-2.5 rounded-lg flex items-center justify-center transition-colors">
+                                            <i class="fas fa-sync-alt mr-2"></i>Quick Status Update <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                                        </button>
+                                        <div x-show="open" x-cloak @click.outside="open = false"
+                                             class="absolute right-0 mt-2 w-full bg-white rounded-lg shadow-lg z-10 py-1 border border-gray-200">
+
+                                            {% for status_val in order_statuses %}
+
+                                            <form method="POST" action="{% url 'update_order_status' order.order.id %}" class="block">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="status" value="{{ status_val }}">
+                                                <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50
+                                                        {% if order.order.status == status_val %}bg-indigo-100 font-medium text-indigo-700{% endif %}">
+                                                    <i class="fas {% if status_val == 'placed' %}fa-clock{% elif status_val == 'processing' %}fa-cog{% elif status_val == 'shipped' %}fa-shipping-fast{% else %}fa-check-circle{% endif %} mr-2"></i>
+                                                    Mark as {{ status_val|title }}
+                                                </button>
+                                            </form>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+
+                                    <button onclick="window.print()" class="w-full border border-gray-300 text-gray-700 hover:bg-gray-100 font-semibold py-2.5 rounded-lg flex items-center justify-center transition-colors">
+                                        <i class="fas fa-print mr-2"></i>Print Invoice
+                                    </button>
+                                    <a href="{% url 'oderslist' %}" class="w-full border border-indigo-500 text-indigo-600 hover:bg-indigo-50 font-semibold py-2.5 rounded-lg flex items-center justify-center transition-colors">
+                                        <i class="fas fa-arrow-left mr-2"></i>Back to Orders
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="bg-white border-t border-gray-200 py-4 px-6 mt-auto">
+                <div class="text-center text-sm text-gray-500">
+                    &copy; 2025 Seller Dashboard. All rights reserved.
+                </div>
+            </footer>
+
+        </main>
+
+    </div>
+
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 px-6 flex justify-around z-20">
+        <a href="{% url 'seller_dashboard' %}" class="flex flex-col items-center text-gray-500">
+            <i class="fas fa-tachometer-alt mb-1"></i>
+            <span class="text-xs">Dashboard</span>
+        </a>
+        <a href="{% url 'seller_addproduct' %}" class="flex flex-col items-center text-gray-500">
+            <i class="fas fa-plus-circle mb-1"></i>
+            <span class="text-xs">Add Product</span>
+        </a>
+        <a href="{% url 'oderslist' %}" class="flex flex-col items-center text-indigo-600 font-medium">
+            <i class="fas fa-box mb-1"></i>
+            <span class="text-xs">Orders</span>
+        </a>
+        <a href="{% url 'profile_update' %}" class="flex flex-col items-center text-gray-500">
+            <i class="fas fa-cog mb-1"></i>
+            <span class="text-xs">Settings</span>
+        </a>
+    </div>
+</body>
+</html>
