@@ -198,7 +198,7 @@ def user_remove_wishlist(request, id):
 @role_required("customer", login_url="/user_login")
 def user_logout(request):
     logout(request)
-    return redirect('/home')
+    return redirect('/')
 
 @role_required("customer", login_url="/user_login")
 def user_add_to_cart(request, slug):

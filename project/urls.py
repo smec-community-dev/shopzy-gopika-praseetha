@@ -84,11 +84,8 @@ urlpatterns = [
 
 
 
-    path('',view_user.user_home),
     path('user_register/',view_user.user_register,name='user_register'),
     path('user_login/',view_user.user_login,name='user_login'),
-
-    path('home/', view_user.home, name='user_home'),
 
 
     # path("category/<slug:slug>/", view_user.category_products, name="category_products"),
@@ -119,7 +116,7 @@ urlpatterns = [
     path("set_default_address/<int:address_id>/", view_user.set_default_address, name="set_default_address"),
     path('change_password/', view_user.change_password_view, name='change_password'),
     path('user_about/',view_user.user_about,name='user_about'),
-    path("accounts/", include("allauth.urls")),
+    # path("accounts/", include("allauth.urls")),
     path('contact/',view_user.contact,name='contact')
 
 ]
