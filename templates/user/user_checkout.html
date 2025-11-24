@@ -230,7 +230,7 @@
             <ul class="hidden md:flex space-x-6 lg:space-x-8">
                 <li><a href="{% url 'home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
                 <li><a href="{% url 'shop_page' %}" class="nav-link font-medium text-primary transition-colors">Shop</a></li>
-                <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
+                <li><a href="{% url 'user_about' %}" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
                 <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
             </ul>
 
@@ -302,9 +302,8 @@
     <div class="mobile-nav bg-white shadow-lg md:hidden hidden peer-checked:block absolute w-full left-0 border-t z-40">
         <div class="container mx-auto px-4 pb-4">
             <a href="{% url 'home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors text-sm font-medium">Home</a>
-            <a href="#" class="block py-3 border-b border-gray-200 text-primary transition-colors text-sm font-medium">Shop</a>
-            <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors text-sm font-medium">Categories</a>
-            <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors text-sm font-medium">About</a>
+            <a href="{% url 'shop_page' %} class="block py-3 border-b border-gray-200 text-primary transition-colors text-sm font-medium">Shop</a>
+            <a href="{% url 'user_about' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors text-sm font-medium">About</a>
             <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors text-sm font-medium">Contact</a>
 
             {% if not request.user.is_authenticated %}
@@ -610,12 +609,39 @@
             </div>
         </div>
     </footer>
+
+    <!-- Razorpay checkout script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <!-- Hidden final form for online payment (Option B) -->
+    <form id="razorpayFinalForm" method="POST" action="{% url 'place_order' %}" class="hidden">
+        {% csrf_token %}
+        <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+        <input type="hidden" name="razorpay_order_id" id="razorpay_order_id">
+        <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+
+        <!-- saved address id if chosen -->
+        <input type="hidden" name="selected_address" id="selected_address_hidden">
+
+        <!-- New address fields -->
+        <input type="hidden" name="full_name" id="full_name_hidden">
+        <input type="hidden" name="phone" id="phone_hidden">
+        <input type="hidden" name="address_line1" id="addr1_hidden">
+        <input type="hidden" name="address_line2" id="addr2_hidden">
+        <input type="hidden" name="city" id="city_hidden">
+        <input type="hidden" name="state" id="state_hidden">
+        <input type="hidden" name="pincode" id="pincode_hidden">
+        <input type="hidden" name="country" id="country_hidden">
+
+        <!-- Mark that this is ONLINE PAYMENT -->
+        <input type="hidden" name="payment_method" value="card">
+    </form>
+
     <script>
     document.addEventListener('DOMContentLoaded', function () {
 
         const form = document.querySelector("form[action='{% url 'place_order' %}']");
         const savedRadios = document.querySelectorAll("input[name='selected_address']");
-        // Narrowed down selection to new address inputs specifically
         const newAddressContainer = document.querySelectorAll('.new-address-field');
 
         function disableNewFields(state) {
@@ -656,34 +682,113 @@
         });
 
         if(form) {
-            form.addEventListener("submit", function (e) {
+            form.addEventListener("submit", async function (e) {
+                // Validate address fields same as before
                 const selectedAddress = document.querySelector("input[name='selected_address']:checked");
 
                 if (selectedAddress) {
-                     disableNewFields(true); // Ensure they are disabled so validation skips them if using saved
-                     return;
+                    // saved address chosen -> allow submit for COD or we will handle for card
+                } else {
+                    // If no saved address, we must validate new fields
+                    const required = ["full_name", "phone", "address_line1", "city", "state", "pincode", "country"];
+                    for (let name of required) {
+                        let field = form.querySelector(`[name='${name}']`);
+                        if (field && !field.value.trim()) {
+                            e.preventDefault();
+                            let labelText = "Field";
+                            if(field.previousElementSibling) {
+                                 labelText = field.previousElementSibling.textContent.replace('*', '').trim();
+                            }
+                            alert(`Please fill the required field: ${labelText}`);
+                            field.focus();
+                            return;
+                        }
+                    }
                 }
 
-                // If no saved address, we must validate new fields
-                disableNewFields(false);
+                // Determine payment method
+                const paymentMethodEl = document.querySelector("input[name='payment_method']:checked");
+                const paymentMethod = paymentMethodEl ? paymentMethodEl.value : 'cod';
 
-                const required = ["full_name", "phone", "address_line1", "city", "state", "pincode", "country"];
+                // If COD - submit normally
+                if (paymentMethod === "cod") {
+                    return; // let the form submit
+                }
 
-                for (let name of required) {
-                    // Fixed template literal syntax below
-                    let field = form.querySelector(`[name='${name}']`);
+                // Else: ONLINE payment - prevent default and open Razorpay
+                e.preventDefault();
 
-                    if (field && !field.value.trim()) {
-                        e.preventDefault();
-                        // Safe navigation for label text
-                        let labelText = "Field";
-                        if(field.previousElementSibling) {
-                             labelText = field.previousElementSibling.textContent.replace('*', '').trim();
+                // Create Razorpay order via backend
+                // create_razorpay_order is csrf_exempt, so no CSRF included. If you change that later, include CSRF token.
+                const amount = "{{ total }}"; // server side total
+                try {
+                    const resp = await fetch("{% url 'create_razorpay_order' %}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded"
+                        },
+                        body: "amount=" + encodeURIComponent(amount)
+                    });
+
+                    const data = await resp.json();
+
+                    const options = {
+                        "key": data.key,
+                        "amount": data.amount,
+                        "currency": "INR",
+                        "name": "Shopzy",
+                        "description": "Order Payment",
+                        "order_id": data.order_id,
+                        "handler": function (response) {
+                            // fill hidden form with razorpay response
+                            document.getElementById("razorpay_payment_id").value = response.razorpay_payment_id;
+                            document.getElementById("razorpay_order_id").value = response.razorpay_order_id;
+                            document.getElementById("razorpay_signature").value = response.razorpay_signature;
+
+                            // If saved address selected, set its id
+                            const saved = document.querySelector("input[name='selected_address']:checked");
+                            if (saved) {
+                                document.getElementById("selected_address_hidden").value = saved.value;
+                                // clear new address fields to avoid accidental overwrite (optional)
+                                document.getElementById("full_name_hidden").value = "";
+                                document.getElementById("phone_hidden").value = "";
+                                document.getElementById("addr1_hidden").value = "";
+                                document.getElementById("addr2_hidden").value = "";
+                                document.getElementById("city_hidden").value = "";
+                                document.getElementById("state_hidden").value = "";
+                                document.getElementById("pincode_hidden").value = "";
+                                document.getElementById("country_hidden").value = "";
+                            } else {
+                                // copy new address inputs into hidden form
+                                document.getElementById("selected_address_hidden").value = "";
+                                document.getElementById("full_name_hidden").value = document.getElementById("new_full_name").value;
+                                document.getElementById("phone_hidden").value = document.getElementById("new_phone").value;
+                                document.getElementById("addr1_hidden").value = document.getElementById("new_addr1").value;
+                                document.getElementById("addr2_hidden").value = document.getElementById("new_addr2").value;
+                                document.getElementById("city_hidden").value = document.getElementById("new_city").value;
+                                document.getElementById("state_hidden").value = document.getElementById("new_state").value;
+                                document.getElementById("pincode_hidden").value = document.getElementById("new_pincode").value;
+                                document.getElementById("country_hidden").value = document.getElementById("new_country").value;
+                            }
+
+                            // submit the final hidden form to place_order view (which will create the order)
+                            document.getElementById("razorpayFinalForm").submit();
+                        },
+                        "prefill": {
+                            "name": "{{ request.user.username }}",
+                            "email": "{{ request.user.email }}"
+                        },
+                        "theme": {
+                            "color": "#5d5fef"
                         }
-                        alert(`Please fill the required field: ${labelText}`);
-                        field.focus();
-                        return;
-                    }
+                    };
+
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+
+                } catch (err) {
+                    console.error("Error creating razorpay order:", err);
+                    alert("Unable to start payment. Please try again or contact support.");
                 }
             });
         }

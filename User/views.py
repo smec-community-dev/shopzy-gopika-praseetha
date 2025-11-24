@@ -1,14 +1,18 @@
 import re
 
+import razorpay
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages as dj_messages
+from django.views.decorators.csrf import csrf_exempt
 from unicodedata import category
 
 from Core.models import User,Category,SubCategory
 from Seller.models import Product
 from decorators.decorators import role_required
+from django.conf import settings
 from .models import Customer,Review,ReviewImage,Wishlist,Cart,Order,OrderItem,Address
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.db.models import Q
@@ -94,7 +98,7 @@ def user_login(request):
         if user is not None:
             if user.role == "customer":
                 login(request, user)
-                return redirect('/home')
+                return redirect('/')
             else:
                 return render(request, 'user/user_login.html', {'error': 'Access denied! Only customers can login here.'})
         else:
@@ -134,7 +138,7 @@ def user_single_product(request, slug):
     try:
         product = Product.objects.get(slug=slug)
     except Product.DoesNotExist:
-        return redirect("/home")
+        return redirect("/")
 
     images = product.images.all()
 
@@ -423,7 +427,8 @@ def place_order(request):
         Cart.objects.filter(user=user).delete()
 
     dj_messages.success(request, "Order placed successfully!")
-    return redirect("user_orders")
+    return redirect("order_success", order_slug=order.slug)
+
 
 @login_required(login_url='/user_login')
 def user_dashboard(request):
@@ -803,3 +808,27 @@ def user_about(request):
 
 def contact(request):
     return render(request, 'user/contact.html')
+
+@csrf_exempt
+def create_razorpay_order(request):
+    if request.method == "POST":
+        amount = request.POST.get("amount")
+
+        amount_in_paise = int(float(amount) * 100)  # ₹ → paise
+
+        client = razorpay.Client(auth=(
+            settings.RAZORPAY_KEY_ID,
+            settings.RAZORPAY_KEY_SECRET
+        ))
+
+        order = client.order.create({
+            "amount": amount_in_paise,
+            "currency": "INR",
+            "payment_capture": 1
+        })
+
+    return JsonResponse({
+            "order_id": order["id"],
+            "key": settings.RAZORPAY_KEY_ID,
+            "amount": amount_in_paise,
+        })

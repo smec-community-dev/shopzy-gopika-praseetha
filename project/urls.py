@@ -110,15 +110,15 @@ urlpatterns = [
     path("order/cancel/<int:order_id>/", view_user.cancel_order, name="cancel_order"),
     path("user_profile_edit/", view_user.user_profile_edit, name="user_profile_edit"),
     path('user_buy_now/<slug:slug>/', view_user.user_buy_now, name='user_buy_now'),
-    path("order-success/<slug:order_slug>/", view_user.order_success, name="order_success"),
+    path("order_success/<slug:order_slug>/", view_user.order_success, name="order_success"),
     path("save_address/", view_user.save_address, name="save_address"),
     path("delete_address/<int:address_id>/", view_user.delete_address, name="delete_address"),
     path("set_default_address/<int:address_id>/", view_user.set_default_address, name="set_default_address"),
     path('change_password/', view_user.change_password_view, name='change_password'),
     path('user_about/',view_user.user_about,name='user_about'),
     # path("accounts/", include("allauth.urls")),
-    path('contact/',view_user.contact,name='contact')
-
+    path('contact/',view_user.contact,name='contact'),
+    path("create_razorpay_order/", view_user.create_razorpay_order, name="create_razorpay_order"),
 ]
 
 

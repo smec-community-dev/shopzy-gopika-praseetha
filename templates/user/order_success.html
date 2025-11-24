@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Successful | Shopzy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<div class="flex justify-center items-center min-h-screen py-4 px-2">
+    <div class="bg-white shadow-md rounded-lg p-4 w-full max-w-xs mx-auto" style="animation: fadeIn 0.6s ease;">
+
+        <!-- Success Icon -->
+        <div class="flex justify-center mb-3">
+            <div class="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center text-lg font-bold"
+                 style="animation: pop 0.5s ease;">
+                <i class="fas fa-check"></i>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <h1 class="text-lg font-bold text-center text-gray-800 mb-1">Order Confirmed!</h1>
+        <p class="text-center text-gray-600 text-xs mb-4">
+            Thank you for your purchase.
+        </p>
+
+        <!-- Order Details Card -->
+        <div class="bg-gray-50 p-3 rounded border mb-4 text-xs">
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="font-semibold text-gray-800 text-xs">Order Summary</h2>
+                <span class="text-xs bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded">#{{ order.slug }}</span>
+            </div>
+
+            <div class="space-y-1.5 text-xs">
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Date:</span>
+                    <span class="font-medium">{{ order.created_at|date:"M d, Y" }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Total:</span>
+                    <span class="font-bold text-green-600">₹{{ order.total_amount }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600">Status:</span>
+                    <span class="font-medium capitalize text-xs">{{ order.status }}</span>
+                </div>
+            </div>
+
+            <!-- Shipping Address -->
+            <div class="mt-3 pt-2 border-t border-gray-200">
+                <h3 class="font-semibold text-gray-800 text-xs mb-1">SHIPPING TO</h3>
+                <p class="text-xs text-gray-700 leading-tight">
+                    {{ order.shipping_address|linebreaksbr }}
+                </p>
+            </div>
+
+            <!-- Ordered Items -->
+            <div class="mt-3 pt-2 border-t border-gray-200">
+                <h3 class="font-semibold text-gray-800 text-xs mb-1">ITEMS ({{ order.order_items.all|length }})</h3>
+                <div class="space-y-1.5 max-h-20 overflow-y-auto pr-1">
+                    {% for item in order.order_items.all %}
+                    <div class="flex justify-between text-xs bg-white p-1.5 rounded border">
+                        <span class="truncate mr-1 flex-1">{{ item.product.product_name }}</span>
+                        <div class="flex items-center space-x-1.5 flex-shrink-0">
+                            <span class="text-gray-500 text-xs">x{{ item.quantity }}</span>
+                            <span class="font-medium">₹{{ item.product.price }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex flex-col gap-2">
+            <a href="{% url 'shop_page' %}"
+               class="text-center bg-purple-600 text-white py-2 rounded font-semibold hover:bg-purple-700 transition text-xs flex items-center justify-center gap-1">
+                <i class="fas fa-shopping-bag text-xs"></i>
+                Shop More
+            </a>
+
+            <a href="{% url 'user_orders' %}"
+               class="text-center bg-gray-200 text-gray-800 py-2 rounded font-semibold hover:bg-gray-300 transition text-xs flex items-center justify-center gap-1">
+                <i class="fas fa-clipboard-list text-xs"></i>
+                My Orders
+            </a>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="mt-3 text-center">
+            <p class="text-xs text-gray-500">
+                Email sent to {{ request.user.email }}
+            </p>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // Add some interactive effects
+    document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('a');
+        buttons.forEach(button => {
+            button.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-1px)';
+                this.style.transition = 'all 0.2s ease';
+            });
+            button.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
