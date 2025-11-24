@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Orders - ShopSphere</title>
+    <title>My Orders - Shopzy</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -136,6 +136,89 @@
         .status-badge {
             transition: all 0.3s ease;
         }
+
+        /* Responsive improvements */
+        @media (max-width: 480px) {
+            .order-header {
+                flex-direction: column;
+                align-items: flex-start !important;
+            }
+
+            .order-status-section {
+                align-self: flex-start;
+                margin-top: 0.5rem;
+            }
+
+            .product-details-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .product-image {
+                align-self: center;
+                margin-bottom: 1rem;
+            }
+
+            .product-info {
+                width: 100%;
+            }
+
+            .price-actions-section {
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                margin-top: 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .footer-columns {
+                grid-template-columns: 1fr !important;
+                text-align: center;
+            }
+
+            .footer-title::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+
+            .social-icons {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .header-search {
+                display: none;
+            }
+
+            .header-icons {
+                margin-left: auto;
+            }
+
+            .order-card {
+                padding: 1rem !important;
+            }
+
+            .empty-state {
+                padding: 2rem 1rem !important;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .footer-columns {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            .price-actions-section {
+                flex-direction: column;
+                align-items: flex-end;
+            }
+        }
     </style>
 </head>
 
@@ -144,106 +227,113 @@
     <header class="bg-white shadow-lg sticky top-0 z-50">
     <div class="container mx-auto px-4">
         <nav class="flex justify-between items-center py-4">
-            <a href="{% url 'user_home' %}" class="logo-hover flex items-center text-2xl font-bold text-primary">
+            <a href="{% url 'home' %}" class="logo-hover flex items-center text-xl sm:text-2xl font-bold text-primary flex-shrink-0">
                 <i class="fas fa-shopping-bag mr-2 transform -rotate-12"></i>
-                ShopSphere
+                Shopzy
             </a>
 
-            <ul class="hidden md:flex space-x-8">
-                <li><a href="{% url 'user_home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
-                <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Categories</a></li>
+            <ul class="hidden md:flex space-x-4 lg:space-x-8 flex-grow justify-center">
+                <li><a href="{% url 'home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
+                <li><a href="{% url 'shop_page' %}" class="nav-link font-medium text-primary transition-colors">Shop</a></li>
                 <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
                 <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
             </ul>
 
-            <div class="flex items-center">
-                <!-- Search Form -->
-                <form action="{% url 'user_home' %}" class="hidden md:flex items-center bg-light rounded-full px-4 py-2 mr-4 w-64 search-bar">
-                    <input type="text"
-                           name="q"
-                           value="{{ request.GET.q }}"
-                           placeholder="Search products..."
-                           class="bg-transparent outline-none w-full px-2">
-                    <button class="text-gray hover:text-primary transition-colors">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </form>
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <div class="header-search hidden md:flex items-center space-x-4">
+                    <form action="{% url 'shop_page' %}" method="GET"
+                          class="flex items-center bg-light rounded-full px-4 py-2 w-full max-w-xs lg:w-64">
 
-                <!-- Wishlist -->
-                <a href="{% url 'user_view_wishlist' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
-                    <i class="far fa-heart text-xl"></i>
-                    <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ request.user.wishlist.count }}</span>
-                </a>
+                        <input type="text"
+                               name="q"
+                               value="{{ request.GET.q }}"
+                               placeholder="Search products..."
+                               class="bg-transparent outline-none w-full px-2 text-sm">
 
-                <!-- Cart -->
-                <a href="{% url 'user_view_cart' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
-                    <i class="fas fa-shopping-cart text-xl"></i>
-                    <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ request.user.cart_items.count }}</span>
-                </a>
+                        <button type="submit" class="text-gray hover:text-primary transition-colors">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
 
-                <!-- User Account Dropdown -->
-                <div class="relative group">
-                    <div class="user-info flex items-center ml-4 bg-light rounded-full px-4 py-2 cursor-pointer transition-all hover:bg-primary hover:text-white">
-                        <i class="fas fa-user mr-2 text-primary transition-colors"></i>
-                        <span class="font-medium">
+                    <div class="relative group">
+                        <div class="user-info flex items-center bg-light rounded-full px-3 py-1.5 cursor-pointer transition-all hover:bg-primary hover:text-white">
+                            <i class="fas fa-user mr-2 text-primary group-hover:text-white transition-colors text-sm"></i>
+                            <span class="font-medium text-sm">
+                                {% if request.user.is_authenticated %}
+                                    {{ request.user.username }}
+                                {% else %}
+                                    Account
+                                {% endif %}
+                            </span>
+                            <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                        </div>
+
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
                             {% if request.user.is_authenticated %}
-                                {{ request.user.username }}
+                                <a href="{% url 'user_dashboard' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors text-sm">
+                                    <i class="fas fa-user-circle mr-2"></i>My Profile
+                                </a>
+                                <a href="{% url 'user_orders' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors text-sm">
+                                    <i class="fas fa-shopping-bag mr-2"></i>My Orders
+                                </a>
+                                <a href="{% url 'user_view_wishlist' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors text-sm">
+                                    <i class="fas fa-heart mr-2"></i>Wishlist
+                                </a>
+                                <div class="border-t my-1"></div>
+                                <a href="{% url 'user_logout' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors text-sm">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                                </a>
                             {% else %}
-                                Account
+                                <a href="{% url 'user_login' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors text-sm">
+                                    <i class="fas fa-sign-in-alt mr-2"></i>Login
+                                </a>
+                                <a href="{% url 'user_register' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors text-sm">
+                                    <i class="fas fa-user-plus mr-2"></i>Register
+                                </a>
                             {% endif %}
-                        </span>
-                        <i class="fas fa-chevron-down ml-2 text-sm"></i>
-                    </div>
-
-                    <!-- Dropdown Menu -->
-                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                        {% if request.user.is_authenticated %}
-                            <a href="{% url 'user_dashboard' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
-                                <i class="fas fa-user-circle mr-2"></i>My Profile
-                            </a>
-                            <a href="{% url 'user_orders' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
-                                <i class="fas fa-shopping-bag mr-2"></i>My Orders
-                            </a>
-                            <a href="{% url 'user_view_wishlist' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
-                                <i class="fas fa-heart mr-2"></i>Wishlist
-                            </a>
-                            <div class="border-t my-1"></div>
-                            <a href="{% url 'user_logout' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
-                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                            </a>
-                        {% else %}
-                            <a href="{% url 'user_login' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
-                                <i class="fas fa-sign-in-alt mr-2"></i>Login
-                            </a>
-                            <a href="{% url 'user_register' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
-                                <i class="fas fa-user-plus mr-2"></i>Register
-                            </a>
-                        {% endif %}
+                        </div>
                     </div>
                 </div>
 
-                <!-- Mobile menu toggle -->
-                <label for="nav-toggle" class="md:hidden ml-4 text-xl cursor-pointer">
-                    <i class="fas fa-bars"></i>
-                </label>
+                <div class="header-icons flex items-center space-x-2 sm:space-x-3">
+                    <a href="{% url 'user_view_wishlist' %}" class="relative text-dark hover:text-primary transition-all hover:-translate-y-1">
+                        <i class="far fa-heart text-lg md:text-xl"></i>
+                        <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center">{{ request.user.wishlist.count }}</span>
+                    </a>
+
+                    <a href="{% url 'user_view_cart' %}" class="relative text-dark hover:text-primary transition-all hover:-translate-y-1">
+                        <i class="fas fa-shopping-cart text-lg md:text-xl"></i>
+                        <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center">{{ request.user.cart_items.count }}</span>
+                    </a>
+
+                    <label for="nav-toggle" class="md:hidden ml-2 text-xl cursor-pointer">
+                        <i class="fas fa-bars"></i>
+                    </label>
+                </div>
             </div>
         </nav>
     </div>
 
-    <!-- Hidden checkbox for mobile menu -->
     <input type="checkbox" id="nav-toggle" class="hidden">
 
-    <!-- Mobile Navigation -->
     <div class="mobile-nav bg-white shadow-lg md:hidden">
         <div class="container mx-auto px-4">
-            <a href="{% url 'user_home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
-            <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Shop</a>
-            <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Categories</a>
-            <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Deals</a>
+            <form action="{% url 'shop_page' %}" method="GET" class="flex items-center bg-gray-100 rounded-lg p-2 mb-4">
+                <input type="text"
+                       name="q"
+                       value="{{ request.GET.q }}"
+                       placeholder="Search products..."
+                       class="bg-transparent outline-none w-full px-2 text-sm">
+                <button type="submit" class="text-gray hover:text-primary transition-colors">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+
+            <a href="{% url 'home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
+            <a href="{% url 'shop_page' %}" class="block py-3 border-b border-gray-200 text-primary transition-colors">Shop</a>
             <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">About</a>
             <a href="#" class="block py-3 hover:text-primary transition-colors">Contact</a>
 
-            <!-- Add login/register links for mobile -->
             {% if not request.user.is_authenticated %}
             <div class="border-t border-gray-200 mt-4 pt-4">
                 <a href="{% url 'user_login' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Login</a>
@@ -251,10 +341,10 @@
             </div>
             {% else %}
             <div class="border-t border-gray-200 mt-4 pt-4">
-                <a href="{% url 'user_home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Profile</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Orders</a>
+                <a href="{% url 'user_dashboard' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Profile</a>
+                <a href="{% url 'user_orders' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Orders</a>
                 <a href="{% url 'user_view_wishlist' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Wishlist</a>
-                <a href="#" class="block py-3 hover:text-primary transition-colors">Logout</a>
+                <a href="{% url 'user_logout' %}" class="block py-3 hover:text-primary transition-colors">Logout</a>
             </div>
             {% endif %}
         </div>
@@ -262,210 +352,206 @@
 </header>
 
     <!-- ORDERS SECTION -->
-    <section class="container mx-auto px-4 py-8 animate-fade-in">
-        <!-- Page Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl md:text-4xl font-bold text-dark mb-2">My Orders</h1>
-            <p class="text-gray-600">Track and manage all your orders in one place</p>
+<section class="container mx-auto px-4 py-6 md:py-8 animate-fade-in">
+    <!-- Page Header -->
+    <div class="mb-6 md:mb-8">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-dark mb-2">My Orders</h1>
+        <p class="text-gray-600 text-sm sm:text-base">Track and manage all your orders in one place</p>
+    </div>
+
+    {% if orders %}
+        <div class="space-y-4 md:space-y-6">
+            {% for order in orders %}
+            {% for item in order.order_items.all %}
+            <!-- PRODUCT CARD -->
+            <div class="order-card bg-white rounded-xl md:rounded-2xl shadow-lg p-4 md:p-6 animate-slide-up">
+
+                <!-- Order Header -->
+                <div class="order-header flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 md:gap-4 mb-4 md:mb-6">
+                    <div class="flex-1">
+                        <h2 class="text-lg sm:text-xl font-bold text-dark mb-1">Order #{{ order.id }}</h2>
+
+                        <p class="text-gray-600 text-xs sm:text-sm mb-2">
+                            <i class="far fa-calendar mr-1"></i>
+                            {{ order.order_date|date:"M d, Y" }}
+                        </p>
+
+                        <p class="text-gray-600 text-xs sm:text-sm">
+                            <i class="fas fa-credit-card mr-1"></i>
+                            Payment: {{ order.payment_method|default:"Cash on Delivery" }}
+                        </p>
+                    </div>
+
+                    <!-- STATUS BADGE (Fixed Section) -->
+                    <div class="order-status-section flex sm:flex-col sm:items-end gap-2">
+
+                        {% if order.status == "placed" %}
+                            <span class="status-badge inline-flex items-center px-3 py-1 md:px-4 md:py-2 bg-blue-100 text-blue-700 rounded-full text-xs md:text-sm font-semibold">
+                                <i class="fas fa-clock mr-1 md:mr-2"></i>Placed
+                            </span>
+
+                        {% elif order.status == "processing" %}
+                            <span class="status-badge inline-flex items-center px-3 py-1 md:px-4 md:py-2 bg-yellow-100 text-yellow-700 rounded-full text-xs md:text-sm font-semibold">
+                                <i class="fas fa-cog mr-1 md:mr-2"></i>Processing
+                            </span>
+
+                        {% elif order.status == "shipped" %}
+                            <span class="status-badge inline-flex items-center px-3 py-1 md:px-4 md:py-2 bg-purple-100 text-purple-700 rounded-full text-xs md:text-sm font-semibold">
+                                <i class="fas fa-shipping-fast mr-1 md:mr-2"></i>Shipped
+                            </span>
+
+                        {% elif order.status == "delivered" %}
+                            <span class="status-badge inline-flex items-center px-3 py-1 md:px-4 md:py-2 bg-green-100 text-green-700 rounded-full text-xs md:text-sm font-semibold">
+                                <i class="fas fa-check mr-1 md:mr-2"></i>Delivered
+                            </span>
+
+                        {% elif order.status == "cancelled" %}
+                            <span class="status-badge inline-flex items-center px-3 py-1 md:px-4 md:py-2 bg-red-100 text-red-700 rounded-full text-xs md:text-sm font-semibold">
+                                <i class="fas fa-times-circle mr-1 md:mr-2"></i>Cancelled
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- PRODUCT DETAILS -->
+                <div class="product-details-container flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center">
+
+                    <!-- Image -->
+                    <div class="product-image flex-shrink-0">
+                        {% if item.product.images.first %}
+                            <img src="{{ item.product.images.first.product_img.url }}"
+                                 class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 object-cover rounded-lg md:rounded-xl shadow"
+                                 alt="{{ item.product.product_name }}">
+                        {% else %}
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg md:rounded-xl flex items-center justify-center">
+                                <i class="fas fa-box text-gray-400 text-lg md:text-xl"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Product Info -->
+                    <div class="product-info flex-1 min-w-0">
+                        <h3 class="text-base sm:text-lg font-semibold text-dark mb-2">{{ item.product.product_name }}</h3>
+
+                        <div class="flex flex-wrap gap-3 md:gap-4 text-xs sm:text-sm text-gray-600">
+                            <p class="flex items-center">
+                                <i class="fas fa-layer-group mr-1 md:mr-2 text-primary"></i>
+                                Quantity: {{ item.quantity }}
+                            </p>
+
+                            <p class="flex items-center">
+                                <i class="fas fa-tag mr-1 md:mr-2 text-primary"></i>
+                                ₹{{ item.product.price }} each
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- PRICE + ACTIONS -->
+                    <div class="price-actions-section flex flex-col sm:flex-row md:flex-col items-start sm:items-center md:items-end gap-3 md:gap-4 w-full md:w-auto">
+
+                        <div class="text-right">
+                            <p class="text-gray-600 text-xs sm:text-sm mb-1">Subtotal</p>
+                            <p class="text-lg sm:text-xl font-bold text-secondary">₹{{ item.subtotal }}</p>
+                        </div>
+
+                        <div class="action-buttons flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+
+                            <!-- Cancel Order (visible only for placed / processing) -->
+                            {% if order.status == "placed" or order.status == "processing" %}
+                            <a href="{% url 'cancel_order' order.id %}"
+                               class="btn bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-semibold transition-all flex items-center justify-center flex-1 text-xs sm:text-sm">
+                                <i class="fas fa-times-circle mr-1 md:mr-2"></i> Cancel Order
+                            </a>
+                            {% endif %}
+
+                            <!-- Add Review (only delivered) -->
+                            {% if order.status == "delivered" %}
+                            <a href="{% url 'add_review' item.product.slug %}"
+                               class="btn bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 md:px-4 md:py-2 rounded-lg font-semibold transition-all flex items-center justify-center flex-1 text-xs sm:text-sm">
+                                <i class="fas fa-star mr-1 md:mr-2"></i> Add Review
+                            </a>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% endfor %}
         </div>
 
-        {% if orders %}
-            <div class="space-y-6">
-                {% for order in orders %}
-                {% for item in order.order_items.all %}
-                <!-- PRODUCT CARD (One product per card) -->
-                <div class="order-card bg-white rounded-2xl shadow-lg p-6 animate-slide-up">
-                    <!-- Order Header + Status -->
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4 mb-6">
-                        <div class="flex-1">
-                            <h2 class="text-xl font-bold text-dark mb-1">Order #{{ order.id }}</h2>
-                            <p class="text-gray-600 text-sm mb-2">
-                                <i class="far fa-calendar mr-1"></i>
-                                {{ order.order_date|date:"M d, Y" }}
-                            </p>
-                            <p class="text-gray-600 text-sm">
-                                <i class="fas fa-credit-card mr-1"></i>
-                                Payment: {{ order.payment_method|default:"Cash on Delivery" }}
-                            </p>
-                        </div>
-
-                        <div class="flex sm:flex-col sm:items-end gap-2">
-                            <!-- Status Badge -->
-                            {% if order.status == "placed" %}
-                                <span class="status-badge inline-flex items-center px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
-                                    <i class="fas fa-clock mr-2"></i>Placed
-                                </span>
-                            {% elif order.status == "processing" %}
-                                <span class="status-badge inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-sm font-semibold">
-                                    <i class="fas fa-cog mr-2"></i>Processing
-                                </span>
-                            {% elif order.status == "shipped" %}
-                                <span class="status-badge inline-flex items-center px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold">
-                                    <i class="fas fa-shipping-fast mr-2"></i>Shipped
-                                </span>
-                            {% elif order.status == "delivered" %}
-                                <span class="status-badge inline-flex items-center px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
-                                    <i class="fas fa-check mr-2"></i>Delivered
-                                </span>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    <!-- PRODUCT DETAILS -->
-                    <div class="flex flex-col md:flex-row gap-6 items-start md:items-center">
-                        <!-- Product Image -->
-                        <div class="flex-shrink-0">
-                            {% if item.product.images.first %}
-                                <img src="{{ item.product.images.first.product_img.url }}"
-                                     alt="{{ item.product.product_name }}"
-                                     class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-xl shadow">
-                            {% else %}
-                                <div class="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center">
-                                    <i class="fas fa-box text-gray-400 text-xl"></i>
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <!-- Product Info -->
-                        <div class="flex-1 min-w-0">
-                            <h3 class="text-lg font-semibold text-dark mb-2">{{ item.product.product_name }}</h3>
-                            <div class="flex flex-wrap gap-4 text-sm text-gray-600">
-
-                                <p class="flex items-center">
-                                    <i class="fas fa-layer-group mr-2 text-primary"></i>
-                                    Quantity: {{ item.quantity }}
-                                </p>
-                                <p class="flex items-center">
-                                    <i class="fas fa-tag mr-2 text-primary"></i>
-                                    ₹{{ item.product.price }} each
-                                </p>
-                            </div>
-                        </div>
-
-                        <!-- Price & Actions -->
-                        <div class="flex flex-col sm:flex-row md:flex-col items-start sm:items-center md:items-end gap-4 w-full md:w-auto">
-                            <div class="text-right">
-                                <p class="text-gray-600 text-sm mb-1">Subtotal</p>
-                                <p class="text-xl font-bold text-secondary">₹{{ item.subtotal }}</p>
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="flex flex-col sm:flex-row gap-2 w-full">
-
-                                <!-- Cancel Order Button - Only show for placed/processing orders -->
-                                {% if order.status == "placed" or order.status == "processing" %}
-                                <a href="#"
-                                   class="btn bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg font-semibold transition-all flex items-center justify-center flex-1">
-                                    <i class="fas fa-times-circle mr-2"></i> Cancel Order
-                                </a>
-                                {% endif %}
-
-                                <!-- Add Review Button - Only show for delivered orders -->
-                                {% if order.status == "delivered" %}
-                                <a href="{% url 'add_review' item.product.slug %}"
-                                   class="btn bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-semibold transition-all flex items-center justify-center flex-1">
-                                    <i class="fas fa-star mr-2"></i> Add Review
-                                </a>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
-                {% endfor %}
+    {% else %}
+        <!-- Empty State -->
+        <div class="empty-state bg-white rounded-xl md:rounded-2xl shadow-xl text-center py-12 md:py-16 px-4 md:px-6 max-w-2xl mx-auto">
+            <div class="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-primary to-accent rounded-full mb-4 md:mb-6">
+                <i class="fas fa-box-open text-white text-xl md:text-2xl"></i>
             </div>
-
-        {% else %}
-            <!-- Empty State -->
-            <div class="bg-white rounded-2xl shadow-xl text-center py-16 px-6 max-w-2xl mx-auto">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full mb-6">
-                    <i class="fas fa-box-open text-white text-2xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold text-gray-800 mb-4">No Orders Found</h3>
-                <p class="text-gray-600 text-lg mb-8">
-                    You haven't ordered anything yet. Start shopping to discover amazing products!
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                    <a href="{% url 'user_home' %}"
-                       class="btn bg-primary hover:bg-primary-dark text-white px-8 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2">
-                        <i class="fas fa-shopping-bag"></i> Start Shopping
-                    </a>
-                    <a href="#"
-                       class="btn bg-white hover:bg-gray-50 text-primary border-2 border-primary px-8 py-3 rounded-xl font-semibold transition-all flex items-center justify-center gap-2">
-                        <i class="fas fa-star"></i> Browse Deals
-                    </a>
-                </div>
+            <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-3 md:mb-4">No Orders Found</h3>
+            <p class="text-gray-600 text-sm md:text-lg mb-6 md:mb-8">
+                You haven't ordered anything yet. Start shopping to discover amazing products!
+            </p>
+            <div class="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
+                <a href="{% url 'home' %}"
+                   class="btn bg-primary hover:bg-primary-dark text-white px-6 py-2.5 md:px-8 md:py-3 rounded-lg md:rounded-xl font-semibold transition-all flex items-center justify-center gap-2 text-sm md:text-base">
+                    <i class="fas fa-shopping-bag"></i> Start Shopping
+                </a>
             </div>
-        {% endif %}
-    </section>
+        </div>
+    {% endif %}
+</section>
+
 
     <!-- FOOTER -->
-    <footer class="bg-dark text-white pt-16 pb-8 mt-16">
+    <footer class="bg-dark text-white pt-12 pb-6 md:pb-8 mt-12 md:mt-16">
         <div class="container mx-auto px-4">
-            <div class="footer-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <div class="footer-columns grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-8">
                 <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">ShopSphere</h3>
-                    <p class="text-gray-300 mb-4">Your one-stop destination for all your shopping needs. Quality products, amazing prices, and exceptional customer service.</p>
-                    <div class="social-icons flex space-x-4 mt-6">
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-pinterest"></i>
-                        </a>
-                    </div>
+                    <h3 class="footer-title text-lg sm:text-xl mb-3 md:mb-4 pb-2 relative">Shopzy</h3>
+                    <p class="text-gray-300 mb-4 text-xs sm:text-sm">Your one-stop destination for all your shopping needs. Quality products, amazing prices, and exceptional customer service.</p>
+
                 </div>
 
                 <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="{% url 'user_home' %}" class="text-gray-300 no-underline transition-colors hover:text-white">Home</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Shop</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Categories</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Deals</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">About Us</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Contact</a></li>
+                    <h3 class="footer-title text-lg sm:text-xl mb-3 md:mb-4 pb-2 relative">Quick Links</h3>
+                    <ul class="space-y-1 md:space-y-2">
+                        <li><a href="{% url 'home' %}" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Home</a></li>
+                        <li><a href="{% url 'shop_page' %}" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Shop</a></li>
+                        <li><a href="{% url 'user_about' %}" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">About Us</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Contact</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">Customer Service</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Shipping Policy</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Return Policy</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Privacy Policy</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Terms & Conditions</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Track Your Order</a></li>
+                    <h3 class="footer-title text-lg sm:text-xl mb-3 md:mb-4 pb-2 relative">Customer Service</h3>
+                    <ul class="space-y-1 md:space-y-2">
+                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Return Policy</a></li>
+                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Terms & Conditions</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">Contact Us</h3>
-                    <ul class="space-y-3">
+                    <h3 class="footer-title text-lg sm:text-xl mb-3 md:mb-4 pb-2 relative">Contact Us</h3>
+                    <ul class="space-y-2 md:space-y-3">
                         <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt mt-1 mr-3 text-primary"></i>
-                            <span class="text-gray-300">123 Commerce St, City, State 12345</span>
+                            <i class="fas fa-map-marker-alt mt-0.5 md:mt-1 mr-2 md:mr-3 text-primary flex-shrink-0"></i>
+                            <span class="text-gray-300 text-xs sm:text-sm">Shopzy, Kaloor Junction, Kerala</span>
                         </li>
                         <li class="flex items-start">
-                            <i class="fas fa-phone mt-1 mr-3 text-primary"></i>
-                            <span class="text-gray-300">+1 (555) 123-4567</span>
+                            <i class="fas fa-phone mt-0.5 md:mt-1 mr-2 md:mr-3 text-primary flex-shrink-0"></i>
+                            <span class="text-gray-300 text-xs sm:text-sm">8078855744</span>
                         </li>
                         <li class="flex items-start">
-                            <i class="fas fa-envelope mt-1 mr-3 text-primary"></i>
-                            <span class="text-gray-300">support@shopsphere.com</span>
+                            <i class="fas fa-envelope mt-0.5 md:mt-1 mr-2 md:mr-3 text-primary flex-shrink-0"></i>
+                            <span class="text-gray-300 text-xs sm:text-sm">support@shopzy.com</span>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="footer-bottom text-center pt-8 border-t border-gray-700 text-gray-400">
-                <p>&copy; 2023 ShopSphere. All rights reserved.</p>
+            <div class="footer-bottom text-center pt-6 md:pt-8 border-t border-gray-700 text-gray-400 text-xs sm:text-sm">
+                <p>&copy; 2023 Shopzy. All rights reserved.</p>
             </div>
         </div>
     </footer>

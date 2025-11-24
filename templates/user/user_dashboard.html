@@ -2,12 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Dashboard - ShopSphere</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shopzy - My Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-
     <script>
         tailwind.config = {
             theme: {
@@ -23,21 +21,6 @@
                         success: '#48bb78',
                         warning: '#ed8936',
                         danger: '#e53e3e',
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-in-out',
-                        'slide-up': 'slideUp 0.5s ease-out',
-                        'pulse-slow': 'pulse 3s infinite',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
-                        },
-                        slideUp: {
-                            '0%': { transform: 'translateY(20px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' },
-                        },
                     }
                 }
             }
@@ -45,537 +28,631 @@
     </script>
 
     <style>
-        .logo-hover i {
-            transition: transform 0.5s ease;
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
         }
 
-        .logo-hover:hover i {
-            transform: rotate(0deg);
-        }
+        .nav-link { position: relative; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0; background-color: #5d5fef; transition: width 0.3s ease; }
+        .nav-link:hover::after { width: 100%; }
 
-        .nav-link {
-            position: relative;
+        .sidebar-link {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
         }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -5px;
-            left: 0;
+        .sidebar-link.active {
             background-color: #5d5fef;
-            transition: width 0.3s ease;
+            color: white;
+            box-shadow: 0 4px 6px rgba(93, 95, 239, 0.3);
         }
+        .sidebar-link.active i { color: white; }
 
-        .nav-link:hover::after {
-            width: 100%;
-        }
+        /* --- MOBILE MENU LOGIC (FIXED) --- */
+        #mobile-menu-checkbox { display: none; }
 
-        .footer-title::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 3px;
-            background: #5d5fef;
-            bottom: 0;
-            left: 0;
-        }
-
-        .social-icon:hover {
-            transform: translateY(-5px);
-        }
-
-        .btn {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn:hover::before {
-            left: 100%;
-        }
-
-        /* Mobile Navigation */
-        #nav-toggle {
-            display: none;
-        }
-
-        #nav-toggle:checked ~ .mobile-nav {
-            max-height: 500px;
-            padding: 1.5rem 0;
-        }
-
-        .mobile-nav {
+        .mobile-menu {
             max-height: 0;
             overflow: hidden;
-            transition: all 0.4s ease;
+            transition: max-height 0.4s ease-out;
         }
 
-        /* Dashboard Cards */
-        .dashboard-card {
-            transition: all 0.3s ease;
+        /* When checkbox is checked, expand the sibling menu */
+        #mobile-menu-checkbox:checked ~ .mobile-nav .mobile-menu {
+            max-height: 500px;
         }
 
-        .dashboard-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        /* --- SIDEBAR LOGIC --- */
+        #sidebar-toggle-checkbox { display: none; }
+
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            z-index: 60;
+            width: 280px;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            overflow-y: auto;
         }
 
-        .progress-bar {
-            transition: width 1s ease-in-out;
+        #sidebar-toggle-checkbox:checked ~ .content-area .sidebar {
+            transform: translateX(0);
         }
 
-        /* Stats Grid Animation */
-        .stats-grid > div {
-            animation: slideUp 0.5s ease-out;
+        /* Backdrop for mobile sidebar */
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 55;
+            backdrop-filter: blur(2px);
         }
 
-        .stats-grid > div:nth-child(1) { animation-delay: 0.1s; }
-        .stats-grid > div:nth-child(2) { animation-delay: 0.2s; }
-        .stats-grid > div:nth-child(3) { animation-delay: 0.3s; }
-        .stats-grid > div:nth-child(4) { animation-delay: 0.4s; }
+        #sidebar-toggle-checkbox:checked ~ .content-area .sidebar-backdrop {
+            display: block;
+        }
+
+        .sidebar-toggle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            bottom: 2rem;
+            right: 1.5rem;
+            z-index: 50;
+            background-color: #5d5fef;
+            color: white;
+            width: 3.5rem;
+            height: 3.5rem;
+            border-radius: 50%;
+            box-shadow: 0 4px 12px rgba(93, 95, 239, 0.4);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .sidebar-toggle-btn:active {
+            transform: scale(0.95);
+        }
+
+        @media (min-width: 1024px) {
+            .sidebar {
+                position: relative;
+                transform: translateX(0);
+                top: auto;
+                height: auto;
+                width: 16rem;
+                box-shadow: none;
+                z-index: 10;
+            }
+            .sidebar-toggle-btn { display: none; }
+            .sidebar-backdrop { display: none !important; }
+        }
     </style>
 </head>
 
-<body class="bg-gray-50 text-dark">
-    <!-- HEADER -->
+<body class="bg-gray-50 text-dark text-sm flex flex-col min-h-screen antialiased">
+
+    <input type="checkbox" id="sidebar-toggle-checkbox">
+
     <header class="bg-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4">
-            <nav class="flex justify-between items-center py-4">
-                <a href="{% url 'user_home' %}" class="logo-hover flex items-center text-2xl font-bold text-primary">
+            <nav class="flex justify-between items-center py-3 md:py-4">
+                <a href="{% url 'home' %}" class="logo-hover flex items-center text-xl md:text-2xl font-bold text-primary truncate">
                     <i class="fas fa-shopping-bag mr-2 transform -rotate-12"></i>
-                    ShopSphere
+                    Shopzy
                 </a>
 
-                <ul class="hidden md:flex space-x-8">
-                    <li><a href="{% url 'user_home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Shop</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Categories</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Deals</a></li>
+                <ul class="hidden md:flex space-x-6 lg:space-x-8">
+                    <li><a href="{% url 'home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
+                    <li><a href="{% url 'shop_page' %}" class="nav-link font-medium text-primary transition-colors">Shop</a></li>
+                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
+                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
                 </ul>
 
-                <div class="flex items-center">
-                    <!-- Search Form -->
-                    <form action="{% url 'user_home' %}" class="hidden md:flex items-center bg-light rounded-full px-4 py-2 mr-4 w-64">
+                <div class="flex items-center gap-2 md:gap-0">
+                    <form action="{% url 'shop_page' %}" method="GET"
+                          class="hidden md:flex items-center bg-light rounded-full px-4 py-2 mr-4 w-48 lg:w-64 search-bar transition-all">
                         <input type="text"
                                name="q"
                                value="{{ request.GET.q }}"
-                               placeholder="Search products..."
-                               class="bg-transparent outline-none w-full px-2">
-                        <button class="text-gray hover:text-primary transition-colors">
+                               placeholder="Search..."
+                               class="bg-transparent outline-none w-full px-2 text-sm">
+                        <button type="submit" class="text-gray hover:text-primary transition-colors">
                             <i class="fas fa-search"></i>
                         </button>
                     </form>
 
-                    <!-- Wishlist -->
-                    <a href="{% url 'user_view_wishlist' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
-                        <i class="far fa-heart text-xl"></i>
-                        <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">3</span>
+                    <button class="md:hidden p-2 text-dark">
+                        <i class="fas fa-search text-lg"></i>
+                    </button>
+
+                    <a href="{% url 'user_view_wishlist' %}" class="relative mx-1 md:mx-2 text-dark hover:text-primary transition-all p-2">
+                        <i class="far fa-heart text-lg md:text-xl"></i>
+                        <span class="absolute top-0 right-0 md:-top-2 md:-right-2 bg-secondary text-white text-[10px] md:text-xs w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center">{{ request.user.wishlist.count }}</span>
                     </a>
 
-                    <!-- Cart -->
-                    <a href="{% url 'user_view_cart' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
-                        <i class="fas fa-shopping-cart text-xl"></i>
-                        <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">2</span>
+                    <a href="{% url 'user_view_cart' %}" class="relative mx-1 md:mx-2 text-dark hover:text-primary transition-all p-2">
+                        <i class="fas fa-shopping-cart text-lg md:text-xl"></i>
+                        <span class="absolute top-0 right-0 md:-top-2 md:-right-2 bg-secondary text-white text-[10px] md:text-xs w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center">{{ request.user.cart_items.count }}</span>
                     </a>
 
-                    <!-- User Account Dropdown -->
-                    <div class="relative group">
-                        <div class="user-info flex items-center ml-4 bg-light rounded-full px-4 py-2 cursor-pointer transition-all hover:bg-primary hover:text-white">
-                            <i class="fas fa-user mr-2 text-primary transition-colors"></i>
-                            <span class="font-medium">
+                    <div class="relative group hidden md:block">
+                        <div class="user-info flex items-center ml-2 lg:ml-4 bg-light rounded-full px-3 py-2 cursor-pointer transition-all hover:bg-primary hover:text-white">
+                            <i class="fas fa-user mr-2 text-primary transition-colors group-hover:text-white"></i>
+                            <span class="font-medium max-w-[100px] truncate">
                                 {% if request.user.is_authenticated %}
                                     {{ request.user.username }}
                                 {% else %}
                                     Account
                                 {% endif %}
                             </span>
-                            <i class="fas fa-chevron-down ml-2 text-sm"></i>
+                            <i class="fas fa-chevron-down ml-2 text-xs"></i>
                         </div>
-
-                        <!-- Dropdown Menu -->
                         <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
-                            {% if request.user.is_authenticated %}
-                                <a href="{% url 'user_dashboard' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
-                                    <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-                                </a>
-                                <a href="{% url 'user_orders' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
-                                    <i class="fas fa-shopping-bag mr-2"></i>My Orders
-                                </a>
-                                <a href="{% url 'user_view_wishlist' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
-                                    <i class="fas fa-heart mr-2"></i>Wishlist
-                                </a>
-                                <div class="border-t my-1"></div>
-                                <a href="{% url 'user_logout' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                                </a>
-                            {% else %}
-                                <a href="{% url 'user_login' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
-                                    <i class="fas fa-sign-in-alt mr-2"></i>Login
-                                </a>
-                                <a href="{% url 'user_register' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
-                                    <i class="fas fa-user-plus mr-2"></i>Register
-                                </a>
-                            {% endif %}
+                             {% if request.user.is_authenticated %}
+                                <a href="{% url 'user_dashboard' %}" class="block px-4 py-2 text-dark hover:bg-gray-100"><i class="fas fa-user-circle mr-2"></i>My Profile</a>
+                                <a href="{% url 'user_orders' %}" class="block px-4 py-2 text-dark hover:bg-gray-100"><i class="fas fa-shopping-bag mr-2"></i>My Orders</a>
+                                <a href="{% url 'user_logout' %}" class="block px-4 py-2 text-dark hover:bg-gray-100"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+                             {% else %}
+                                <a href="{% url 'user_login' %}" class="block px-4 py-2 text-dark hover:bg-gray-100">Login</a>
+                             {% endif %}
                         </div>
                     </div>
 
-                    <!-- Mobile menu toggle -->
-                    <label for="nav-toggle" class="md:hidden ml-4 text-xl cursor-pointer">
+                    <label for="mobile-menu-checkbox" class="md:hidden ml-2 text-xl cursor-pointer p-2 select-none">
                         <i class="fas fa-bars"></i>
                     </label>
                 </div>
             </nav>
-        </div>
 
-        <!-- Hidden checkbox for mobile menu -->
-        <input type="checkbox" id="nav-toggle" class="hidden">
+            <input type="checkbox" id="mobile-menu-checkbox">
 
-        <!-- Mobile Navigation -->
-        <div class="mobile-nav bg-white shadow-lg md:hidden">
-            <div class="container mx-auto px-4">
-                <a href="{% url 'user_home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Shop</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Categories</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Deals</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">About</a>
-                <a href="#" class="block py-3 hover:text-primary transition-colors">Contact</a>
+            <div class="mobile-nav bg-white shadow-lg md:hidden border-t">
+                <div class="container mx-auto px-4 mobile-menu">
+                    <a href="{% url 'home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
+                    <a href="{% url 'shop_page' %}" class="block py-3 border-b border-gray-200 text-primary transition-colors">Shop</a>
+                    <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">About</a>
+                    <a href="#" class="block py-3 hover:text-primary transition-colors">Contact</a>
 
-                <!-- Add login/register links for mobile -->
-                {% if not request.user.is_authenticated %}
-                <div class="border-t border-gray-200 mt-4 pt-4">
-                    <a href="{% url 'user_login' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Login</a>
-                    <a href="{% url 'user_register' %}" class="block py-3 hover:text-primary transition-colors">Register</a>
+                    {% if request.user.is_authenticated %}
+                    <div class="py-3 border-t mt-2 bg-gray-50 -mx-4 px-4">
+                        <p class="text-xs text-gray-500 mb-2">Logged in as {{ request.user.username }}</p>
+                        <a href="{% url 'user_logout' %}" class="block text-danger font-medium"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+                    </div>
+                    {% else %}
+                    <div class="py-3 border-t mt-2 flex gap-2">
+                        <a href="{% url 'user_login' %}" class="flex-1 text-center py-2 bg-gray-100 rounded text-dark">Login</a>
+                        <a href="{% url 'user_register' %}" class="flex-1 text-center py-2 bg-primary text-white rounded">Register</a>
+                    </div>
+                    {% endif %}
                 </div>
-                {% else %}
-                <div class="border-t border-gray-200 mt-4 pt-4">
-                    <a href="{% url 'user_dashboard' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Dashboard</a>
-                    <a href="{% url 'user_orders' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Orders</a>
-                    <a href="{% url 'user_view_wishlist' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Wishlist</a>
-                    <a href="#" class="block py-3 hover:text-primary transition-colors">Logout</a>
-                </div>
-                {% endif %}
             </div>
         </div>
     </header>
 
-    <!-- DASHBOARD SECTION -->
-    <section class="container mx-auto px-4 py-8 animate-fade-in">
-        <!-- Welcome Section -->
-        <div class="bg-gradient-to-r from-primary to-accent rounded-2xl shadow-xl p-8 text-white mb-8">
-            <div class="flex flex-col md:flex-row items-center justify-between">
-                <div class="mb-6 md:mb-0">
-                    <h1 class="text-3xl md:text-4xl font-bold mb-2">Welcome back, {{ request.user.username }}! 👋</h1>
-                    <p class="text-white opacity-90 text-lg">Here's what's happening with your account today</p>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="text-center">
-                        <div class="text-2xl font-bold">12</div>
-                        <div class="text-sm opacity-80">Loyalty Points</div>
-                    </div>
-                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                        <i class="fas fa-trophy text-xl"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="content-area flex-grow relative">
+        <label for="sidebar-toggle-checkbox" class="sidebar-backdrop"></label>
 
-        <!-- Quick Stats -->
-        <div class="stats-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <!-- Total Orders -->
-            <div class="dashboard-card bg-white rounded-2xl shadow-lg p-6 text-center">
-                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-shopping-bag text-blue-600 text-xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold text-dark mb-1">8</h3>
-                <p class="text-gray-600">Total Orders</p>
-                <div class="mt-3 bg-gray-200 rounded-full h-2">
-                    <div class="bg-blue-600 h-2 rounded-full progress-bar" style="width: 80%"></div>
-                </div>
-            </div>
+        <main class="py-6 md:py-8 bg-gray-50 min-h-screen">
+            <div class="container mx-auto px-4 max-w-7xl">
 
-            <!-- Pending Orders -->
-            <div class="dashboard-card bg-white rounded-2xl shadow-lg p-6 text-center">
-                <div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-clock text-yellow-600 text-xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold text-dark mb-1">2</h3>
-                <p class="text-gray-600">Pending Orders</p>
-                <div class="mt-3 bg-gray-200 rounded-full h-2">
-                    <div class="bg-yellow-600 h-2 rounded-full progress-bar" style="width: 25%"></div>
-                </div>
-            </div>
+                <div class="lg:flex lg:space-x-6">
 
-            <!-- Wishlist Items -->
-            <div class="dashboard-card bg-white rounded-2xl shadow-lg p-6 text-center">
-                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-heart text-red-600 text-xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold text-dark mb-1">5</h3>
-                <p class="text-gray-600">Wishlist Items</p>
-                <div class="mt-3 bg-gray-200 rounded-full h-2">
-                    <div class="bg-red-600 h-2 rounded-full progress-bar" style="width: 50%"></div>
-                </div>
-            </div>
+                    <aside id="dashboard-sidebar" class="sidebar bg-white shadow-lg rounded-none lg:rounded-lg p-5 lg:mb-0">
+                         <div class="flex justify-between items-center lg:hidden mb-6 border-b pb-4">
+                            <span class="font-bold text-lg text-primary">Menu</span>
+                            <label for="sidebar-toggle-checkbox" class="text-gray-500 p-2 cursor-pointer">
+                                <i class="fas fa-times text-xl"></i>
+                            </label>
+                        </div>
 
-            <!-- Total Spent -->
-            <div class="dashboard-card bg-white rounded-2xl shadow-lg p-6 text-center">
-                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-wallet text-green-600 text-xl"></i>
-                </div>
-                <h3 class="text-2xl font-bold text-dark mb-1">₹12,458</h3>
-                <p class="text-gray-600">Total Spent</p>
-                <div class="mt-3 bg-gray-200 rounded-full h-2">
-                    <div class="bg-green-600 h-2 rounded-full progress-bar" style="width: 65%"></div>
-                </div>
-            </div>
-        </div>
+                        <h3 class="text-base font-bold text-dark mb-3 border-b pb-2 hidden lg:block">Navigation</h3>
+                        <ul class="space-y-1.5">
+                            <li>
+                                <a href="{% url 'user_dashboard' %}"
+                                   class="sidebar-link {% if not request.GET.section %}active{% endif %} flex items-center rounded-lg text-dark hover:bg-primary hover:text-white">
+                                    <i class="fas fa-home mr-3 w-5 text-center {% if not request.GET.section %}text-white{% else %}text-primary{% endif %}"></i> Dashboard
+                                </a>
+                            </li>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Left Column -->
-            <div class="lg:col-span-2 space-y-8">
-                <!-- Recent Orders -->
-                <div class="dashboard-card bg-white rounded-2xl shadow-lg p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold text-dark flex items-center">
-                            <i class="fas fa-history mr-3 text-primary"></i> Recent Orders
-                        </h2>
-                        <a href="{% url 'user_orders' %}" class="text-primary hover:text-primary-dark font-medium flex items-center">
-                            View All <i class="fas fa-chevron-right ml-1 text-sm"></i>
-                        </a>
-                    </div>
+                            <li>
+                                <a href="?section=addresses"
+                                   class="sidebar-link {% if request.GET.section == 'addresses' %}active{% endif %} flex items-center rounded-lg text-dark hover:bg-primary hover:text-white">
+                                    <i class="fas fa-map-marked-alt mr-3 w-5 text-center {% if request.GET.section == 'addresses' %}text-white{% else %}text-primary{% endif %}"></i> Addresses
+                                </a>
+                            </li>
 
-                    <div class="space-y-4">
-                        {% for order in recent_orders|slice:":3" %}
-                        <div class="flex items-center justify-between p-4 bg-light rounded-xl hover:bg-gray-50 transition-colors">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 bg-primary bg-opacity-10 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-box text-primary"></i>
+                            <li>
+                                <a href="?section=security"
+                                   class="sidebar-link {% if request.GET.section == 'security' %}active{% endif %} flex items-center rounded-lg text-dark hover:bg-primary hover:text-white">
+                                    <i class="fas fa-shield-alt mr-3 w-5 text-center {% if request.GET.section == 'security' %}text-white{% else %}text-primary{% endif %}"></i> Security
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'user_orders' %}" class="sidebar-link flex items-center rounded-lg text-dark hover:bg-primary hover:text-white">
+                                    <i class="fas fa-box-open mr-3 w-5 text-center text-primary"></i> My Orders
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'user_view_wishlist' %}" class="sidebar-link flex items-center rounded-lg text-dark hover:bg-primary hover:text-white">
+                                    <i class="fas fa-heart mr-3 w-5 text-center text-primary"></i> Wishlist
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'user_view_cart' %}" class="sidebar-link flex items-center rounded-lg text-dark hover:bg-primary hover:text-white">
+                                    <i class="fas fa-shopping-cart mr-3 w-5 text-center text-primary"></i> Cart
+                                </a>
+                            </li>
+                            <li class="pt-3 border-t mt-3">
+                                <a href="{% url 'user_logout' %}" class="sidebar-link flex items-center rounded-lg text-danger hover:bg-danger hover:text-white">
+                                    <i class="fas fa-sign-out-alt mr-3 w-5 text-center text-danger"></i> Logout
+                                </a>
+                            </li>
+                        </ul>
+                    </aside>
+
+                    <label for="sidebar-toggle-checkbox" class="sidebar-toggle-btn">
+                        <i class="fas fa-sliders-h text-xl"></i>
+                    </label>
+
+                    <section class="lg:flex-1 bg-white shadow-lg rounded-lg p-4 md:p-6 min-h-[500px]">
+
+                        <div class="mb-6 border-b pb-3">
+                            <h2 class="text-lg md:text-xl font-semibold text-primary mb-1">
+                                {% if request.GET.section == 'addresses' %}
+                                    Address Book
+                                {% elif request.GET.section == 'security' %}
+                                    Account Security
+                                {% else %}
+                                    Welcome Back, {{ request.user.username }}!
+                                {% endif %}
+                            </h2>
+                            <p class="text-xs text-gray-500">
+                                {% if request.GET.section == 'addresses' %}
+                                    Manage your shipping and billing addresses.
+                                {% elif request.GET.section == 'security' %}
+                                    Update your password.
+                                {% else %}
+                                    Manage your profile and settings.
+                                {% endif %}
+                            </p>
+                        </div>
+
+                        {% if request.GET.section == 'addresses' %}
+                            {% if request.GET.action == 'add' or request.GET.action == 'edit' %}
+                                <div class="max-w-2xl mx-auto lg:mx-0">
+                                    <div class="p-4 bg-light rounded-lg shadow-sm border-l-4 border-warning mb-8">
+                                        <div class="flex items-center justify-between mb-4 border-b pb-2">
+                                            <h4 class="text-sm md:text-base font-bold flex items-center">
+                                                <i class="fas fa-map-marker-alt mr-2 text-warning"></i>
+                                                {% if request.GET.action == 'edit' %}Edit Address{% else %}Add New{% endif %}
+                                            </h4>
+                                            <a href="?section=addresses" class="text-gray-500 hover:text-dark text-xs flex items-center p-2">
+                                                <i class="fas fa-arrow-left mr-1"></i> Back
+                                            </a>
+                                        </div>
+
+                                        <form method="POST" action="{% url 'save_address' %}">
+                                            {% csrf_token %}
+                                            {% if request.GET.id %}
+                                                <input type="hidden" name="address_id" value="{{ request.GET.id }}">
+                                            {% endif %}
+
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                <div>
+                                                    <label class="text-xs font-medium mb-1 block">Full Name</label>
+                                                    <input type="text" name="name" required value="{{ address_data.full_name|default_if_none:'' }}" class="w-full border p-2 rounded text-sm focus:border-primary outline-none focus:ring-1 ring-primary">
+                                                </div>
+                                                <div>
+                                                    <label class="text-xs font-medium mb-1 block">Phone Number</label>
+                                                    <input type="tel" name="phone" required value="{{ address_data.phone|default_if_none:'' }}" class="w-full border p-2 rounded text-sm focus:border-primary outline-none focus:ring-1 ring-primary">
+                                                </div>
+                                                <div class="md:col-span-2">
+                                                    <label class="text-xs font-medium mb-1 block">Address Line 1</label>
+                                                    <input type="text" name="address_line1" required placeholder="House No, Building" value="{{ address_data.address_line1|default_if_none:'' }}" class="w-full border p-2 rounded text-sm focus:border-primary outline-none focus:ring-1 ring-primary">
+                                                </div>
+                                                <div class="md:col-span-2">
+                                                    <label class="text-xs font-medium mb-1 block">Address Line 2</label>
+                                                    <input type="text" name="address_line2" placeholder="Area, Landmark" value="{{ address_data.address_line2|default_if_none:'' }}" class="w-full border p-2 rounded text-sm focus:border-primary outline-none focus:ring-1 ring-primary">
+                                                </div>
+                                                <div>
+                                                    <label class="text-xs font-medium mb-1 block">City</label>
+                                                    <input type="text" name="city" required value="{{ address_data.city|default_if_none:'' }}" class="w-full border p-2 rounded text-sm">
+                                                </div>
+                                                <div>
+                                                    <label class="text-xs font-medium mb-1 block">State</label>
+                                                    <input type="text" name="state" required value="{{ address_data.state|default_if_none:'' }}" class="w-full border p-2 rounded text-sm">
+                                                </div>
+                                                <div>
+                                                    <label class="text-xs font-medium mb-1 block">Zip Code</label>
+                                                    <input type="text" name="zip" required value="{{ address_data.pincode|default_if_none:'' }}" class="w-full border p-2 rounded text-sm">
+                                                </div>
+                                                <div>
+                                                    <label class="text-xs font-medium mb-1 block">Country</label>
+                                                    <input type="text" name="country" required value="{{ address_data.country|default_if_none:'India' }}" class="w-full border p-2 rounded text-sm">
+                                                </div>
+                                                <div>
+                                                    <label class="text-xs font-medium mb-1 block">Type</label>
+                                                    <select name="type" class="w-full border p-2 rounded text-sm bg-white">
+                                                        <option value="Home">Home</option>
+                                                        <option value="Work">Work</option>
+                                                    </select>
+                                                </div>
+                                                <div class="flex items-center pt-6">
+                                                     <label class="flex items-center space-x-2 cursor-pointer">
+                                                        <input type="checkbox" name="is_default" {% if address_data.is_default %}checked{% endif %} class="rounded text-primary h-4 w-4">
+                                                        <span class="text-xs text-gray-600">Set as default</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                                                <button type="submit" class="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white px-5 py-2.5 rounded-lg text-sm shadow-md">Save Address</button>
+                                                <a href="?section=addresses" class="w-full sm:w-auto text-center bg-gray-200 hover:bg-gray-300 text-dark px-4 py-2.5 rounded-lg text-sm">Cancel</a>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h3 class="font-semibold text-dark">Order #{{ order.id }}</h3>
-                                    <p class="text-gray-600 text-sm">{{ order.order_date|date:"M d, Y" }}</p>
+                            {% else %}
+                                <div class="mb-8">
+                                    <div class="flex items-center justify-end mb-4">
+                                        <a href="?section=addresses&action=add" class="bg-primary hover:bg-primary-dark text-white px-4 py-2 rounded-lg text-sm shadow-md transition-all flex items-center">
+                                            <i class="fas fa-plus mr-2"></i> Add Address
+                                        </a>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {% for address in addresses %}
+                                        <div class="border {% if address.is_default %}border-2 border-primary/20 bg-primary/5{% else %}hover:shadow-lg hover:border-primary bg-white{% endif %} rounded-lg p-4 relative group transition-all">
+                                            <span class="absolute top-3 right-3 {% if address.is_default %}bg-primary text-white{% else %}bg-gray-100 text-gray-600{% endif %} text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                                                {% if address.is_default %}Default{% else %}Home{% endif %}
+                                            </span>
+
+                                            <div class="flex items-center mb-2">
+                                                <div class="w-8 h-8 rounded-full {% if address.is_default %}bg-white{% else %}bg-primary/10{% endif %} flex items-center justify-center text-primary mr-2 shadow-sm">
+                                                    <i class="fas fa-map-marker-alt text-xs"></i>
+                                                </div>
+                                                <p class="font-bold text-sm truncate max-w-[150px]">{{ address.full_name }}</p>
+                                            </div>
+
+                                            <p class="text-xs text-gray-600 mb-4 leading-relaxed pl-10 break-words">
+                                                {{ address.address_line1 }}{% if address.address_line2 %}, {{ address.address_line2 }}{% endif %}<br>
+                                                {{ address.city }}, {{ address.state }} - {{ address.pincode }}<br>
+                                                <span class="font-medium text-dark mt-1 block">Phone: {{ address.phone }}</span>
+                                            </p>
+
+                                            <div class="flex flex-wrap gap-3 mt-2 border-t pt-3 pl-0 md:pl-10">
+                                                <a href="?section=addresses&action=edit&id={{ address.id }}" class="text-primary text-xs font-bold hover:underline p-1">EDIT</a>
+                                                <a href="{% url 'delete_address' address_id=address.id %}" onclick="return confirm('Delete address?');" class="text-danger text-xs font-bold hover:underline p-1">DELETE</a>
+                                                {% if not address.is_default %}
+                                                <a href="{% url 'set_default_address' address_id=address.id %}" class="text-accent text-xs font-bold hover:underline p-1">SET DEFAULT</a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        {% empty %}
+                                        <div class="md:col-span-2 p-6 text-center bg-gray-100 rounded-lg text-gray-600 text-sm">
+                                            You have no saved addresses.
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                        {% elif request.GET.section == 'security' %}
+                             <div class="max-w-xl mx-auto lg:mx-0">
+                                <div class="p-4 bg-light rounded-lg shadow-sm border-l-4 border-primary">
+                                    <form method="POST" action="{% url 'change_password' %}" class="space-y-4">
+                                        {% csrf_token %}
+                                        <div class="flex flex-col">
+                                            <label class="text-xs font-medium mb-1 block">Email</label>
+                                            <input type="email" value="{{ request.user.email }}" readonly class="w-full border p-2 rounded text-sm bg-gray-100 text-gray-500">
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <label class="text-xs font-medium mb-1 block">New Password</label>
+                                            <input type="password" name="new_password" required class="w-full border p-2 rounded text-sm focus:border-primary outline-none focus:ring-1 ring-primary">
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <label class="text-xs font-medium mb-1 block">Confirm Password</label>
+                                            <input type="password" name="confirm_password" required class="w-full border p-2 rounded text-sm focus:border-primary outline-none focus:ring-1 ring-primary">
+                                        </div>
+                                        <div class="pt-2">
+                                            <button type="submit" class="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white px-5 py-2 rounded-lg text-sm shadow-md">Update Password</button>
+                                        </div>
+                                    </form>
+
+                                    {% if messages %}
+                                        <div class="mt-4 space-y-2">
+                                            {% for message in messages %}
+                                                <div class="p-3 rounded-lg text-xs break-words
+                                                    {% if message.tags == 'success' %}bg-success/10 text-success border border-success{% elif message.tags == 'error' %}bg-danger/10 text-danger border border-danger{% else %}bg-warning/10 text-warning border border-warning{% endif %}">
+                                                    {{ message }}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                             </div>
+
+                        {% else %}
+
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 text-center mb-8">
+                                <div class="p-3 bg-primary text-white rounded-lg shadow-md">
+                                    <i class="fas fa-boxes text-xl mb-1"></i>
+                                    <p class="text-lg font-bold">{{ total_orders|default:"0" }}</p>
+                                    <p class="text-xs opacity-80">Total Orders</p>
+                                </div>
+                                <div class="p-3 bg-secondary text-white rounded-lg shadow-md">
+                                    <i class="fas fa-box-open text-xl mb-1"></i>
+                                    <p class="text-lg font-bold">{{ pending_orders|default:"0" }}</p>
+                                    <p class="text-xs opacity-80">Pending</p>
+                                </div>
+                                <div class="p-3 bg-accent text-white rounded-lg shadow-md">
+                                    <i class="fas fa-heart text-xl mb-1"></i>
+                                    <p class="text-lg font-bold">{{ wishlist_count|default:"0" }}</p>
+                                    <p class="text-xs opacity-80">Wishlist</p>
+                                </div>
+                                <div class="p-3 bg-warning text-white rounded-lg shadow-md">
+                                    <i class="fas fa-map-marker-alt text-xl mb-1"></i>
+                                    <p class="text-lg font-bold">{{ total_addresses|default:"0" }}</p>
+                                    <p class="text-xs opacity-80">Addresses</p>
                                 </div>
                             </div>
-                            <div class="text-right">
-                                <p class="font-bold text-secondary">₹{{ order.total_amount }}</p>
-                                <span class="inline-block px-2 py-1 text-xs rounded-full
-                                    {% if order.status == 'delivered' %}bg-green-100 text-green-800
-                                    {% elif order.status == 'processing' %}bg-yellow-100 text-yellow-800
-                                    {% else %}bg-blue-100 text-blue-800{% endif %}">
-                                    {{ order.status|title }}
-                                </span>
+
+                            <div class="mb-8">
+                                <div class="p-4 bg-light rounded-lg shadow-sm border-l-4 border-primary">
+                                    <div class="flex items-center justify-between mb-4 border-b pb-2">
+                                        <h4 class="text-base font-bold flex items-center">
+                                            <i class="fas fa-user-cog mr-2 text-primary"></i> Profile
+                                        </h4>
+                                        {% if not request.GET.edit %}
+                                        <a href="?edit=1" class="bg-primary hover:bg-primary-dark text-white px-3 py-1.5 rounded-lg text-sm shadow-md">
+                                            <i class="fas fa-pen mr-1"></i> Edit
+                                        </a>
+                                        {% endif %}
+                                    </div>
+
+                                    {% if request.GET.edit %}
+                                        <form method="POST" action="{% url 'user_profile_edit' %}" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-4">
+                                                <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-primary bg-white flex-shrink-0">
+                                                    {% if profile and profile.profile_img %}
+                                                        <img src="{{ profile.profile_img.url }}" class="w-full h-full object-cover">
+                                                    {% else %}
+                                                        <div class="w-full h-full flex items-center justify-center text-gray-300 text-3xl"><i class="fas fa-user"></i></div>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="w-full">
+                                                    <label class="text-sm font-medium mb-1 block">Change Photo</label>
+                                                    <input type="file" name="profile_img" class="w-full text-xs file:px-3 file:py-1.5 file:bg-primary file:text-white file:border-0 file:rounded-full file:cursor-pointer file:mr-3 bg-white rounded border">
+                                                </div>
+                                            </div>
+
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="text-xs font-medium mb-1 block">First Name</label>
+                                                    <input type="text" name="first_name" value="{{ request.user.first_name }}" class="w-full border p-2 rounded text-sm">
+                                                </div>
+                                                <div>
+                                                    <label class="text-xs font-medium mb-1 block">Last Name</label>
+                                                    <input type="text" name="last_name" value="{{ request.user.last_name }}" class="w-full border p-2 rounded text-sm">
+                                                </div>
+                                                <div>
+                                                    <label class="text-xs font-medium mb-1 block">Email</label>
+                                                    <input type="email" name="email" value="{{ request.user.email }}" class="w-full border p-2 rounded text-sm">
+                                                </div>
+                                                <div>
+                                                    <label class="text-xs font-medium mb-1 block">Contact</label>
+                                                    <input type="tel" name="contact" value="{{ request.user.contact }}" class="w-full border p-2 rounded text-sm">
+                                                </div>
+                                            </div>
+                                            <div class="flex gap-2 mt-4 justify-end">
+                                                <a href="{% url 'user_dashboard' %}" class="bg-gray-200 text-dark px-3 py-2 rounded-lg text-sm">Cancel</a>
+                                                <button type="submit" class="bg-success text-white px-3 py-2 rounded-lg text-sm shadow-md">Save</button>
+                                            </div>
+                                        </form>
+                                    {% else %}
+                                        <div class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-4 mb-4 text-center sm:text-left">
+                                            <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-primary shadow-md bg-white flex-shrink-0">
+                                                {% if profile and profile.profile_img %}
+                                                    <img src="{{ profile.profile_img.url }}" class="w-full h-full object-cover">
+                                                {% else %}
+                                                    <div class="w-full h-full flex items-center justify-center text-gray-300 text-3xl"><i class="fas fa-user"></i></div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="min-w-0"> <p class="font-bold text-lg truncate">{{ request.user.first_name }} {{ request.user.last_name }}</p>
+                                                <p class="text-xs text-gray-500 break-all">{{ request.user.email }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div class="bg-white p-2 rounded border border-dashed border-gray-300">
+                                                <label class="text-xs font-medium mb-0.5 text-gray-500 block">Username</label>
+                                                <p class="text-sm font-medium truncate">{{ request.user.username }}</p>
+                                            </div>
+                                            <div class="bg-white p-2 rounded border border-dashed border-gray-300">
+                                                <label class="text-xs font-medium mb-0.5 text-gray-500 block">Contact</label>
+                                                <p class="text-sm font-medium">{{ request.user.contact|default:"-" }}</p>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                        {% endfor %}
-                    </div>
 
-                    {% if not recent_orders %}
-                    <div class="text-center py-8">
-                        <i class="fas fa-shopping-bag text-4xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-600 mb-4">No orders yet</p>
-                        <a href="{% url 'user_home' %}" class="btn bg-primary hover:bg-primary-dark text-white px-6 py-2 rounded-lg">
-                            Start Shopping
-                        </a>
-                    </div>
-                    {% endif %}
-                </div>
+                            <div class="pt-4 border-t">
+                                <h3 class="text-lg font-semibold text-dark mb-3">Quick Actions</h3>
+                                <div class="flex flex-col sm:flex-row gap-3">
+                                    <a href="{% url 'user_orders' %}" class="bg-primary hover:bg-primary-dark text-white px-4 py-3 sm:py-2 rounded-lg font-medium shadow-sm text-sm text-center">
+                                        View Orders
+                                    </a>
+                                    <a href="{% url 'shop_page' %}" class="bg-gray-200 hover:bg-gray-300 text-dark px-4 py-3 sm:py-2 rounded-lg font-medium shadow-sm text-sm text-center">
+                                        Continue Shopping
+                                    </a>
+                                </div>
+                            </div>
 
-                <!-- Quick Actions -->
-                <div class="dashboard-card bg-white rounded-2xl shadow-lg p-6">
-                    <h2 class="text-xl font-bold text-dark mb-6 flex items-center">
-                        <i class="fas fa-bolt mr-3 text-primary"></i> Quick Actions
-                    </h2>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <a href="{% url 'user_home' %}" class="bg-light hover:bg-primary hover:text-white rounded-xl p-4 text-center transition-all group">
-                            <i class="fas fa-shopping-cart text-2xl mb-2 text-primary group-hover:text-white"></i>
-                            <p class="font-medium">Shop Now</p>
-                        </a>
-                        <a href="{% url 'user_orders' %}" class="bg-light hover:bg-primary hover:text-white rounded-xl p-4 text-center transition-all group">
-                            <i class="fas fa-clipboard-list text-2xl mb-2 text-primary group-hover:text-white"></i>
-                            <p class="font-medium">My Orders</p>
-                        </a>
-                        <a href="{% url 'user_view_wishlist' %}" class="bg-light hover:bg-primary hover:text-white rounded-xl p-4 text-center transition-all group">
-                            <i class="fas fa-heart text-2xl mb-2 text-primary group-hover:text-white"></i>
-                            <p class="font-medium">Wishlist</p>
-                        </a>
-                        <a href="#" class="bg-light hover:bg-primary hover:text-white rounded-xl p-4 text-center transition-all group">
-                            <i class="fas fa-cog text-2xl mb-2 text-primary group-hover:text-white"></i>
-                            <p class="font-medium">Settings</p>
-                        </a>
-                    </div>
+                        {% endif %}
+                    </section>
                 </div>
             </div>
-
-            <!-- Right Column -->
-            <div class="space-y-8">
-                <!-- Profile Summary -->
-                <div class="dashboard-card bg-white rounded-2xl shadow-lg p-6">
-                    <h2 class="text-xl font-bold text-dark mb-6 flex items-center">
-                        <i class="fas fa-user-circle mr-3 text-primary"></i> Profile
-                    </h2>
-                    <div class="flex items-center space-x-4 mb-6">
-                        <div class="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-white text-2xl"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-lg">{{ request.user.username }}</h3>
-                            <p class="text-gray-600 text-sm">{{ request.user.email }}</p>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Member since</span>
-                            <span class="font-medium">Jan 2023</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Loyalty Tier</span>
-                            <span class="font-medium text-primary">Silver</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Account Status</span>
-                            <span class="font-medium text-green-600">Verified</span>
-                        </div>
-                    </div>
-                    <button class="w-full mt-6 btn bg-primary hover:bg-primary-dark text-white py-2 rounded-lg font-medium">
-                        Edit Profile
-                    </button>
-                </div>
-
-                <!-- Notifications -->
-                <div class="dashboard-card bg-white rounded-2xl shadow-lg p-6">
-                    <h2 class="text-xl font-bold text-dark mb-6 flex items-center">
-                        <i class="fas fa-bell mr-3 text-primary"></i> Notifications
-                    </h2>
-                    <div class="space-y-4">
-                        <div class="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
-                            <i class="fas fa-shipping-fast text-blue-500 mt-1"></i>
-                            <div>
-                                <p class="font-medium text-sm">Order #1234 has been shipped</p>
-                                <p class="text-gray-600 text-xs">2 hours ago</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-3 p-3 bg-yellow-50 rounded-lg">
-                            <i class="fas fa-tag text-yellow-500 mt-1"></i>
-                            <div>
-                                <p class="font-medium text-sm">Special offer on your wishlist items</p>
-                                <p class="text-gray-600 text-xs">1 day ago</p>
-                            </div>
-                        </div>
-                        <div class="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
-                            <i class="fas fa-star text-green-500 mt-1"></i>
-                            <div>
-                                <p class="font-medium text-sm">You earned 5 loyalty points</p>
-                                <p class="text-gray-600 text-xs">2 days ago</p>
-                            </div>
-                        </div>
-                    </div>
-                    <a href="#" class="block text-center text-primary hover:text-primary-dark font-medium mt-4">
-                        View All Notifications
-                    </a>
-                </div>
-
-                <!-- Support Card -->
-                <div class="dashboard-card bg-gradient-to-br from-primary to-accent rounded-2xl shadow-lg p-6 text-white">
-                    <h2 class="text-xl font-bold mb-3">Need Help?</h2>
-                    <p class="text-white opacity-90 mb-4">Our support team is here to help you</p>
-                    <div class="space-y-3">
-                        <a href="#" class="flex items-center space-x-3 p-3 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-all">
-                            <i class="fas fa-headset"></i>
-                            <span>Contact Support</span>
-                        </a>
-                        <a href="#" class="flex items-center space-x-3 p-3 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-all">
-                            <i class="fas fa-comments"></i>
-                            <span>Live Chat</span>
-                        </a>
-                        <a href="#" class="flex items-center space-x-3 p-3 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-all">
-                            <i class="fas fa-envelope"></i>
-                            <span>Email Us</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+        </main>
+    </div>
 
     <!-- FOOTER -->
-    <footer class="bg-dark text-white pt-16 pb-8 mt-16">
+    <footer class="bg-dark text-white pt-12 pb-6 md:pb-8 mt-12 md:mt-16">
         <div class="container mx-auto px-4">
-            <div class="footer-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+            <div class="footer-columns grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-8">
                 <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">ShopSphere</h3>
-                    <p class="text-gray-300 mb-4">Your one-stop destination for all your shopping needs. Quality products, amazing prices, and exceptional customer service.</p>
-                    <div class="social-icons flex space-x-4 mt-6">
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-pinterest"></i>
-                        </a>
-                    </div>
+                    <h3 class="footer-title text-lg sm:text-xl mb-3 md:mb-4 pb-2 relative">Shopzy</h3>
+                    <p class="text-gray-300 mb-4 text-xs sm:text-sm">Your one-stop destination for all your shopping needs. Quality products, amazing prices, and exceptional customer service.</p>
+
                 </div>
 
                 <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="{% url 'user_home' %}" class="text-gray-300 no-underline transition-colors hover:text-white">Home</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Shop</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Categories</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Deals</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">About Us</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Contact</a></li>
+                    <h3 class="footer-title text-lg sm:text-xl mb-3 md:mb-4 pb-2 relative">Quick Links</h3>
+                    <ul class="space-y-1 md:space-y-2">
+                        <li><a href="{% url 'home' %}" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Home</a></li>
+                        <li><a href="{% url 'shop_page' %}" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Shop</a></li>
+                        <li><a href="{% url 'user_about' %}" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">About Us</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Contact</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">Customer Service</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Shipping Policy</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Return Policy</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Privacy Policy</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Terms & Conditions</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Track Your Order</a></li>
+                    <h3 class="footer-title text-lg sm:text-xl mb-3 md:mb-4 pb-2 relative">Customer Service</h3>
+                    <ul class="space-y-1 md:space-y-2">
+                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Return Policy</a></li>
+                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Terms & Conditions</a></li>
                     </ul>
                 </div>
 
                 <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">Contact Us</h3>
-                    <ul class="space-y-3">
+                    <h3 class="footer-title text-lg sm:text-xl mb-3 md:mb-4 pb-2 relative">Contact Us</h3>
+                    <ul class="space-y-2 md:space-y-3">
                         <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt mt-1 mr-3 text-primary"></i>
-                            <span class="text-gray-300">123 Commerce St, City, State 12345</span>
+                            <i class="fas fa-map-marker-alt mt-0.5 md:mt-1 mr-2 md:mr-3 text-primary flex-shrink-0"></i>
+                            <span class="text-gray-300 text-xs sm:text-sm">Shopzy, Kaloor Junction, Kerala</span>
                         </li>
                         <li class="flex items-start">
-                            <i class="fas fa-phone mt-1 mr-3 text-primary"></i>
-                            <span class="text-gray-300">+1 (555) 123-4567</span>
+                            <i class="fas fa-phone mt-0.5 md:mt-1 mr-2 md:mr-3 text-primary flex-shrink-0"></i>
+                            <span class="text-gray-300 text-xs sm:text-sm">8078855744</span>
                         </li>
                         <li class="flex items-start">
-                            <i class="fas fa-envelope mt-1 mr-3 text-primary"></i>
-                            <span class="text-gray-300">support@shopsphere.com</span>
+                            <i class="fas fa-envelope mt-0.5 md:mt-1 mr-2 md:mr-3 text-primary flex-shrink-0"></i>
+                            <span class="text-gray-300 text-xs sm:text-sm">support@shopzy.com</span>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="footer-bottom text-center pt-8 border-t border-gray-700 text-gray-400">
-                <p>&copy; 2023 ShopSphere. All rights reserved.</p>
+            <div class="footer-bottom text-center pt-6 md:pt-8 border-t border-gray-700 text-gray-400 text-xs sm:text-sm">
+                <p>&copy; 2023 Shopzy. All rights reserved.</p>
             </div>
         </div>
     </footer>

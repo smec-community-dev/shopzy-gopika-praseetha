@@ -33,6 +33,7 @@ class Order(models.Model):
         ('processing', 'Processing'),
         ('shipped', 'Shipped'),
         ('delivered', 'Delivered'),
+        ('cancelled', 'Cancelled'),
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="orders")
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
