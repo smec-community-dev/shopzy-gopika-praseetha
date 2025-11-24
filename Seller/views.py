@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import message
 from django.core.paginator import Paginator
 from django.db.models import Sum, Avg, Prefetch, F, Count, Q
+from django.http import JsonResponse
 
 from django.shortcuts import render, redirect, get_object_or_404
 from datetime import date, timedelta
@@ -301,6 +302,8 @@ def seller_dashboard(request):
         'monthly_sales_max': monthly_sales_max,
         'yearly_sales_max': yearly_sales_max,
         'current_year': current_year,
+
+
     }
 
     return render(request, 'seller/seller_dashboard.html', context)
@@ -711,3 +714,5 @@ def seller_delete_profile(request):
 
     # Redirect if accessed via GET accidentally
     return redirect('profile_update')
+
+

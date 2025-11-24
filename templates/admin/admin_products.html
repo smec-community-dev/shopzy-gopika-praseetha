@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .notification-dropdown, .profile-dropdown {
+            display: none;
+        }
+        .notification-button:focus + .notification-dropdown,
+        .notification-dropdown:hover,
+        .profile-button:focus + .profile-dropdown,
+        .profile-dropdown:hover {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Display Django Messages -->
+    {% if messages %}
+    <div class="fixed top-0 left-0 right-0 z-50">
+        {% for message in messages %}
+        <div class="{% if message.tags == 'error' %}bg-red-500{% else %}bg-green-500{% endif %} text-white px-4 py-3 rounded-none text-center">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Debug Information (Remove this after fixing) -->
+<!--    <div class="bg-yellow-100 border-l-4 border-yellow-500 p-4 mb-4">-->
+<!--        <div class="flex">-->
+<!--&lt;!&ndash;            <div class="flex-shrink-0">&ndash;&gt;-->
+<!--&lt;!&ndash;                <i class="fas fa-bug text-yellow-500"></i>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--&lt;!&ndash;            <div class="ml-3">&ndash;&gt;-->
+<!--&lt;!&ndash;                <p class="text-sm text-yellow-700">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <strong>Debug Info:</strong><br>&ndash;&gt;-->
+<!--&lt;!&ndash;                    Total Products: {{ total_products }}<br>&ndash;&gt;-->
+<!--&lt;!&ndash;                    Products in current page: {{ products|length }}<br>&ndash;&gt;-->
+<!--&lt;!&ndash;                    Categories: {{ categories|length }}<br>&ndash;&gt;-->
+<!--&lt;!&ndash;                    Subcategories: {{ subcategories|length }}<br>&ndash;&gt;-->
+<!--&lt;!&ndash;                    Sellers: {{ sellers|length }}&ndash;&gt;-->
+<!--&lt;!&ndash;                </p>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+<!--        </div>-->
+<!--    </div>-->
+
+    <div class="flex flex-col lg:flex-row min-h-screen">
+        <!-- Sidebar (Same as before) -->
+        <aside class="w-full lg:w-64 bg-white shadow-lg lg:min-h-screen">
+            <div class="p-6 border-b border-gray-200">
+                <h1 class="text-xl font-bold text-indigo-600">Admin Dashboard</h1>
+            </div>
+
+            <nav class="mt-6 px-4">
+                <a href="{% url 'admin_dashboard' %}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl mb-2 transition-colors">
+                    <i class="fas fa-tachometer-alt mr-3 text-gray-500"></i>
+                    Dashboard
+                </a>
+                <a href="{% url 'user_management' %}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl mb-2 transition-colors">
+                    <i class="fas fa-users mr-3 text-gray-500"></i>
+                    User Management
+                </a>
+                <a href="{% url 'product_management' %}" class="flex items-center px-4 py-3 text-gray-700 bg-indigo-50 rounded-xl mb-2 font-medium">
+                    <i class="fas fa-shopping-bag mr-3 text-indigo-600"></i>
+                    Product Management
+                </a>
+                <a href="{% url 'order_management' %}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl mb-2 transition-colors">
+                    <i class="fas fa-box mr-3 text-gray-500"></i>
+                    Order Management
+                </a>
+                <a href="{% url 'seller_management' %}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl mb-2 transition-colors">
+                    <i class="fas fa-store mr-3 text-gray-500"></i>
+                    Seller Management
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-0 flex flex-col">
+            <!-- Desktop Header -->
+            <header class="hidden lg:block bg-white shadow-sm py-4 px-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Product Management</h1>
+                        <p class="text-gray-500 text-sm mt-1">Manage all products, inventory, and categories</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="profile-button flex items-center space-x-2 p-2 text-gray-700 hover:text-gray-900 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                                <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold">
+                                    {{ request.user.username|first|upper }}
+                                </div>
+                                <span class="text-sm font-medium">{{ request.user.username }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Product Management Content -->
+            <div class="p-4 md:p-6 flex-1">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+                    <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-xl bg-indigo-100 text-indigo-500">
+                                <i class="fas fa-cubes text-lg md:text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Total Products</p>
+                                <p class="text-xl md:text-2xl font-semibold text-gray-800">{{ total_products|default:"0" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-xl bg-red-100 text-red-500">
+                                <i class="fas fa-exclamation-triangle text-lg md:text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Out of Stock</p>
+                                <p class="text-xl md:text-2xl font-semibold text-gray-800">{{ out_of_stock|default:"0" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-xl bg-amber-100 text-amber-500">
+                                <i class="fas fa-box text-lg md:text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Low Stock</p>
+                                <p class="text-xl md:text-2xl font-semibold text-gray-800">{{ low_stock|default:"0" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-xl bg-green-100 text-green-500">
+                                <i class="fas fa-star text-lg md:text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Highly Rated</p>
+                                <p class="text-xl md:text-2xl font-semibold text-gray-800">{{ high_rated|default:"0" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search and Filter Section -->
+                <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 mb-6">
+                    <form method="GET" class="flex flex-col lg:flex-row gap-3">
+                        <div class="flex-1">
+                            <input
+                                type="text"
+                                name="search"
+                                placeholder="Search products by name, description, or seller..."
+                                value="{{ search_query }}"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                        </div>
+                        <div class="flex gap-3">
+                            <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center">
+                                <i class="fas fa-search mr-2"></i>Search
+                            </button>
+                            <a href="{% url 'product_management' %}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors flex items-center">
+                                <i class="fas fa-refresh mr-2"></i>Reset
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Products Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-lg font-semibold text-gray-900">All Products</h2>
+                                <p class="text-sm text-gray-500 mt-1">Manage product inventory and status</p>
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                Showing {{ products.start_index|default:"0" }} to {{ products.end_index|default:"0" }} of {{ products.paginator.count|default:"0" }} products
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Seller</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rating</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for product in products %}
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-12 w-12 bg-gray-100 rounded-lg overflow-hidden">
+                                                {% if product.images.first and product.images.first.product_img %}
+                                                <img src="{{ product.images.first.product_img.url }}" alt="{{ product.product_name }}" class="h-12 w-12 object-cover">
+                                                {% else %}
+                                                <div class="h-12 w-12 bg-gray-200 flex items-center justify-center text-gray-400">
+                                                    <i class="fas fa-image"></i>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">{{ product.product_name }}</div>
+                                                <div class="text-sm text-gray-500 truncate max-w-xs">{{ product.description|truncatewords:8|default:"No description" }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">
+                                            {% if product.sub_category and product.sub_category.category %}
+                                                {{ product.sub_category.category.category_name }}
+                                            {% else %}
+                                                No Category
+                                            {% endif %}
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            {% if product.sub_category %}
+                                                {{ product.sub_category.sub_category_name }}
+                                            {% else %}
+                                                No Subcategory
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">
+                                            {% if product.seller %}
+                                                {{ product.seller.shop_name }}
+                                            {% else %}
+                                                No Seller
+                                            {% endif %}
+                                        </div>
+                                        <div class="text-xs text-gray-500">
+                                            {% if product.seller and product.seller.user %}
+                                                {{ product.seller.user.username }}
+                                            {% else %}
+                                                No User
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-semibold text-gray-900">₹{{ product.price|default:"0" }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        {% if product.stock > 10 %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-check-circle mr-1"></i> {{ product.stock }} in stock
+                                        </span>
+                                        {% elif product.stock > 0 %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i> {{ product.stock }} in stock
+                                        </span>
+                                        {% else %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                            <i class="fas fa-times-circle mr-1"></i> Out of stock
+                                        </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-star text-amber-400 mr-1"></i>
+                                                <span class="text-sm font-medium text-gray-900">{{ product.rating|default:"0.0" }}</span>
+                                            </div>
+                                            <div class="ml-2 text-xs text-gray-500">
+                                                ({{ product.reviews.count|default:"0" }} review{{ product.reviews.count|pluralize }})
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <form method="POST" action="{% url 'toggle_product_status' product.id %}" class="inline">
+                                            {% csrf_token %}
+                                            {% if product.stock > 0 %}
+                                            <button type="submit" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors" title="Mark Out of Stock">
+                                                <i class="fas fa-ban mr-1"></i> Mark Out of Stock
+                                            </button>
+                                            {% else %}
+                                            <button type="submit" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200 transition-colors" title="Mark In Stock">
+                                                <i class="fas fa-check mr-1"></i> Mark In Stock
+                                            </button>
+                                            {% endif %}
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <i class="fas fa-cubes text-4xl mb-3 text-gray-300"></i>
+                                            <p class="text-lg font-medium text-gray-900">No products found</p>
+                                            <p class="text-sm text-gray-500 mt-1">
+                                                {% if search_query %}
+                                                Try adjusting your search terms
+                                                {% else %}
+                                                No products in the system yet
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Auto-hide messages after 5 seconds
+        setTimeout(function() {
+            const messages = document.querySelectorAll('.fixed .bg-red-500, .fixed .bg-green-500');
+            messages.forEach(message => {
+                message.style.display = 'none';
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

@@ -20,6 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 from Seller import views as views_seller
+from Core import views as view_admin
 urlpatterns = [
     path('admin/', admin.site.urls),
 
@@ -43,11 +44,36 @@ urlpatterns = [
     path('profile/update/', views_seller.seller_profile_update, name='seller_profile_update'),
     path('profile/delete/', views_seller.seller_delete_profile, name='seller_delete_profile'),
     path('accounts/', include('allauth.urls')),
-
-
+    path('login/admin',view_admin.admin_login,name='admin_login'),
+    path('dashbaords/admin',view_admin.admin_dashboard, name='admin_dashboard'),
+    path('admin/logout/', view_admin.admin_logout, name='admin_logout'),
+    path('create-admin/', view_admin.create_temp_admin, name='create_admin'),
+    path('users/admin/', view_admin.user_management, name='user_management'),
+    path('product/admin/', view_admin.product_management, name='product_management'),
+    path('orders/admin/', view_admin.order_management, name='order_management'),
+    path('sellers/admin/', view_admin.seller_management, name='seller_management'),
+    path('analytics/admin/', view_admin.analytics, name='analytics'),
+    path('settings/admin/', view_admin.admin_settings, name='admin_settings'),
+    path('users/admin/toggle/<int:user_id>/', view_admin.toggle_user_status, name='toggle_user_status'),
+    path('orders/admin/update-status/<int:order_id>/', view_admin.update_order_status, name='update_order_status'),
+    path('orders/admin/viewdetails/<int:order_id>/', view_admin.order_detail, name='order_detail'),
+    path('users/admin/update-role/<int:user_id>/', view_admin.update_user_role, name='update_user_role'),
+    path('users/admin/delete/<int:user_id>/', view_admin.delete_user, name='delete_user'),
+    path('products/admin/toggle-status/<int:product_id>/', view_admin.toggle_product_status, name='toggle_product_status'),
+    path('orders/admin/<int:order_id>/', view_admin.order_detail, name='order_detail'),
+    path('sellers/admin/toggle-status/<int:seller_id>/', view_admin.toggle_seller_status, name='toggle_seller_status'),
+    path('reviews/', view_admin.review_management, name='review_management'),
+    path('reviews/<int:review_id>/', view_admin.review_detail, name='review_detail'),
+    path('reviews/<int:review_id>/delete/', view_admin.delete_review, name='delete_review'),
 
 
 ]
+
+
+
+
+
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
