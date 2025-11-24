@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.product_name }} - ShopSphere</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5d5fef',
+                        'primary-dark': '#4a4bc5',
+                        secondary: '#ff6b6b',
+                        accent: '#4ecdc4',
+                        light: '#f8f9fa',
+                        dark: '#2d3748',
+                        gray: '#718096',
+                        success: '#48bb78',
+                        warning: '#ed8936',
+                        danger: '#e53e3e',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .logo-hover i { transition: transform 0.5s ease; }
+        .logo-hover:hover i { transform: rotate(0deg); }
+
+        .nav-link { position: relative; }
+        .nav-link::after {
+            content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0;
+            background-color: #5d5fef; transition: width 0.3s ease;
+        }
+        .nav-link:hover::after { width: 100%; }
+
+        .footer-title::after {
+            content: ''; position: absolute; width: 40px; height: 3px; background: #5d5fef; bottom: 0; left: 0;
+        }
+
+        .social-icon:hover { transform: translateY(-5px); }
+
+        .btn { position: relative; overflow: hidden; }
+        .btn::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+        .btn:hover::before { left: 100%; }
+
+        /* Mobile Navigation with CSS-only toggle */
+        #nav-toggle { display: none; }
+        #nav-toggle:checked ~ .mobile-nav { max-height: 500px; padding: 1.5rem 0; }
+
+        .mobile-nav {
+            max-height: 0; overflow: hidden; transition: all 0.4s ease;
+        }
+
+        /* Search bar focus effect */
+        .search-bar input:focus {
+            box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.1);
+        }
+
+        /* Product image gallery */
+        .main-image {
+            transition: transform 0.3s ease;
+        }
+
+        .main-image:hover {
+            transform: scale(1.02);
+        }
+
+        .thumbnail {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .thumbnail:hover {
+            transform: scale(1.05);
+            border-color: #5d5fef;
+        }
+
+        /* Product details card */
+        .product-details-card {
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
+        }
+
+        .product-details-card:hover {
+            transform: translateY(-5px) rotateX(2deg);
+        }
+
+        /* CSS-only Image Gallery */
+        .main-image-container {
+            position: relative;
+            height: 384px;
+        }
+
+        .main-image-target {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            object-fit: contain;
+        }
+
+        .main-image-target:target {
+            opacity: 1;
+            z-index: 10;
+        }
+
+        .main-image-default {
+            opacity: 1;
+            z-index: 5;
+        }
+
+        /* Hide the default image when any target is active */
+        .main-image-container:has(.main-image-target:target) .main-image-default {
+            opacity: 0;
+            z-index: 1;
+        }
+
+        /* Review form styling */
+        .review-form-card {
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
+        }
+
+        .review-form-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .review-card {
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
+        }
+
+        .review-card:hover {
+            transform: translateY(-3px);
+        }
+
+        /* Responsive improvements */
+        @media (max-width: 768px) {
+            .main-image-container {
+                height: 300px;
+            }
+
+            .thumbnail img {
+                height: 60px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main-image-container {
+                height: 250px;
+            }
+
+            .thumbnail img {
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 text-dark">
+
+<!-- HEADER -->
+<header class="bg-white shadow-lg sticky top-0 z-50">
+    <div class="container mx-auto px-4">
+        <nav class="flex justify-between items-center py-4">
+            <a href="{% url 'user_home' %}" class="logo-hover flex items-center text-2xl font-bold text-primary">
+                <i class="fas fa-shopping-bag mr-2 transform -rotate-12"></i>
+                ShopSphere
+            </a>
+
+            <ul class="hidden md:flex space-x-8">
+                <li><a href="{% url 'user_home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
+                <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Categories</a></li>
+                <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
+                <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
+            </ul>
+
+            <div class="flex items-center">
+                <!-- Search Form -->
+                <form action="{% url 'user_home' %}" class="hidden md:flex items-center bg-light rounded-full px-4 py-2 mr-4 w-64 search-bar">
+                    <input type="text"
+                           name="q"
+                           value="{{ request.GET.q }}"
+                           placeholder="Search products..."
+                           class="bg-transparent outline-none w-full px-2">
+                    <button class="text-gray hover:text-primary transition-colors">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+
+                <!-- Wishlist -->
+                <a href="{% url 'user_view_wishlist' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
+                    <i class="far fa-heart text-xl"></i>
+                    <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ request.user.wishlist.count }}</span>
+                </a>
+
+                <!-- Cart -->
+                <a href="{% url 'user_view_cart' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
+                    <i class="fas fa-shopping-cart text-xl"></i>
+                    <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ request.user.cart_items.count }}</span>
+                </a>
+
+                <!-- User Account Dropdown -->
+                <div class="relative group">
+                    <div class="user-info flex items-center ml-4 bg-light rounded-full px-4 py-2 cursor-pointer transition-all hover:bg-primary hover:text-white">
+                        <i class="fas fa-user mr-2 text-primary transition-colors"></i>
+                        <span class="font-medium">
+                            {% if request.user.is_authenticated %}
+                                {{ request.user.username }}
+                            {% else %}
+                                Account
+                            {% endif %}
+                        </span>
+                        <i class="fas fa-chevron-down ml-2 text-sm"></i>
+                    </div>
+
+                    <!-- Dropdown Menu -->
+                    <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        {% if request.user.is_authenticated %}
+                            <a href="{% url 'user_dashboard' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user-circle mr-2"></i>My Profile
+                            </a>
+                            <a href="{% url 'user_orders' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-shopping-bag mr-2"></i>My Orders
+                            </a>
+                            <a href="{% url 'user_view_wishlist' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-heart mr-2"></i>Wishlist
+                            </a>
+                            <div class="border-t my-1"></div>
+                            <a href="{% url 'user_logout' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                            </a>
+                        {% else %}
+                            <a href="{% url 'user_login' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Login
+                            </a>
+                            <a href="{% url 'user_register' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-user-plus mr-2"></i>Register
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Mobile menu toggle -->
+                <label for="nav-toggle" class="md:hidden ml-4 text-xl cursor-pointer">
+                    <i class="fas fa-bars"></i>
+                </label>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Hidden checkbox for mobile menu -->
+    <input type="checkbox" id="nav-toggle" class="hidden">
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav bg-white shadow-lg md:hidden">
+        <div class="container mx-auto px-4">
+            <a href="{% url 'user_home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
+            <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Shop</a>
+            <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Categories</a>
+            <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Deals</a>
+            <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">About</a>
+            <a href="#" class="block py-3 hover:text-primary transition-colors">Contact</a>
+
+            <!-- Add login/register links for mobile -->
+            {% if not request.user.is_authenticated %}
+            <div class="border-t border-gray-200 mt-4 pt-4">
+                <a href="{% url 'user_login' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Login</a>
+                <a href="{% url 'user_register' %}" class="block py-3 hover:text-primary transition-colors">Register</a>
+            </div>
+            {% else %}
+            <div class="border-t border-gray-200 mt-4 pt-4">
+                <a href="{% url 'user_home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Profile</a>
+                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Orders</a>
+                <a href="{% url 'user_view_wishlist' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Wishlist</a>
+                <a href="#" class="block py-3 hover:text-primary transition-colors">Logout</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</header>
+
+<!-- PRODUCT SECTION -->
+<section class="container mx-auto px-4 py-8 animate-fade-in">
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 p-4 md:p-8">
+
+            <!-- IMAGES -->
+            <div class="space-y-4">
+                <div class="main-image-container bg-light rounded-2xl overflow-hidden flex justify-center items-center">
+                    {% if images %}
+                        <img src="{{ images.0.product_img.url }}" alt="{{ product.product_name }}" class="main-image-default main-image-target max-w-full max-h-full object-contain rounded-xl">
+                    {% else %}
+                        <img src="https://via.placeholder.com/400" alt="{{ product.product_name }}" class="main-image-default main-image-target max-w-full max-h-full object-contain rounded-xl">
+                    {% endif %}
+
+                    {% for image in images %}
+                        {% if not forloop.first %}
+                            <img id="image-{{ forloop.counter }}" src="{{ image.product_img.url }}" alt="{{ product.product_name }}" class="main-image-target max-w-full max-h-full object-contain rounded-xl">
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if images and images|length > 1 %}
+                <div class="grid grid-cols-4 gap-2 md:gap-4">
+                    <a href="#">
+                        <div class="thumbnail border-2 border-gray-200 rounded-lg overflow-hidden">
+                            <img src="{{ images.0.product_img.url }}" alt="{{ product.product_name }}" class="w-full h-20 object-cover">
+                        </div>
+                    </a>
+                    {% for image in images %}
+                        {% if not forloop.first %}
+                        <a href="#image-{{ forloop.counter }}">
+                            <div class="thumbnail border-2 border-gray-200 rounded-lg overflow-hidden">
+                                <img src="{{ image.product_img.url }}" alt="{{ product.product_name }}" class="w-full h-20 object-cover">
+                            </div>
+                        </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- PRODUCT DETAILS -->
+            <div class="product-details-card space-y-4 md:space-y-6">
+                <div class="flex justify-between items-start">
+                    <h1 class="text-2xl md:text-3xl font-bold text-dark mb-2">{{ product.product_name }}</h1>
+
+                    {% if wishlisted %}
+                        <a href="{% url 'add_wishlist' product.slug %}" class="text-red-500 hover:text-red-600 transition-colors">
+                            <i class="fas fa-heart text-2xl md:text-3xl"></i>
+                        </a>
+                    {% else %}
+                        <a href="{% url 'add_wishlist' product.slug %}" class="text-gray-400 hover:text-red-500 transition-colors">
+                            <i class="far fa-heart text-2xl md:text-3xl"></i>
+                        </a>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center mb-4">
+                    <div class="text-yellow-500 text-base md:text-lg">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= product.rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="ml-2 text-gray-600 text-sm md:text-base">({{ product.rating }})</span>
+                    <span class="mx-2 text-gray-300 hidden sm:inline">•</span>
+                    <span class="text-green-600 font-medium text-sm md:text-base">In Stock</span>
+                </div>
+
+                <div class="text-3xl md:text-4xl font-bold text-secondary">₹{{ product.price }}</div>
+
+                <div class="text-gray-600 leading-relaxed text-sm md:text-base">
+                    <p>{{ product.description }}</p>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <span class="font-semibold text-sm md:text-base">Quantity:</span>
+                    <div class="flex items-center border border-gray-300 rounded-lg">
+                        <button id="qty-decrease" class="px-3 md:px-4 py-2 text-gray-600 hover:text-primary">-</button>
+                        <span id="qty-display" class="px-3 md:px-4 py-2 border-l border-r border-gray-300">1</span>
+                        <button id="qty-increase" class="px-3 md:px-4 py-2 text-gray-600 hover:text-primary">+</button>
+                    </div>
+                </div>
+                <input type="hidden" id="quantity-input" value="1">
+
+
+                <!-- ADD-TO-CART + BUY NOW -->
+               <a id="addToCartBtn"
+                   href="{% url 'user_add_to_cart' product.slug %}?qty=1"
+                   class="btn border-2 border-green-600 text-green-600 py-3 px-8 rounded-lg w-full font-semibold
+                          hover:bg-green-600 hover:text-white mt-3 transition-all hover:-translate-y-1 flex
+                          items-center justify-center">
+
+                   {% if carted %}
+                   <i class="fa-solid fa-cart-shopping mr-2"></i> Remove from Cart
+                   {% else %}
+                   <i class="fa-solid fa-cart-plus mr-2"></i> Add to Cart
+                   {% endif %}
+               </a>
+
+
+
+                    <!-- BUY NOW -->
+                    <form action="{% url 'user_add_to_cart' product.slug %}" method="POST" class="w-full">
+                        {% csrf_token %}
+                        <input type="hidden" id="quantity-input-buy" name="quantity" value="1">
+                        <input type="hidden" name="next" value="review">
+                        <button type="submit" class="btn bg-secondary text-white py-3 px-4 md:px-8 rounded-lg w-full font-semibold transition-all hover:-translate-y-1 hover:bg-red-500 text-sm md:text-base">
+                            <i class="fas fa-bolt mr-2"></i> Buy Now
+                        </button>
+                    </form>
+                </div>
+                    <!-- Wishlist -->
+                    <a href="{% url 'add_wishlist' product.slug %}"
+                       class="btn border-2 border-primary text-primary py-3 px-8 rounded-lg w-full font-semibold hover:bg-primary hover:text-white mt-3 transition-all hover:-translate-y-1 flex items-center justify-center">
+                        {% if wishlisted %}
+                            <i class="fas fa-heart mr-2"></i> Remove from Wishlist
+                        {% else %}
+                            <i class="far fa-heart mr-2"></i> Add to Wishlist
+                        {% endif %}
+                    </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-dark text-white pt-12 md:pt-16 pb-6 md:pb-8 mt-12 md:mt-16">
+    <div class="container mx-auto px-4">
+        <div class="footer-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-6 md:mb-8">
+            <div class="footer-column">
+                <h3 class="footer-title text-lg md:text-xl mb-3 md:mb-4 pb-2 relative">ShopSphere</h3>
+                <p class="text-gray-300 mb-3 md:mb-4 text-sm md:text-base">Your one-stop destination for all your shopping needs. Quality products, amazing prices, and exceptional customer service.</p>
+                <div class="social-icons flex space-x-3 md:space-x-4 mt-4 md:mt-6">
+                    <a href="#" class="social-icon w-8 h-8 md:w-10 md:h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
+                        <i class="fab fa-facebook-f text-sm md:text-base"></i>
+                    </a>
+                    <a href="#" class="social-icon w-8 h-8 md:w-10 md:h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
+                        <i class="fab fa-twitter text-sm md:text-base"></i>
+                    </a>
+                    <a href="#" class="social-icon w-8 h-8 md:w-10 md:h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
+                        <i class="fab fa-instagram text-sm md:text-base"></i>
+                    </a>
+                    <a href="#" class="social-icon w-8 h-8 md:w-10 md:h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
+                        <i class="fab fa-pinterest text-sm md:text-base"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h3 class="footer-title text-lg md:text-xl mb-3 md:mb-4 pb-2 relative">Quick Links</h3>
+                <ul class="space-y-1 md:space-y-2">
+                    <li><a href="{% url 'user_home' %}" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Home</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Shop</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Categories</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Deals</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">About Us</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Contact</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3 class="footer-title text-lg md:text-xl mb-3 md:mb-4 pb-2 relative">Customer Service</h3>
+                <ul class="space-y-1 md:space-y-2">
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Shipping Policy</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Return Policy</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Privacy Policy</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Terms & Conditions</a></li>
+                    <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-sm md:text-base">Track Your Order</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3 class="footer-title text-lg md:text-xl mb-3 md:mb-4 pb-2 relative">Contact Us</h3>
+                <ul class="space-y-2 md:space-y-3">
+                    <li class="flex items-start">
+                        <i class="fas fa-map-marker-alt mt-1 mr-2 md:mr-3 text-primary text-sm md:text-base"></i>
+                        <span class="text-gray-300 text-sm md:text-base">123 Commerce St, City, State 12345</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-phone mt-1 mr-2 md:mr-3 text-primary text-sm md:text-base"></i>
+                        <span class="text-gray-300 text-sm md:text-base">+1 (555) 123-4567</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-envelope mt-1 mr-2 md:mr-3 text-primary text-sm md:text-base"></i>
+                        <span class="text-gray-300 text-sm md:text-base">support@shopsphere.com</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom text-center pt-6 md:pt-8 border-t border-gray-700 text-gray-400 text-sm md:text-base">
+            <p>&copy; 2024 ShopSphere. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+    let qty = 1;
+    const stock = {{ product.stock }};
+    const qtyDisplay = document.getElementById("qty-display");
+    const qtyInput = document.getElementById("quantity-input");
+    const qtyBuyInput = document.getElementById("quantity-input-buy");
+    const cartBtn = document.getElementById("addToCartBtn");
+
+    function updateCartLink() {
+        cartBtn.href = "{% url 'user_add_to_cart' product.slug %}?qty=" + qty;
+    }
+
+    document.getElementById("qty-increase").onclick = () => {
+        if (qty < stock) {
+            qty++;
+            qtyDisplay.innerText = qty;
+            qtyInput.value = qty;
+            qtyBuyInput.value = qty;
+            updateCartLink();
+        }
+    };
+
+    document.getElementById("qty-decrease").onclick = () => {
+        if (qty > 1) {
+            qty--;
+            qtyDisplay.innerText = qty;
+            qtyInput.value = qty;
+            qtyBuyInput.value = qty;
+            updateCartLink();
+        }
+    };
+
+    updateCartLink();
+</script>
+
+
+</body>
+</html>

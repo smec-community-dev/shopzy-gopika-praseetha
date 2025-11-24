@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Shopzy</title>
+    <title>Login - Shopzy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -111,12 +111,6 @@
         input:focus, textarea:focus, select:focus {
             box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.1);
         }
-
-        .file-input-btn:hover {
-            background: #5d5fef;
-            color: white;
-            border-color: #5d5fef;
-        }
     </style>
 </head>
 <body class="bg-gray-50 text-dark">
@@ -130,12 +124,12 @@
                 </a>
 
                 <ul class="hidden md:flex space-x-8">
-                    <li><a href="home.html" class="nav-link text-dark font-medium hover:text-primary transition-colors">Home</a></li>
-                    <li><a href="shop.html" class="nav-link text-dark font-medium hover:text-primary transition-colors">Shop</a></li>
-                    <li><a href="categories.html" class="nav-link text-dark font-medium hover:text-primary transition-colors">Categories</a></li>
-                    <li><a href="deals.html" class="nav-link text-dark font-medium hover:text-primary transition-colors">Deals</a></li>
-                    <li><a href="about.html" class="nav-link text-dark font-medium hover:text-primary transition-colors">About</a></li>
-                    <li><a href="contact.html" class="nav-link text-dark font-medium hover:text-primary transition-colors">Contact</a></li>
+                    <li><a href="{% url 'user_home' %}" class="nav-link text-dark font-medium hover:text-primary transition-colors">Home</a></li>
+                    <li><a href="{% url 'user_login' %}" class="nav-link text-dark font-medium hover:text-primary transition-colors">Shop</a></li>
+                    <li><a href="{% url 'user_login' %}" class="nav-link text-dark font-medium hover:text-primary transition-colors">Categories</a></li>
+                    <li><a href="{% url 'user_login' %}" class="nav-link text-dark font-medium hover:text-primary transition-colors">Deals</a></li>
+                    <li><a href="#" class="nav-link text-dark font-medium hover:text-primary transition-colors">About</a></li>
+                    <li><a href="#" class="nav-link text-dark font-medium hover:text-primary transition-colors">Contact</a></li>
                 </ul>
 
                 <div class="flex items-center">
@@ -157,79 +151,51 @@
         </div>
     </header>
 
-    <!-- Registration Page Content -->
+    <!-- Login Page Content -->
     <div class="auth-page flex justify-center items-center min-h-screen py-8 animate-fade-in">
         <div class="auth-container bg-white rounded-2xl w-full max-w-md p-8 shadow-xl transform transition-transform hover:-translate-y-1 relative overflow-hidden animate-slide-up">
             <div class="auth-header flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-primary">Join Shopzy</h2>
+                <h2 class="text-2xl font-bold text-primary">Welcome to Shopzy</h2>
             </div>
 
             <div class="auth-tabs flex mb-6 border-b border-gray-200">
-
-                <button class="auth-tab py-3 px-6 bg-transparent border-none font-semibold cursor-pointer text-primary relative active" data-tab="register">
+                <button class="auth-tab py-3 px-6 bg-transparent border-none font-semibold cursor-pointer text-primary relative active" data-tab="login">
+                    Login
+                </button>
+                <button class="auth-tab py-3 px-6 bg-transparent border-none font-semibold cursor-pointer text-gray relative" data-tab="register">
                     Register
                 </button>
             </div>
 
-            <form class="auth-form active" id="register-form" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-
-                <!-- First Name and Last Name in a row -->
-                <div class="flex flex-col md:flex-row md:space-x-4 mb-5">
-                    <div class="form-group mb-5 md:mb-0 flex-1">
-                        <label for="first_name" class="block mb-2 font-medium">First Name</label>
-                        <input type="text" id="first_name" name="first_name" placeholder="Enter your first name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-primary outline-none transition-colors" required>
-                    </div>
-                    <div class="form-group flex-1">
-                        <label for="last_name" class="block mb-2 font-medium">Last Name</label>
-                        <input type="text" id="last_name" name="last_name" placeholder="Enter your last name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-primary outline-none transition-colors" required>
-                    </div>
+            <!-- Error Message Display -->
+            {% if error %}
+            <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg animate-bounce-in">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                    <span class="text-red-700 font-medium">{{ error }}</span>
                 </div>
+            </div>
+            {% endif %}
+
+            <form class="auth-form active" id="login-form" method="POST">
+                {% csrf_token %}
 
                 <div class="form-group mb-5">
                     <label for="username" class="block mb-2 font-medium">Username</label>
                     <input type="text" id="username" name="username" placeholder="Enter your username" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-primary outline-none transition-colors" required>
                 </div>
 
-                <div class="form-group mb-5">
-                    <label for="email" class="block mb-2 font-medium">Email</label>
-                    <input type="email" id="email" name="email" placeholder="Enter your email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-primary outline-none transition-colors" required>
-                </div>
-
-                <div class="flex flex-col md:flex-row md:space-x-4 mb-5">
-                    <div class="form-group mb-5 md:mb-0 flex-1">
-                        <label for="password" class="block mb-2 font-medium">Password</label>
-                        <input type="password" id="password" name="password" placeholder="Create a password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-primary outline-none transition-colors" required>
-                    </div>
-                </div>
-
-                <div class="form-group mb-5">
-                    <label for="contact" class="block mb-2 font-medium">Contact Number</label>
-                    <input type="tel" id="contact" name="contact" placeholder="Enter your phone number" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-primary outline-none transition-colors" required>
-                </div>
-
-                <div class="form-group mb-5">
-                    <label for="address" class="block mb-2 font-medium">Address</label>
-                    <textarea id="address" name="address" placeholder="Enter your full address" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-primary outline-none transition-colors" required></textarea>
-                </div>
-
                 <div class="form-group mb-6">
-                    <label class="block mb-2 font-medium">Profile Image</label>
-                    <img id="profile-preview" class="profile-image-preview w-24 h-24 rounded-full object-cover mx-auto mb-4 border-2 border-primary" src="https://via.placeholder.com/100" alt="Profile Preview">
-                    <div class="file-input-wrapper relative overflow-hidden w-full">
-                        <div class="file-input-btn block py-3 px-4 bg-light border border-dashed border-gray-500 rounded-lg text-center cursor-pointer transition-all">
-                            <i class="fas fa-upload mr-2"></i> Choose Profile Image
-                        </div>
-                        <input type="file" id="profile_img" name="profile_img" accept="image/*" class="absolute left-0 top-0 opacity-0 w-full h-full cursor-pointer">
-                    </div>
+                    <label for="password" class="block mb-2 font-medium">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-primary outline-none transition-colors" required>
                 </div>
 
                 <button type="submit" class="auth-btn w-full py-3 bg-primary text-white border-none rounded-lg text-lg font-semibold cursor-pointer transition-all hover:bg-primary-dark hover:-translate-y-0.5">
-                    Create Account
+                    Login
                 </button>
 
                 <div class="auth-footer text-center mt-6 text-gray">
-                    <p>Already have an account? <a href="{% url 'user_login' %}" class="text-primary font-medium no-underline">Sign in</a></p>
+                    <p>Don't have an account? <a href="{% url 'user_register' %}" class="text-primary font-medium no-underline">Sign up</a></p>
                 </div>
             </form>
         </div>

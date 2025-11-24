@@ -1,7 +1,7 @@
 from django.db import models
 from Core.models import User,SubCategory
 from Seller.models import Product
-
+from django.utils.text import slugify
 # Create your models here.
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="customer_profile")
@@ -40,6 +40,13 @@ class Order(models.Model):
     order_date = models.DateTimeField(auto_now_add=True)
     shipping_address = models.TextField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='placed')
+    slug = models.SlugField(unique=True, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        if not self.slug:
+            self.slug = f"order-{self.id}"
+            super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Order #{self.id} by {self.user.username}"
@@ -62,7 +69,7 @@ class Wishlist(models.Model):
     added_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} → {self.product.product_name}"
+        return f"{self.unser.username} → {self.product.product_name}"
 
 
 class Review(models.Model):
@@ -81,3 +88,20 @@ class ReviewImage(models.Model):
 
     def __str__(self):
         return f"Image by {self.review.user.username}"
+
+class Address(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="addresses")
+
+    full_name = models.CharField(max_length=150)
+    phone = models.CharField(max_length=15)
+    address_line1 = models.CharField(max_length=255)
+    address_line2 = models.CharField(max_length=255, blank=True, null=True)
+    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
+    pincode = models.CharField(max_length=10)
+    country = models.CharField(max_length=100, default="India")
+
+    is_default = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.full_name}, {self.address_line1}, {self.city}"

@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+
 from Seller.models import Seller, Product, ProductImage
 
 # Register your models here.
