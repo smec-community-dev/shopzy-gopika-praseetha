@@ -47,74 +47,21 @@
         }
     </script>
     <style>
-        .logo-hover i {
-            transition: transform 0.5s ease;
-        }
-
-        .logo-hover:hover i {
-            transform: rotate(0deg);
-        }
-
-        .nav-link {
-            position: relative;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -5px;
-            left: 0;
-            background-color: #5d5fef;
-            transition: width 0.3s ease;
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        .auth-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(135deg, #5d5fef 0%, #4ecdc4 100%);
-        }
-
-        .auth-tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: #5d5fef;
-        }
-
-        .footer-title::after {
-            content: '';
-            position: absolute;
-            width: 40px;
-            height: 3px;
-            background: #5d5fef;
-            bottom: 0;
-            left: 0;
-        }
-
-        .social-icon:hover {
-            transform: translateY(-5px);
-        }
-
-        input:focus, textarea:focus, select:focus {
-            box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.1);
-        }
+        /* ... Your existing custom CSS styles ... */
+        .logo-hover i { transition: transform 0.5s ease; }
+        .logo-hover:hover i { transform: rotate(0deg); }
+        .nav-link { position: relative; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0; background-color: #5d5fef; transition: width 0.3s ease; }
+        .nav-link:hover::after { width: 100%; }
+        .auth-container::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(135deg, #5d5fef 0%, #4ecdc4 100%); }
+        .auth-tab.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: #5d5fef; }
+        .footer-title::after { content: ''; position: absolute; width: 40px; height: 3px; background: #5d5fef; bottom: 0; left: 0; }
+        .social-icon:hover { transform: translateY(-5px); }
+        input:focus, textarea:focus, select:focus { box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.1); }
     </style>
 </head>
 <body class="bg-gray-50 text-dark">
-    <!-- Header & Navigation -->
+
     <header class="bg-white shadow-md sticky top-0 z-50">
         <div class="container mx-auto px-4">
             <nav class="flex justify-between items-center py-4">
@@ -124,152 +71,144 @@
                 </a>
 
                 <ul class="hidden md:flex space-x-8">
-                    <li><a href="{% url 'user_home' %}" class="nav-link text-dark font-medium hover:text-primary transition-colors">Home</a></li>
-                    <li><a href="{% url 'user_login' %}" class="nav-link text-dark font-medium hover:text-primary transition-colors">Shop</a></li>
-                    <li><a href="{% url 'user_login' %}" class="nav-link text-dark font-medium hover:text-primary transition-colors">Categories</a></li>
-                    <li><a href="{% url 'user_login' %}" class="nav-link text-dark font-medium hover:text-primary transition-colors">Deals</a></li>
+                    <li><a href="{% url 'home' %}" class="nav-link text-dark font-medium hover:text-primary transition-colors">Home</a></li>
+                    <li><a href="{% url 'shop_page' %}" class="nav-link text-dark font-medium hover:text-primary transition-colors">Shop</a></li>
                     <li><a href="#" class="nav-link text-dark font-medium hover:text-primary transition-colors">About</a></li>
                     <li><a href="#" class="nav-link text-dark font-medium hover:text-primary transition-colors">Contact</a></li>
                 </ul>
 
                 <div class="flex items-center">
-                    <div class="hidden md:flex items-center bg-light rounded-full px-4 py-2 mr-4 w-64">
-                        <input type="text" placeholder="Search products..." class="bg-transparent outline-none w-full px-2">
-                        <button class="text-gray hover:text-primary transition-colors">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
                     <div class="user-info flex items-center ml-4 bg-light rounded-full px-4 py-2 cursor-pointer transition-all hover:bg-primary hover:text-white">
                         <i class="fas fa-user mr-2 text-primary transition-colors"></i>
                         <span id="username" class="font-medium">Guest</span>
                     </div>
-                    <div class="menu-toggle md:hidden ml-4 text-xl cursor-pointer">
+                    <div class="menu-toggle md:hidden ml-4 text-xl cursor-pointer" id="menu-toggle">
                         <i class="fas fa-bars"></i>
                     </div>
                 </div>
             </nav>
+
+            <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg border-t border-gray-100 py-2">
+                <ul class="flex flex-col space-y-2 px-4">
+                    <li><a href="{% url 'home' %}" class="block py-2 text-dark font-medium hover:text-primary transition-colors">Home</a></li>
+                    <li><a href="{% url 'shop_page' %}" class="block py-2 text-dark font-medium hover:text-primary transition-colors">Shop</a></li>
+                    <li><a href="#" class="block py-2 text-dark font-medium hover:text-primary transition-colors">About</a></li>
+                    <li><a href="#" class="block py-2 text-dark font-medium hover:text-primary transition-colors">Contact</a></li>
+                </ul>
+            </div>
         </div>
     </header>
 
-    <!-- Login Page Content -->
     <div class="auth-page flex justify-center items-center min-h-screen py-8 animate-fade-in">
         <div class="auth-container bg-white rounded-2xl w-full max-w-md p-8 shadow-xl transform transition-transform hover:-translate-y-1 relative overflow-hidden animate-slide-up">
             <div class="auth-header flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-primary">Welcome to Shopzy</h2>
+                <h2 class="text-2xl font-bold text-primary">Join Shopzy</h2>
             </div>
 
             <div class="auth-tabs flex mb-6 border-b border-gray-200">
-                <button class="auth-tab py-3 px-6 bg-transparent border-none font-semibold cursor-pointer text-primary relative active" data-tab="login">
+                <button class="auth-tab py-3 px-6 bg-transparent border-none font-semibold cursor-pointer text-primary relative active"
+                    data-tab="login">
                     Login
                 </button>
-                <button class="auth-tab py-3 px-6 bg-transparent border-none font-semibold cursor-pointer text-gray relative" data-tab="register">
+                <a href="{% url 'user_register' %}"
+                   class="py-3 px-6 font-semibold text-gray cursor-pointer hover:text-primary">
                     Register
-                </button>
+                </a>
             </div>
 
-            <!-- Error Message Display -->
+            {% if messages %}
+            <div class="mb-6">
+                {% for message in messages %}
+                {% if 'success' in message.tags %}
+                <div class="p-4 bg-green-100 border border-green-200 rounded-lg animate-bounce-in">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle text-success mr-3"></i>
+                        <span class="text-green-700 font-medium">{{ message }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
+
             {% if error %}
             <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg animate-bounce-in">
                 <div class="flex items-center">
-                    <i class="fas fa-exclamation-circle text-red-500 mr-3"></i>
+                    <i class="fas fa-exclamation-circle text-danger mr-3"></i>
                     <span class="text-red-700 font-medium">{{ error }}</span>
                 </div>
             </div>
             {% endif %}
 
-            <form class="auth-form active" id="login-form" method="POST">
+            <form class="auth-form active" id="login-form" method="POST" action="{% url 'user_login' %}">
                 {% csrf_token %}
 
                 <div class="form-group mb-5">
-                    <label for="username" class="block mb-2 font-medium">Username</label>
-                    <input type="text" id="username" name="username" placeholder="Enter your username" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-primary outline-none transition-colors" required>
+                    <label for="username_input" class="block mb-2 font-medium">Username</label>
+                    <input type="text" id="username_input" name="username" placeholder="Enter your username"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-primary outline-none transition-colors"
+                           required>
                 </div>
 
                 <div class="form-group mb-6">
-                    <label for="password" class="block mb-2 font-medium">Password</label>
-                    <input type="password" id="password" name="password" placeholder="Enter your password" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-primary outline-none transition-colors" required>
+                    <label for="password_input" class="block mb-2 font-medium">Password</label>
+                    <input type="password" id="password_input" name="password" placeholder="Enter your password"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-primary outline-none transition-colors"
+                           required>
                 </div>
 
-                <button type="submit" class="auth-btn w-full py-3 bg-primary text-white border-none rounded-lg text-lg font-semibold cursor-pointer transition-all hover:bg-primary-dark hover:-translate-y-0.5">
+                <button type="submit"
+                        class="auth-btn w-full py-3 bg-primary text-white border-none rounded-lg text-lg font-semibold cursor-pointer transition-all hover:bg-primary-dark hover:-translate-y-0.5">
                     Login
                 </button>
 
+                <div class="my-6 flex items-center">
+                    <hr class="flex-grow border-gray-300">
+                    <span class="mx-3 text-gray-400 font-medium">OR</span>
+                    <hr class="flex-grow border-gray-300">
+                </div>
+
+                <a href="/accounts/google/login/?process=login"
+                               class="flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2 px-4 bg-white hover:bg-gray-100 transition">
+                                <i class="fab fa-google text-red-500 text-lg"></i>
+                                <span class="text-gray-700 font-medium">Login with Google</span>
+                </a>
+
                 <div class="auth-footer text-center mt-6 text-gray">
-                    <p>Don't have an account? <a href="{% url 'user_register' %}" class="text-primary font-medium no-underline">Sign up</a></p>
+                    <p>Don't have an account?
+                        <a href="{% url 'user_register' %}" class="text-primary font-medium no-underline">Sign up</a>
+                    </p>
                 </div>
             </form>
+
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="bg-dark text-white pt-16 pb-8 mt-16">
         <div class="container mx-auto px-4">
             <div class="footer-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-                <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">Shopzy</h3>
-                    <p class="text-gray-300 mb-4">Your one-stop destination for all your shopping needs. Quality products, amazing prices, and exceptional customer service.</p>
-                    <div class="social-icons flex space-x-4 mt-6">
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="social-icon w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white transition-all">
-                            <i class="fab fa-pinterest"></i>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="home.html" class="text-gray-300 no-underline transition-colors hover:text-white">Home</a></li>
-                        <li><a href="shop.html" class="text-gray-300 no-underline transition-colors hover:text-white">Shop</a></li>
-                        <li><a href="categories.html" class="text-gray-300 no-underline transition-colors hover:text-white">Categories</a></li>
-                        <li><a href="deals.html" class="text-gray-300 no-underline transition-colors hover:text-white">Deals</a></li>
-                        <li><a href="about.html" class="text-gray-300 no-underline transition-colors hover:text-white">About Us</a></li>
-                        <li><a href="contact.html" class="text-gray-300 no-underline transition-colors hover:text-white">Contact</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">Customer Service</h3>
-                    <ul class="space-y-2">
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Shipping Policy</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Return Policy</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Privacy Policy</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Terms & Conditions</a></li>
-                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Track Your Order</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-column">
-                    <h3 class="footer-title text-xl mb-4 pb-2 relative">Contact Us</h3>
-                    <ul class="space-y-3">
-                        <li class="flex items-start">
-                            <i class="fas fa-map-marker-alt mt-1 mr-3 text-primary"></i>
-                            <span class="text-gray-300">123 Commerce St, City, State 12345</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-phone mt-1 mr-3 text-primary"></i>
-                            <span class="text-gray-300">+1 (555) 123-4567</span>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-envelope mt-1 mr-3 text-primary"></i>
-                            <span class="text-gray-300">support@shopzy.com</span>
-                        </li>
-                    </ul>
-                </div>
+                <div class="footer-column"><h3 class="footer-title text-xl mb-4 pb-2 relative">Shopzy</h3><p class="text-gray-300 mb-4">Your one-stop destination...</p></div>
+                <div class="footer-column"><h3 class="footer-title text-xl mb-4 pb-2 relative">Quick Links</h3></div>
+                <div class="footer-column"><h3 class="footer-title text-xl mb-4 pb-2 relative">Customer Service</h3></div>
+                <div class="footer-column"><h3 class="footer-title text-xl mb-4 pb-2 relative">Contact Us</h3></div>
             </div>
-
             <div class="footer-bottom text-center pt-8 border-t border-gray-700 text-gray-400">
                 <p>&copy; 2023 Shopzy. All rights reserved.</p>
             </div>
         </div>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuToggle = document.getElementById('menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+
+            if (menuToggle && mobileMenu) {
+                menuToggle.addEventListener('click', () => {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        });
+    </script>
 </body>
 </html>

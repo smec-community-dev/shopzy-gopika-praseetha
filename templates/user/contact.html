@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wishlist - Shopzy</title>
+    <title>Contact Us - Shopzy</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -27,7 +27,7 @@
         }
     </script>
     <style>
-        /* Base Styles: Keep them for design integrity */
+        /* Base Styles: Copied from user_wishlist.html for design integrity */
         .fade-in { animation: fadeIn 0.8s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         .slide-in { animation: slideIn 0.6s ease-out; }
@@ -40,7 +40,8 @@
         .section-title::after { content: ''; position: absolute; width: 80px; height: 4px; background: #5d5fef; bottom: -10px; left: 50%; transform: translateX(-50%); border-radius: 2px; }
         .nav-link { position: relative; }
         .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -5px; left: 0; background-color: #5d5fef; transition: width 0.3s ease; }
-        .nav-link:hover::after { width: 100%; }
+        /* Active link for 'Contact' in header/nav */
+        .nav-link.active::after, .nav-link:hover::after { width: 100%; }
         .float-animation { animation: float 6s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
@@ -48,8 +49,6 @@
 
         /* --- PURE CSS MOBILE MENU FIX (Ensures menu icon works) --- */
         #mobile-menu-toggle { display: none; } /* Hide the actual checkbox */
-
-        /* Define the closed state for the mobile menu */
         .mobile-menu {
             max-height: 0;
             overflow: hidden;
@@ -57,139 +56,20 @@
             padding-top: 0 !important;
             padding-bottom: 0 !important;
         }
-
-        /* When the #mobile-menu-toggle checkbox is checked, open the menu */
         #mobile-menu-toggle:checked ~ .mobile-nav-wrapper .mobile-menu {
-            max-height: 500px; /* Sufficient height to show all links */
+            max-height: 500px;
             padding-top: 1rem !important;
             padding-bottom: 1rem !important;
         }
 
-        /* Custom Badges for Product Card */
-        .status-badge {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            padding: 2px 8px;
-            border-radius: 9999px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            z-index: 20;
-            text-transform: uppercase;
-        }
-
-        .in-stock { background-color: #48bb78; color: white; }
-        .limited { background-color: #ed8936; color: white; }
-        .out-of-stock { background-color: #e53e3e; color: white; }
-
-        .product-img {
-            height: 160px;
-        }
-        /* Make product image height responsive */
-        @media (min-width: 768px) { .product-img { height: 200px; } }
-
-        .product-card:hover .quick-view-btn {
-            opacity: 1;
-            bottom: 10px;
-        }
-
-        .quick-view-btn {
-            opacity: 0;
-            bottom: 0;
-            transition: all 0.3s ease;
-        }
-
-        /* Hide desktop-focused search/account on small screens */
+        /* Responsive improvements (copied from original CSS) */
         @media (max-width: 767px) {
-            .desktop-search-account {
-                display: none;
-            }
+            .desktop-search-account { display: none; }
         }
-
-        /* Wishlist specific styles */
-        .wishlist-heart {
-            animation: heartBeat 0.8s ease-in-out;
-        }
-
-        @keyframes heartBeat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        /* Responsive improvements */
         @media (max-width: 480px) {
-            .hero h1 {
-                font-size: 1.75rem;
-                line-height: 1.2;
-            }
-
-            .hero p {
-                font-size: 0.9rem;
-            }
-
-            .hero-buttons {
-                flex-direction: column;
-                gap: 0.75rem;
-            }
-
-            .hero-buttons a {
-                width: 100%;
-                text-align: center;
-            }
-
-            .category-card {
-                min-width: 120px !important;
-            }
-
-            .product-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 0.75rem !important;
-            }
-
-            .product-card .product-info {
-                padding: 0.75rem;
-            }
-
-            .footer-grid {
-                grid-template-columns: 1fr !important;
-                gap: 1.5rem !important;
-            }
-
-            .footer-logo {
-                text-align: center;
-            }
-
-            .footer-logo .social-icons {
-                justify-content: center;
-            }
-
-            .wishlist-header h1 {
-                font-size: 1.5rem !important;
-            }
-
-            .wishlist-header p {
-                font-size: 0.8rem !important;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .product-grid {
-                grid-template-columns: 1fr !important;
-            }
-
-            .category-card {
-                min-width: 110px !important;
-            }
-        }
-
-        @media (min-width: 481px) and (max-width: 767px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .product-grid {
-                grid-template-columns: repeat(3, 1fr) !important;
-            }
+            .footer-grid { grid-template-columns: 1fr !important; gap: 1.5rem !important; }
+            .footer-logo { text-align: center; }
+            .footer-logo .social-icons { justify-content: center; }
         }
     </style>
 </head>
@@ -207,9 +87,9 @@
 
                 <ul class="hidden md:flex space-x-4 lg:space-x-8 flex-grow justify-center">
                     <li><a href="{% url 'home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
-                    <li><a href="{% url 'shop_page' %}" class="nav-link font-medium text-primary transition-colors">Shop</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
+                    <li><a href="{% url 'shop_page' %}" class="nav-link font-medium hover:text-primary transition-colors">Shop</a></li>
+                    <li><a href="{% url 'user_about' %}" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
+                    <li><a href="{% url 'contact' %}" class="nav-link font-medium text-primary active transition-colors">Contact</a></li>
                 </ul>
 
                 <div class="flex items-center space-x-2 sm:space-x-4">
@@ -299,9 +179,9 @@
                 </form>
 
                 <a href="{% url 'home' %}" class="block py-2.5 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
-                <a href="{% url 'shop_page' %}" class="block py-2.5 border-b border-gray-200 text-primary transition-colors">Shop</a>
-                <a href="#" class="block py-2.5 border-b border-gray-200 hover:text-primary transition-colors">About</a>
-                <a href="#" class="block py-2.5 hover:text-primary transition-colors">Contact</a>
+                <a href="{% url 'shop_page' %}" class="block py-2.5 border-b border-gray-200 hover:text-primary transition-colors">Shop</a>
+                <a href="{% url 'user_about' %" class="block py-2.5 border-b border-gray-200 hover:text-primary transition-colors">About</a>
+                <a href="{% url 'contact' %}" class="block py-2.5 hover:text-primary text-primary transition-colors">Contact</a>
 
                 {% if not request.user.is_authenticated %}
                 <div class="border-t border-gray-200 mt-4 pt-2">
@@ -319,117 +199,128 @@
             </div>
         </div>
     </div>
-    <!-- Wishlist Products Section -->
-    <section class="py-10 md:py-12 bg-gray-50 section-spacing">
+
+    <section class="py-10 md:py-16 bg-gray-50 section-spacing fade-in">
         <div class="container mx-auto px-4">
-            {% if data %}
             <div class="text-center mb-8 md:mb-12">
-                <h2 class="section-title text-xl sm:text-2xl md:text-3xl font-bold text-dark mb-3">
-                    Your Wishlist Items
-                </h2>
-                <p class="text-gray-600 max-w-xl mx-auto text-xs sm:text-sm">
-                    Your saved favorites - ready to purchase when you are
+                <h1 class="section-title text-2xl sm:text-3xl md:text-4xl font-extrabold text-dark mb-3">
+                    Get In Touch
+                </h1>
+                <p class="text-gray-600 max-w-2xl mx-auto text-sm sm:text-base mt-4">
+                    We're here to help! Send us a message or find our contact details below.
                 </p>
             </div>
 
-            <div class="product-grid grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6" id="products-grid">
-                {% for w in data %}
-                <div class="product-card bg-white rounded-lg shadow-md overflow-hidden relative card-hover">
-                    <div class="absolute top-2 right-2 z-30">
-                        <a href="{% url 'user_remove_wishlist' w.id %}"
-                           class="w-6 h-6 md:w-7 md:h-7 bg-white rounded-full shadow-md flex items-center justify-center text-red-500 wishlist-heart">
-                            <i class="fas fa-heart"></i>
-                        </a>
-                    </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
+                <div class="lg:col-span-1 bg-white p-6 md:p-8 rounded-lg shadow-xl card-hover h-full slide-in" style="animation-delay: 0.1s;">
+                    <h3 class="text-xl font-bold text-primary mb-4 flex items-center">
+                        <i class="fas fa-info-circle mr-3"></i> Contact Information
+                    </h3>
+                    <p class="text-gray-600 mb-6">Our support team is available during business hours to assist you.</p>
 
-                    <div class="product-img h-28 sm:h-32 md:h-36 lg:h-40 bg-light flex items-center justify-center relative overflow-hidden">
-                        {% if w.product.images.first %}
-                            <img src="{{ w.product.images.first.product_img.url }}"
-                                 alt="{{ w.product.product_name }}"
-                                 class="max-w-full max-h-full transition-transform duration-500 hover:scale-105">
-                        {% else %}
-                            <img src="/static/images/no-image.png"
-                                 alt="No Image"
-                                 class="max-w-full max-h-full">
-                        {% endif %}
-
-                        {% if w.product.stock > 10 %}
-                            <div class="status-badge in-stock">In Stock</div>
-                        {% elif w.product.stock > 0 %}
-                            <div class="status-badge limited">Limited</div>
-                        {% else %}
-                            <div class="status-badge out-of-stock">Out of Stock</div>
-                        {% endif %}
-
-                        <a href="{% url 'user_single_product' w.product.slug %}"
-                           class="quick-view-btn absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-primary text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg opacity-0 transition">
-                            Quick View
-                        </a>
-                    </div>
-
-                    <div class="product-info p-2 sm:p-3">
-                        <h3 class="text-xs sm:text-sm font-semibold mb-1 truncate">{{ w.product.product_name }}</h3>
-
-                        <div class="flex items-center mb-1">
-                            <div class="text-yellow-500 text-xs">
-                                <i class="fas fa-star"></i>
+                    <ul class="space-y-6">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-1 mr-4 text-accent text-lg"></i>
+                            <div>
+                                <h4 class="font-semibold text-dark">Our Office</h4>
+                                <p class="text-gray-600 text-sm">123 Commerce St, Shopzy HQ, City, State 12345</p>
                             </div>
-                            <span class="ml-1 text-xs text-gray-600">({{ w.product.rating|default:"4.0" }})</span>
-                        </div>
-
-                        <div class="product-price text-sm sm:text-base font-bold text-secondary mb-2">
-                            ₹{{ w.product.price }}
-                        </div>
-
-                        <div class="flex space-x-1 sm:space-x-2">
-                            {% if w.product.stock > 0 %}
-                                <a href="{% url 'user_add_to_cart' w.product.slug %}"
-                                   class="bg-primary text-white flex-1 text-center block py-1.5 rounded-lg font-medium text-xs">
-                                    Add to Cart
-                                </a>
-                            {% else %}
-                                <button disabled
-                                   class="bg-gray-400 text-white flex-1 text-center block py-1.5 rounded-lg font-medium text-xs cursor-not-allowed">
-                                    Out of Stock
-                                </button>
-                            {% endif %}
-
-                            <a href="{% url 'user_single_product' w.product.slug %}"
-                               class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 bg-gray-100 rounded-lg flex items-center justify-center text-dark hover:bg-primary hover:text-white transition-colors text-xs">
-                                <i class="fas fa-eye"></i>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone-alt mt-1 mr-4 text-accent text-lg"></i>
+                            <div>
+                                <h4 class="font-semibold text-dark">Phone Support</h4>
+                                <p class="text-gray-600 text-sm">+1 (555) 123-4567</p>
+                                <p class="text-xs text-gray-500">Mon - Fri, 9:00 AM to 5:00 PM (EST)</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-1 mr-4 text-accent text-lg"></i>
+                            <div>
+                                <h4 class="font-semibold text-dark">Email Support</h4>
+                                <p class="text-gray-600 text-sm">support@Shopzy.com</p>
+                                <p class="text-xs text-gray-500">Expect a response within 24 hours.</p>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="mt-8 border-t pt-6">
+                        <h4 class="font-semibold text-dark mb-3">Follow Us</h4>
+                        <div class="social-icons flex space-x-3">
+                            <a href="#" class="social-icon w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white transition-all hover:-translate-y-1">
+                                <i class="fab fa-facebook-f text-sm"></i>
+                            </a>
+                            <a href="#" class="social-icon w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white transition-all hover:-translate-y-1">
+                                <i class="fab fa-twitter text-sm"></i>
+                            </a>
+                            <a href="#" class="social-icon w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white transition-all hover:-translate-y-1">
+                                <i class="fab fa-instagram text-sm"></i>
                             </a>
                         </div>
                     </div>
                 </div>
-                {% endfor %}
-            </div>
 
-            {% else %}
-            <div class="empty-wishlist text-center py-10 mt-4 bg-white rounded-lg border-2 border-dashed border-gray-200 fade-in">
-                <div class="max-w-md mx-auto">
-                    <div class="w-20 h-20 bg-gradient-to-br from-pink-100 to-red-100 rounded-full mx-auto flex items-center justify-center mb-4">
-                        <i class="far fa-heart text-4xl text-red-400"></i>
-                    </div>
+                <div class="lg:col-span-2 bg-white p-6 md:p-10 rounded-lg shadow-xl slide-in" style="animation-delay: 0.2s;">
+                    <h3 class="text-xl font-bold text-dark mb-6">Send Us a Message</h3>
 
-                    <h2 class="text-xl font-bold text-gray-600 mb-2">Your wishlist is empty</h2>
-                    <p class="text-gray-500 mb-6 text-sm">Start exploring and add products you love.</p>
+                    <form id="dummy-contact-form" action="#" method="GET" class="space-y-5">
 
-                    <div class="flex flex-col sm:flex-row justify-center gap-3">
-                        <a href="{% url 'shop_page' %}"
-                           class="btn bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary-dark transition-all">
-                            <i class="fas fa-shopping-bag mr-1"></i> Continue Shopping
-                        </a>
-                        <a href="#categories"
-                           class="btn border border-primary text-primary px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary hover:text-white transition-all">
-                            Explore Categories
-                        </a>
-                    </div>
+                        <div id="form-messages">
+                            </div>
+
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray mb-1">Full Name</label>
+                            <input type="text" id="name" name="name" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition-colors placeholder:text-sm"
+                                   placeholder="Enter your full name">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray mb-1">Email Address</label>
+                                <input type="email" id="email" name="email" required
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition-colors placeholder:text-sm"
+                                       placeholder="you@example.com">
+                            </div>
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray mb-1">Phone Number (Optional)</label>
+                                <input type="tel" id="phone" name="phone"
+                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition-colors placeholder:text-sm"
+                                       placeholder="+1 (555) 000-0000">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="subject" class="block text-sm font-medium text-gray mb-1">Subject</label>
+                            <select id="subject" name="subject" required
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition-colors placeholder:text-sm appearance-none">
+                                <option value="">Select a subject...</option>
+                                <option value="Order Inquiry">Order Inquiry</option>
+                                <option value="Product Support">Product Support</option>
+                                <option value="Returns/Exchanges">Returns/Exchanges</option>
+                                <option value="General Feedback">General Feedback</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray mb-1">Your Message</label>
+                            <textarea id="message" name="message" rows="5" required
+                                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary transition-colors placeholder:text-sm"
+                                      placeholder="Write your detailed message here..."></textarea>
+                        </div>
+
+                        <div>
+                            <button type="submit"
+                                    id="submit-button"
+                                    class="btn-primary w-full text-white px-6 py-3 rounded-lg font-semibold text-base shadow-md hover:shadow-lg flex items-center justify-center">
+                                <i class="fas fa-paper-plane mr-2"></i> Send Dummy Message
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
-            {% endif %}
         </div>
     </section>
-
 
     <!-- FOOTER -->
     <footer class="bg-dark text-white pt-12 pb-6 md:pb-8 mt-12 md:mt-16">
@@ -485,5 +376,49 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        document.getElementById('dummy-contact-form').addEventListener('submit', function(event) {
+            // 1. Prevent the actual form submission (i.e., prevent page reload)
+            event.preventDefault();
+
+            // 2. Get form elements and message container
+            const form = event.target;
+            const messagesContainer = document.getElementById('form-messages');
+            const submitButton = document.getElementById('submit-button');
+
+            // Basic check for browser validation
+            if (!form.checkValidity()) {
+                // If invalid, let the browser show its built-in error messages
+                return;
+            }
+
+            // 3. Set a 'Sending' state and disable the button
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+            submitButton.disabled = true;
+
+            // 4. Clear any previous messages
+            messagesContainer.innerHTML = '';
+
+            // 5. Simulate network delay (e.g., 2 seconds)
+            setTimeout(function() {
+                // 6. Generate the dummy success message
+                const successMessage = `
+                    <div class="p-3 mb-3 rounded-lg text-sm bg-success text-white">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        **DUMMY SUBMISSION SUCCESSFUL!** Thank you, your message has been "sent" (no real email was dispatched).
+                    </div>
+                `;
+
+                // 7. Display the message and clear the form
+                messagesContainer.innerHTML = successMessage;
+                form.reset(); // Clear all form fields
+
+                // 8. Restore the button state
+                submitButton.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Send Dummy Message';
+                submitButton.disabled = false;
+            }, 2000); // Wait for 2000 milliseconds (2 seconds)
+        });
+    </script>
 </body>
 </html>

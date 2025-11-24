@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Wishlist - Shopzy</title>
+    <title>Shopzy - Premium Online Shopping</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -106,16 +106,6 @@
             }
         }
 
-        /* Wishlist specific styles */
-        .wishlist-heart {
-            animation: heartBeat 0.8s ease-in-out;
-        }
-
-        @keyframes heartBeat {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
         /* Responsive improvements */
         @media (max-width: 480px) {
             .hero h1 {
@@ -162,14 +152,6 @@
             .footer-logo .social-icons {
                 justify-content: center;
             }
-
-            .wishlist-header h1 {
-                font-size: 1.5rem !important;
-            }
-
-            .wishlist-header p {
-                font-size: 0.8rem !important;
-            }
         }
 
         @media (max-width: 360px) {
@@ -208,7 +190,7 @@
                 <ul class="hidden md:flex space-x-4 lg:space-x-8 flex-grow justify-center">
                     <li><a href="{% url 'home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
                     <li><a href="{% url 'shop_page' %}" class="nav-link font-medium text-primary transition-colors">Shop</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
+                    <li><a href="{% url 'user_about' %}" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
                     <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
                 </ul>
 
@@ -267,7 +249,7 @@
                     </div>
 
                     <a href="{% url 'user_view_wishlist' %}" class="relative text-dark hover:text-primary transition-all hover:-translate-y-1">
-                        <i class="fas fa-heart text-lg md:text-xl text-red-500"></i>
+                        <i class="far fa-heart text-lg md:text-xl"></i>
                         <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center">{{ request.user.wishlist.count }}</span>
                     </a>
 
@@ -319,116 +301,223 @@
             </div>
         </div>
     </div>
-    <!-- Wishlist Products Section -->
-    <section class="py-10 md:py-12 bg-gray-50 section-spacing">
+
+
+    <section id="home" class="hero bg-gradient-to-r from-primary to-accent text-white py-10 md:py-16 rounded-b-3xl mb-8 md:mb-12 relative overflow-hidden">
         <div class="container mx-auto px-4">
-            {% if data %}
-            <div class="text-center mb-8 md:mb-12">
-                <h2 class="section-title text-xl sm:text-2xl md:text-3xl font-bold text-dark mb-3">
-                    Your Wishlist Items
-                </h2>
-                <p class="text-gray-600 max-w-xl mx-auto text-xs sm:text-sm">
-                    Your saved favorites - ready to purchase when you are
-                </p>
-            </div>
-
-            <div class="product-grid grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6" id="products-grid">
-                {% for w in data %}
-                <div class="product-card bg-white rounded-lg shadow-md overflow-hidden relative card-hover">
-                    <div class="absolute top-2 right-2 z-30">
-                        <a href="{% url 'user_remove_wishlist' w.id %}"
-                           class="w-6 h-6 md:w-7 md:h-7 bg-white rounded-full shadow-md flex items-center justify-center text-red-500 wishlist-heart">
-                            <i class="fas fa-heart"></i>
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-8 md:mb-0 text-center md:text-left fade-in">
+                    <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold mb-3 leading-tight">Discover Amazing Products With Exclusive Deals</h1>
+                    <p class="text-sm sm:text-base lg:text-lg mb-6 opacity-90">Shop the latest trends in fashion, electronics, home goods and more. Free shipping on orders over $50!</p>
+                    <div class="hero-buttons flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+                        <a href="{% url 'shop_page' %}" class="btn bg-white text-primary py-2.5 px-5 rounded-full font-semibold shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl text-sm">
+                            Shop Now <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                        <a href="#categories" class="btn bg-transparent border-2 border-white text-white py-2.5 px-5 rounded-full font-semibold shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl text-sm">
+                            Browse Categories
                         </a>
                     </div>
 
-                    <div class="product-img h-28 sm:h-32 md:h-36 lg:h-40 bg-light flex items-center justify-center relative overflow-hidden">
-                        {% if w.product.images.first %}
-                            <img src="{{ w.product.images.first.product_img.url }}"
-                                 alt="{{ w.product.product_name }}"
-                                 class="max-w-full max-h-full transition-transform duration-500 hover:scale-105">
-                        {% else %}
-                            <img src="/static/images/no-image.png"
-                                 alt="No Image"
-                                 class="max-w-full max-h-full">
-                        {% endif %}
-
-                        {% if w.product.stock > 10 %}
-                            <div class="status-badge in-stock">In Stock</div>
-                        {% elif w.product.stock > 0 %}
-                            <div class="status-badge limited">Limited</div>
-                        {% else %}
-                            <div class="status-badge out-of-stock">Out of Stock</div>
-                        {% endif %}
-
-                        <a href="{% url 'user_single_product' w.product.slug %}"
-                           class="quick-view-btn absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-primary text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg opacity-0 transition">
-                            Quick View
-                        </a>
+                    <div class="flex flex-wrap gap-4 mt-8 justify-center md:justify-start text-xs sm:text-sm">
+                        <div class="flex items-center">
+                            <i class="fas fa-shipping-fast text-base sm:text-lg mr-2"></i>
+                            <span>Free Shipping</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-shield-alt text-base sm:text-lg mr-2"></i>
+                            <span>Secure Payment</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-undo text-base sm:text-lg mr-2"></i>
+                            <span>Easy Returns</span>
+                        </div>
                     </div>
-
-                    <div class="product-info p-2 sm:p-3">
-                        <h3 class="text-xs sm:text-sm font-semibold mb-1 truncate">{{ w.product.product_name }}</h3>
-
-                        <div class="flex items-center mb-1">
-                            <div class="text-yellow-500 text-xs">
-                                <i class="fas fa-star"></i>
+                </div>
+                <div class="md:w-1/2 flex justify-center slide-in">
+                    <div class="bg-white rounded-xl shadow-xl p-4 sm:p-5 max-w-sm w-full float-animation">
+                        <div class="text-dark text-center">
+                            <h3 class="text-lg sm:text-xl font-bold text-primary mb-3">Why Shop With Us?</h3>
+                            <div class="grid grid-cols-2 gap-2 sm:gap-3">
+                                <div class="flex flex-col items-center p-2 sm:p-3 bg-blue-50 rounded-lg">
+                                    <i class="fas fa-truck text-blue-600 text-lg sm:text-xl mb-1"></i>
+                                    <span class="font-medium text-xs">Fast Delivery</span>
+                                </div>
+                                <div class="flex flex-col items-center p-2 sm:p-3 bg-green-50 rounded-lg">
+                                    <i class="fas fa-medal text-green-600 text-lg sm:text-xl mb-1"></i>
+                                    <span class="font-medium text-xs">Quality Guarantee</span>
+                                </div>
+                                <div class="flex flex-col items-center p-2 sm:p-3 bg-purple-50 rounded-lg">
+                                    <i class="fas fa-headset text-purple-600 text-lg sm:text-xl mb-1"></i>
+                                    <span class="font-medium text-xs">24/7 Support</span>
+                                </div>
+                                <div class="flex flex-col items-center p-2 sm:p-3 bg-yellow-50 rounded-lg">
+                                    <i class="fas fa-tags text-yellow-600 text-lg sm:text-xl mb-1"></i>
+                                    <span class="font-medium text-xs">Best Prices</span>
+                                </div>
                             </div>
-                            <span class="ml-1 text-xs text-gray-600">({{ w.product.rating|default:"4.0" }})</span>
-                        </div>
-
-                        <div class="product-price text-sm sm:text-base font-bold text-secondary mb-2">
-                            ₹{{ w.product.price }}
-                        </div>
-
-                        <div class="flex space-x-1 sm:space-x-2">
-                            {% if w.product.stock > 0 %}
-                                <a href="{% url 'user_add_to_cart' w.product.slug %}"
-                                   class="bg-primary text-white flex-1 text-center block py-1.5 rounded-lg font-medium text-xs">
-                                    Add to Cart
-                                </a>
-                            {% else %}
-                                <button disabled
-                                   class="bg-gray-400 text-white flex-1 text-center block py-1.5 rounded-lg font-medium text-xs cursor-not-allowed">
-                                    Out of Stock
-                                </button>
-                            {% endif %}
-
-                            <a href="{% url 'user_single_product' w.product.slug %}"
-                               class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 bg-gray-100 rounded-lg flex items-center justify-center text-dark hover:bg-primary hover:text-white transition-colors text-xs">
-                                <i class="fas fa-eye"></i>
-                            </a>
                         </div>
                     </div>
                 </div>
-                {% endfor %}
             </div>
-
-            {% else %}
-            <div class="empty-wishlist text-center py-10 mt-4 bg-white rounded-lg border-2 border-dashed border-gray-200 fade-in">
-                <div class="max-w-md mx-auto">
-                    <div class="w-20 h-20 bg-gradient-to-br from-pink-100 to-red-100 rounded-full mx-auto flex items-center justify-center mb-4">
-                        <i class="far fa-heart text-4xl text-red-400"></i>
-                    </div>
-
-                    <h2 class="text-xl font-bold text-gray-600 mb-2">Your wishlist is empty</h2>
-                    <p class="text-gray-500 mb-6 text-sm">Start exploring and add products you love.</p>
-
-                    <div class="flex flex-col sm:flex-row justify-center gap-3">
-                        <a href="{% url 'shop_page' %}"
-                           class="btn bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary-dark transition-all">
-                            <i class="fas fa-shopping-bag mr-1"></i> Continue Shopping
-                        </a>
-                        <a href="#categories"
-                           class="btn border border-primary text-primary px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-primary hover:text-white transition-all">
-                            Explore Categories
-                        </a>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
         </div>
     </section>
+
+   <section id="categories" class="py-10 md:py-12 bg-white section-spacing">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-8 md:mb-12">
+            <h2 class="section-title text-xl sm:text-2xl md:text-3xl font-bold text-dark mb-3">
+                Shop By Category
+            </h2>
+            <p class="text-gray-600 max-w-xl mx-auto text-xs sm:text-sm">
+                Explore our wide range of product categories
+            </p>
+        </div>
+
+        <div class="relative">
+            <div id="category-slider"
+                 class="flex space-x-3 sm:space-x-4 md:space-x-6 overflow-x-auto scrollbar-hide px-2 py-4 snap-x snap-mandatory">
+
+                {% for x in categories %}
+                <a href="{% url 'shop_page' %}?category={{ x.category_name }}"
+                   class="category-card min-w-[120px] sm:min-w-[130px] md:min-w-[150px] lg:min-w-[180px] snap-center bg-light rounded-xl p-3 sm:p-4 text-center cursor-pointer
+                          card-hover flex-shrink-0 transition-all duration-300 hover:-translate-y-2 block">
+                    <div>
+                        <div class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 mx-auto rounded-full overflow-hidden shadow-md mb-2 sm:mb-3">
+                            {% if x.image %}
+                                <img src="{{ x.image.url }}" class="w-full h-full object-cover">
+                            {% else %}
+                                <img src="https://via.placeholder.com/150"
+                                     class="w-full h-full object-cover">
+                            {% endif %}
+                        </div>
+
+                        <h3 class="font-bold text-xs sm:text-sm md:text-base mb-1">{{ x.category_name }}</h3>
+                        <p class="text-gray-600 text-xs">Explore now</p>
+                    </div>
+                </a>
+                {% endfor %}
+
+            </div>
+        </div>
+    </div>
+</section>
+
+  <section id="products" class="py-10 md:py-12 bg-gray-50 section-spacing">
+    <div class="container mx-auto px-4">
+
+        <div class="text-center mb-8 md:mb-12">
+            <h2 class="section-title text-xl sm:text-2xl md:text-3xl font-bold text-dark mb-3">
+                Featured Products
+            </h2>
+            <p class="text-gray-600 max-w-xl mx-auto text-xs sm:text-sm">
+                Check out our handpicked selection of premium products
+            </p>
+        </div>
+
+        <div class="product-grid grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-6" id="products-grid">
+
+            {% for product in products %}
+            <div class="product-card bg-white rounded-lg shadow-md overflow-hidden relative card-hover">
+
+                {% if product.slug %}
+                <div class="absolute top-2 right-2 z-30">
+                    <a href="{% url 'add_wishlist' product.slug %}"
+                       class="w-6 h-6 md:w-7 md:h-7 bg-white rounded-full shadow-md flex items-center justify-center text-xs
+                              {% if product.wishlist_exists %} text-red-500 {% else %} text-gray-500 {% endif %}">
+
+                        {% if product.wishlist_exists %}
+                            <i class="fas fa-heart"></i>
+                        {% else %}
+                            <i class="far fa-heart"></i>
+                        {% endif %}
+                    </a>
+                </div>
+                {% endif %}
+
+                <div class="product-img h-28 sm:h-32 md:h-36 lg:h-40 bg-light flex items-center justify-center relative overflow-hidden">
+
+                    {% if product.images.first %}
+                        <img src="{{ product.images.first.product_img.url }}"
+                             alt="{{ product.product_name }}"
+                             class="max-w-full max-h-full transition-transform duration-500 hover:scale-105">
+                    {% else %}
+                        <img src="/static/images/no-image.png"
+                             alt="No Image"
+                             class="max-w-full max-h-full">
+                    {% endif %}
+
+                    {% if product.stock > 10 %}
+                        <div class="status-badge in-stock">In Stock</div>
+                    {% elif product.stock > 0 %}
+                        <div class="status-badge limited">Limited</div>
+                    {% else %}
+                        <div class="status-badge out-of-stock">Out of Stock</div>
+                    {% endif %}
+
+                    <a href="{% url 'user_single_product' product.slug %}"
+                       class="quick-view-btn absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-primary text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg opacity-0 transition">
+                        Quick View
+                    </a>
+                </div>
+
+                <div class="product-info p-2 sm:p-3">
+
+                    <h3 class="text-xs sm:text-sm font-semibold mb-1 truncate">{{ product.product_name }}</h3>
+
+                    <div class="flex items-center mb-1">
+                        <div class="text-yellow-500 text-xs">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="ml-1 text-xs text-gray-600">({{ product.rating|default:"4.0" }})</span>
+                    </div>
+
+                    <div class="product-price text-sm sm:text-base font-bold text-secondary mb-2">
+                        ₹{{ product.price }}
+                    </div>
+
+                    <div class="flex space-x-1 sm:space-x-2">
+                        {% if product.stock > 0 %}
+
+                        {% if product.carted %}
+                            <a href="{% url 'user_remove_from_cart' product.cart_item_id %}"
+                               class="bg-red-500 text-white flex-1 text-center block py-1.5 rounded-lg font-medium text-xs">
+                                Remove
+                            </a>
+                        {% else %}
+                            <a href="{% url 'user_add_to_cart' product.slug %}"
+                               class="bg-primary text-white flex-1 text-center block py-1.5 rounded-lg font-medium text-xs">
+                                Add to Cart
+                            </a>
+                        {% endif %}
+                        {% endif %}
+
+                        <a href="{% url 'user_single_product' product.slug %}"
+                           class="w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 bg-gray-100 rounded-lg flex items-center justify-center text-dark hover:bg-primary hover:text-white transition-colors text-xs">
+                            <i class="fas fa-eye"></i>
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+            {% endfor %}
+
+            {% if products.count == 0 %}
+            <p class="text-gray-600 text-center col-span-full py-10">No products found.</p>
+            {% endif %}
+
+        </div>
+
+        <div class="text-center mt-8">
+            <a href="{% url 'shop_page' %}"
+               class="btn bg-white text-primary border-2 border-primary py-2.5 px-6 rounded-full font-semibold transition-all hover:-translate-y-1 hover:shadow-lg text-sm">
+                View All Products <i class="fas fa-arrow-right ml-2"></i>
+            </a>
+        </div>
+
+    </div>
+</section>
 
 
     <!-- FOOTER -->

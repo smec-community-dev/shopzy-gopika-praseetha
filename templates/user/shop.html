@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shop - Shopzy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5d5fef',
+                        'primary-dark': '#4a4bc5',
+                        secondary: '#ff6b6b',
+                        accent: '#4ecdc4',
+                        light: '#f8f9fa',
+                        dark: '#2d3748',
+                        gray: '#718096',
+                        success: '#48bb78',
+                        warning: '#ed8936',
+                        danger: '#e53e3e',
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-card': 'floatCard 5s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'bounce-gentle': 'bounceGentle 2s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        floatCard: {
+                            '0%, 100%': { transform: 'perspective(1000px) rotateY(15deg) rotateX(10deg) translateY(0)' },
+                            '50%': { transform: 'perspective(1000px) rotateY(15deg) rotateX(10deg) translateY(-10px)' },
+                        },
+                        bounceGentle: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-5px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .logo-hover i {
+            transition: transform 0.5s ease;
+        }
+
+        .logo-hover:hover i {
+            transform: rotate(0deg);
+        }
+
+        .nav-link {
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: #5d5fef;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .footer-title::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 3px;
+            background: #5d5fef;
+            bottom: 0;
+            left: 0;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-5px);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            top: -150px;
+            right: -100px;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            bottom: -100px;
+            left: -50px;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .floating-card {
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateY(15deg) rotateX(10deg);
+            transition: transform 0.5s ease;
+        }
+
+        .floating-card:hover {
+            transform: perspective(1000px) rotateY(0deg) rotateX(0deg);
+            animation: none;
+        }
+
+        .product-card {
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #5d5fef 0%, #4ecdc4 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: -1;
+            border-radius: 12px;
+        }
+
+        .product-card:hover::before {
+            opacity: 0.05;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px) rotateY(3deg);
+        }
+
+        .product-img img {
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-img img {
+            transform: scale(1.05);
+        }
+
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .section-title h2 {
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            width: 80px;
+            height: 4px;
+            background: #5d5fef;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        /* Mobile Navigation with CSS-only toggle */
+        #nav-toggle {
+            display: none;
+        }
+
+        #nav-toggle:checked ~ .mobile-nav {
+            max-height: 500px;
+            padding: 1.5rem 0;
+        }
+
+        .mobile-nav {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        /* Search bar focus effect */
+        .search-bar input:focus {
+            box-shadow: 0 0 0 3px rgba(93, 95, 239, 0.1);
+        }
+
+        /* Shop page specific styles */
+        .filter-section {
+            transition: all 0.3s ease;
+        }
+
+        .filter-toggle {
+            cursor: pointer;
+        }
+
+        .filter-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .filter-content.active {
+            max-height: 1000px;
+        }
+
+        .price-range {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 5px;
+            border-radius: 5px;
+            background: #d1d5db;
+            outline: none;
+        }
+
+        .price-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #5d5fef;
+            cursor: pointer;
+        }
+
+        .price-range::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #5d5fef;
+            cursor: pointer;
+            border: none;
+        }
+
+        .sort-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .sort-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
+            z-index: 1;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .sort-dropdown:hover .sort-dropdown-content {
+            display: block;
+        }
+
+        .sort-dropdown-content a {
+            color: #2d3748;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s;
+        }
+
+        .sort-dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .active-filter {
+            background-color: #5d5fef;
+            color: white;
+        }
+
+        /* Shop Search Bar Styles */
+        .shop-search-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .shop-search-bar {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .shop-search-bar:focus-within {
+            box-shadow: 0 6px 12px rgba(93, 95, 239, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .shop-search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 0.5rem;
+            font-size: 1rem;
+            background: transparent;
+        }
+
+        .shop-search-bar button {
+            background: #5d5fef;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .shop-search-bar button:hover {
+            background: #4a4bc5;
+            transform: translateY(-2px);
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border-radius: 0 0 12px 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .search-suggestions.active {
+            max-height: 200px;
+        }
+
+        .search-suggestion-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f1f1;
+            transition: background-color 0.2s;
+        }
+
+        .search-suggestion-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .search-suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-results-info {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #5d5fef;
+        }
+
+        /* Enhanced Product Card Styles */
+        .product-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card .quick-view-btn {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover .quick-view-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .wishlist-btn {
+            transition: all 0.3s ease;
+        }
+
+        .wishlist-btn.active {
+            color: #ff6b6b;
+            transform: scale(1.2);
+        }
+
+        .wishlist-btn.animate {
+            animation: heartBeat 0.5s ease;
+        }
+
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .add-to-cart-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .add-to-cart-btn .cart-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .add-to-cart-btn:hover .cart-icon {
+            transform: translateX(5px);
+        }
+
+        /* Skeleton Loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes loading {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            max-width: 300px;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            border-left: 4px solid #48bb78;
+        }
+
+        .toast.error {
+            border-left: 4px solid #e53e3e;
+        }
+
+        .toast.info {
+            border-left: 4px solid #5d5fef;
+        }
+
+        /* Scroll to Top Button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #5d5fef;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 99;
+            box-shadow: 0 4px 12px rgba(93, 95, 239, 0.3);
+        }
+
+        .scroll-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scroll-to-top:hover {
+            background: #4a4bc5;
+            transform: translateY(-5px);
+        }
+
+        /* Mobile Filter Overlay */
+        .mobile-filter-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 40;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-filter-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .mobile-filter-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            background: white;
+            z-index: 50;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .mobile-filter-sidebar.active {
+            transform: translateX(0);
+        }
+
+        /* Improved Product Status Badges */
+        .status-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .status-badge.in-stock {
+            background: rgba(72, 187, 120, 0.15);
+            color: #48bb78;
+        }
+
+        .status-badge.limited {
+            background: rgba(237, 137, 54, 0.15);
+            color: #ed8936;
+        }
+
+        .status-badge.preorder {
+            background: rgba(93, 95, 239, 0.15);
+            color: #5d5fef;
+        }
+
+        .status-badge.out-of-stock {
+            background: rgba(229, 62, 62, 0.15);
+            color: #e53e3e;
+        }
+
+        /* Improved Filter Chips */
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            background: #5d5fef;
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .filter-chip:hover {
+            background: #4a4bc5;
+        }
+
+        .filter-chip .remove {
+            margin-left: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: background 0.2s ease;
+        }
+
+        .filter-chip .remove:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Improved Pagination */
+        .pagination-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .pagination-item.active {
+            background: #5d5fef;
+            color: white;
+        }
+
+        .pagination-item:not(.active):hover {
+            background: #f1f1f1;
+        }
+
+        /* Section Dividers */
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            margin: 2rem 0;
+        }
+
+        /* CSS-only Filter Toggle */
+        .filter-toggle:focus + .filter-content,
+        .filter-toggle:active + .filter-content {
+            max-height: 1000px;
+        }
+
+        /* CSS-only Dropdown */
+        .sort-dropdown:focus-within .sort-dropdown-content,
+        .sort-dropdown:hover .sort-dropdown-content {
+            display: block;
+        }
+
+        /* CSS-only Toast */
+        .toast:target {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        /* CSS-only Scroll to Top */
+        .scroll-to-top:target {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* CSS-only Mobile Filter */
+        #mobile-filter-toggle:checked ~ .mobile-filter-overlay,
+        #mobile-filter-toggle:checked ~ .mobile-filter-sidebar {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #mobile-filter-toggle:checked ~ .mobile-filter-sidebar {
+            transform: translateX(0);
+        }
+
+        /* Hide mobile filter checkbox */
+        #mobile-filter-toggle {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-dark">
+    <!-- Header & Navigation -->
+    <header class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <nav class="flex justify-between items-center py-4">
+                <a href="{% url 'home' %}" class="logo-hover flex items-center text-2xl font-bold text-primary">
+                    <i class="fas fa-shopping-bag mr-2 transform -rotate-12"></i>
+                    Shopzy
+                </a>
+
+                <ul class="hidden md:flex space-x-8">
+                    <li><a href="{% url 'home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
+                    <li><a href="{% url 'shop_page' %}" class="nav-link font-medium text-primary transition-colors">Shop</a></li>
+                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
+                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
+                </ul>
+
+                <div class="flex items-center">
+                    <!-- Search Form -->
+                    <form action="{% url 'shop_page' %}" method="GET"
+                          class="flex items-center bg-light rounded-full px-4 py-2 mr-4 w-64 search-bar">
+
+                        <input type="text"
+                               name="q"
+                               value="{{ request.GET.q }}"
+                               placeholder="Search products..."
+                               class="bg-transparent outline-none w-full px-2">
+
+                        <button type="submit" class="text-gray hover:text-primary transition-colors">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+
+
+                    <!-- Wishlist -->
+                    <a href="{% url 'user_view_wishlist' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
+                        <i class="far fa-heart text-xl"></i>
+                        <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ request.user.wishlist.count }}</span>
+                    </a>
+
+                    <!-- Cart -->
+                    <a href="{% url 'user_view_cart' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ request.user.cart_items.count }}</span>
+                    </a>
+
+                    <!-- User Account Dropdown -->
+                    <div class="relative group">
+                        <div class="user-info flex items-center ml-4 bg-light rounded-full px-4 py-2 cursor-pointer transition-all hover:bg-primary hover:text-white">
+                            <i class="fas fa-user mr-2 text-primary transition-colors"></i>
+                            <span class="font-medium">
+                                {% if request.user.is_authenticated %}
+                                    {{ request.user.username }}
+                                {% else %}
+                                    Account
+                                {% endif %}
+                            </span>
+                            <i class="fas fa-chevron-down ml-2 text-sm"></i>
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                            {% if request.user.is_authenticated %}
+                                <a href="{% url 'user_dashboard' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-user-circle mr-2"></i>My Profile
+                                </a>
+                                <a href="{% url 'user_orders' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-shopping-bag mr-2"></i>My Orders
+                                </a>
+                                <a href="{% url 'user_view_wishlist' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-heart mr-2"></i>Wishlist
+                                </a>
+                                <div class="border-t my-1"></div>
+                                <a href="{% url 'user_logout' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                                </a>
+                            {% else %}
+                                <a href="{% url 'user_login' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-sign-in-alt mr-2"></i>Login
+                                </a>
+                                <a href="{% url 'user_register' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
+                                    <i class="fas fa-user-plus mr-2"></i>Register
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Mobile menu toggle -->
+                    <label for="nav-toggle" class="md:hidden ml-4 text-xl cursor-pointer">
+                        <i class="fas fa-bars"></i>
+                    </label>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Hidden checkbox for mobile menu -->
+        <input type="checkbox" id="nav-toggle" class="hidden">
+
+        <!-- Mobile Navigation -->
+        <div class="mobile-nav bg-white shadow-lg md:hidden">
+            <div class="container mx-auto px-4">
+                <a href="{% url 'home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
+                <a href="{% url 'shop_page' %}" class="block py-3 border-b border-gray-200 text-primary transition-colors">Shop</a>
+                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">About</a>
+                <a href="#" class="block py-3 hover:text-primary transition-colors">Contact</a>
+
+                <!-- Add login/register links for mobile -->
+                {% if not request.user.is_authenticated %}
+                <div class="border-t border-gray-200 mt-4 pt-4">
+                    <a href="{% url 'user_login' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Login</a>
+                    <a href="{% url 'user_register' %}" class="block py-3 hover:text-primary transition-colors">Register</a>
+                </div>
+                {% else %}
+                <div class="border-t border-gray-200 mt-4 pt-4">
+                    <a href="{% url 'home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Profile</a>
+                    <a href="{% url 'user_orders' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Orders</a>
+                    <a href="{% url 'user_view_wishlist' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Wishlist</a>
+                    <a href="#" class="block py-3 hover:text-primary transition-colors">Logout</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <!-- Shop Header Section -->
+    <section class="bg-gradient-to-r from-primary to-accent text-white py-12 relative overflow-hidden">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="max-w-3xl">
+                <h1 class="text-4xl md:text-5xl font-bold mb-4 animate-slide-up">Shop Our Collection</h1>
+                <p class="text-lg md:text-xl mb-6 opacity-90 animate-slide-up" style="animation-delay: 0.1s">Discover amazing products at unbeatable prices</p>
+                <div class="flex flex-wrap gap-2 animate-slide-up" style="animation-delay: 0.2s">
+                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">Free Shipping</span>
+                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">Easy Returns</span>
+                    <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">Secure Checkout</span>
+                </div>
+            </div>
+        </div>
+        <div class="absolute top-0 right-0 w-1/3 h-full opacity-10">
+            <div class="absolute top-1/4 right-10 w-64 h-64 rounded-full bg-white"></div>
+            <div class="absolute bottom-10 right-1/4 w-48 h-48 rounded-full bg-white"></div>
+        </div>
+    </section>
+
+    <!-- Shop Content -->
+    <section class="container mx-auto px-4 py-8 mb-12">
+        <div class="flex flex-col lg:flex-row gap-6">
+            <!-- Sidebar Filters -->
+            <div class="lg:w-1/4">
+                <div class="bg-white rounded-xl shadow-lg p-5 sticky top-24 hidden lg:block">
+
+                    <!-- Header -->
+                    <div class="flex justify-between items-center mb-5">
+                        <h3 class="text-lg font-bold text-dark">Filters</h3>
+                        <a href="{% url 'shop_page' %}" class="text-primary text-sm font-medium">Clear All</a>
+                    </div>
+
+                    <div class="filter-section mb-5">
+                        <div class="filter-toggle flex justify-between items-center mb-3" tabindex="0">
+                            <h4 class="font-semibold text-base">Categories</h4>
+                            <i class="fas fa-chevron-down transition-transform text-sm"></i>
+                        </div>
+
+                        <div class="filter-content active">
+                            <div class="space-y-2">
+
+                                {% for cat in categories %}
+                                <label class="flex items-center cursor-pointer">
+
+                                    <!-- Checkbox -->
+                                    <input type="checkbox"
+                                        class="mr-2 rounded text-primary focus:ring-primary"
+                                        {% if selected_category == cat.slug %}checked{% endif %}
+                                        onclick="window.location='?category={{ cat.slug }}{% if search_query %}&q={{ search_query }}{% endif %}{% if sort_option %}&sort={{ sort_option }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if rating_filter %}&rating={{ rating_filter }}{% endif %}'">
+
+                                    <!-- Name -->
+                                    <span class="text-sm {% if selected_category == cat.slug %}text-primary font-semibold{% endif %}">
+                                        {{ cat.category_name }}
+                                    </span>
+
+                                </label>
+                                {% endfor %}
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============================= -->
+                    <!-- PRICE FILTER (Dynamic)        -->
+                    <!-- ============================= -->
+                    <div class="filter-section mb-5">
+                        <div class="filter-toggle flex justify-between items-center mb-3" tabindex="0">
+                            <h4 class="font-semibold text-base">Price Range</h4>
+                            <i class="fas fa-chevron-down transition-transform text-sm"></i>
+                        </div>
+
+                        <div class="filter-content active">
+                            <form method="GET">
+
+                                <!-- Keep existing filters -->
+                                {% if selected_category %}
+                                <input type="hidden" name="category" value="{{ selected_category }}">
+                                {% endif %}
+                                {% if selected_sub_category %}
+                                <input type="hidden" name="subcategory" value="{{ selected_sub_category }}">
+                                {% endif %}
+                                {% if sort_option %}
+                                <input type="hidden" name="sort" value="{{ sort_option }}">
+                                {% endif %}
+                                {% if search_query %}
+                                <input type="hidden" name="q" value="{{ search_query }}">
+                                {% endif %}
+                                {% if rating_filter %}
+                                <input type="hidden" name="rating" value="{{ rating_filter }}">
+                                {% endif %}
+
+                                <!-- Range Inputs -->
+                                <div class="flex gap-2 mb-3">
+                                    <input type="number" name="min_price" placeholder="Min"
+                                           value="{{ min_price|default:'' }}"
+                                           class="w-1/2 border p-2 rounded text-sm">
+                                    <input type="number" name="max_price" placeholder="Max"
+                                           value="{{ max_price|default:'' }}"
+                                           class="w-1/2 border p-2 rounded text-sm">
+                                </div>
+
+                                <button class="w-full bg-primary text-white py-2 rounded-lg font-semibold text-sm">
+                                    Apply Price
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mobile Filter Button -->
+                <label for="mobile-filter-toggle" class="lg:hidden w-full bg-primary text-white py-3 rounded-lg font-semibold flex items-center justify-center mb-4 cursor-pointer">
+                    <i class="fas fa-filter mr-2"></i>
+                    Show Filters
+                </label>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="lg:w-3/4">
+                <!-- Products Header -->
+                <div class="flex flex-col md:flex-row justify-between items-center mb-6">
+                    <div class="mb-3 md:mb-0">
+                        <p class="text-sm text-gray-600">
+                            Showing {{ products.start_index }}–{{ products.end_index }} of {{ products.paginator.count }} products
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <div class="sort-dropdown">
+                            <button class="bg-white border border-gray-300 rounded-lg px-3 py-1.5 flex items-center text-sm">
+                                <span>
+                                    Sort by:
+                                    {% if sort_option == "low-high" %}
+                                        Price: Low to High
+                                    {% elif sort_option == "high-low" %}
+                                        Price: High to Low
+                                    {% elif sort_option == "rating" %}
+                                        Customer Rating
+                                    {% elif sort_option == "new" %}
+                                        Newest Arrivals
+                                    {% else %}
+                                        Featured
+                                    {% endif %}
+                                </span>
+                                <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                            </button>
+
+                            <div class="sort-dropdown-content">
+                                <a href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}"
+                                   class="text-sm">
+                                    Featured
+                                </a>
+
+                                <a href="?sort=low-high{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_sub_category %}&subcategory={{ selected_sub_category }}{% endif %}"
+                                   class="text-sm">
+                                    Price: Low to High
+                                </a>
+
+                                <a href="?sort=high-low{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_sub_category %}&subcategory={{ selected_sub_category }}{% endif %}"
+                                   class="text-sm">
+                                    Price: High to Low
+                                </a>
+
+                                <a href="?sort=rating{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_sub_category %}&subcategory={{ selected_sub_category }}{% endif %}"
+                                   class="text-sm">
+                                    Customer Rating
+                                </a>
+
+                                <a href="?sort=new{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_sub_category %}&subcategory={{ selected_sub_category }}{% endif %}"
+                                   class="text-sm">
+                                    Newest Arrivals
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shop Search Bar -->
+                <div class="shop-search-container mb-5">
+                    <form method="GET" class="shop-search-bar w-full">
+
+                        <!-- Keep existing filters in GET -->
+                        {% if selected_category %}
+                            <input type="hidden" name="category" value="{{ selected_category }}">
+                        {% endif %}
+                        {% if selected_sub_category %}
+                            <input type="hidden" name="subcategory" value="{{ selected_sub_category }}">
+                        {% endif %}
+                        {% if sort_option %}
+                            <input type="hidden" name="sort" value="{{ sort_option }}">
+                        {% endif %}
+
+                        <i class="fas fa-search text-gray-400 mr-2 text-sm"></i>
+
+                        <input
+                            type="text"
+                            name="q"
+                            placeholder="Search for products..."
+                            value="{{ request.GET.q }}"
+                            class="text-sm w-full outline-none"
+                        >
+
+                        <button type="submit" class="text-sm">
+                            <i class="fas fa-search"></i>
+                            Search
+                        </button>
+                    </form>
+
+                    <!-- Optional Autocomplete Results -->
+                    {% if search_suggestions %}
+                    <div class="search-suggestions active">
+                        {% for suggestion in search_suggestions %}
+                            <a href="?q={{ suggestion }}" class="search-suggestion-item text-sm">
+                                {{ suggestion }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+{% if not products %}
+<div class="my-10 flex items-center justify-center">
+    <span class="px-4 py-2 text-gray-600 text-sm font-medium bg-gray-100 border border-gray-200 rounded-lg">
+        Product Not Found
+    </span>
+</div>
+{% endif %}
+
+
+
+               <!-- Products Grid -->
+<!-- Products Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-slide-up" id="products-grid">
+
+    {% for product in products %}
+    <div class="product-card bg-white rounded-xl shadow-md overflow-hidden relative">
+
+        <!-- ❤️ WISHLIST BUTTON -->
+        {% if product.slug %}
+        <div class="absolute top-3 right-3 z-30">
+            <a href="{% url 'add_wishlist' product.slug %}"
+               class="w-8 h-8 bg-white rounded-full shadow-md flex items-center justify-center text-sm
+                      {% if product.wishlist_exists %} text-red-500 {% else %} text-gray-500 {% endif %}">
+
+                {% if product.wishlist_exists %}
+                    <i class="fas fa-heart"></i>
+                {% else %}
+                    <i class="far fa-heart"></i>
+                {% endif %}
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- PRODUCT IMAGE -->
+        <div class="product-img h-40 bg-light flex items-center justify-center relative overflow-hidden">
+
+            {% if product.images.first %}
+                <img src="{{ product.images.first.product_img.url }}"
+                     alt="{{ product.product_name }}"
+                     class="max-w-full max-h-full transition-transform duration-500">
+            {% else %}
+                <img src="/static/images/no-image.png"
+                     alt="No Image"
+                     class="max-w-full max-h-full">
+            {% endif %}
+
+            <!-- STOCK BADGE -->
+            {% if product.stock > 10 %}
+                <div class="status-badge in-stock">In Stock</div>
+            {% elif product.stock > 0 %}
+                <div class="status-badge limited">Limited</div>
+            {% else %}
+                <div class="status-badge out-of-stock">Out of Stock</div>
+            {% endif %}
+
+            <!-- QUICK VIEW -->
+            <a href="{% url 'user_single_product' product.slug %}"
+               class="quick-view-btn absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-primary text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg opacity-0 transition">
+                Quick View
+            </a>
+        </div>
+
+        <!-- PRODUCT DETAILS -->
+        <div class="product-info p-4">
+
+            <!-- NAME -->
+            <h3 class="text-base font-semibold mb-1.5">{{ product.product_name }}</h3>
+
+            <!-- RATING -->
+            <div class="flex items-center mb-1.5">
+                <div class="text-yellow-500 text-xs">
+                    <i class="fas fa-star"></i>
+                </div>
+                <span class="ml-1.5 text-xs text-gray-600">({{ product.rating|default:"4.0" }})</span>
+            </div>
+
+            <!-- PRICE -->
+            <div class="product-price text-lg font-bold text-secondary mb-3">
+                ₹{{ product.price }}
+            </div>
+
+            <!-- CART BUTTONS -->
+            <div class="flex space-x-1.5">
+                {% if product.stock > 0 %}
+                {% if product.carted %}
+                    <a href="{% url 'user_remove_from_cart' product.cart_item_id %}"
+                       class="bg-red-500 text-white flex-1 text-center block py-1.5 rounded-lg font-medium text-sm">
+                        Remove
+                    </a>
+                {% else %}
+                    <a href="{% url 'user_add_to_cart' product.slug %}"
+                       class="bg-primary text-white flex-1 text-center block py-1.5 rounded-lg font-medium text-sm">
+                        Add to Cart
+                    </a>
+                {% endif %}
+                {% endif %}
+
+                <a href="{% url 'user_single_product' product.slug %}"
+                   class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center text-dark hover:bg-primary hover:text-white transition-colors text-sm">
+                    <i class="fas fa-eye"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+    {% endfor %}
+
+    {% if products.count == 0 %}
+    <p class="text-gray-600 text-center col-span-3 py-10">No products found.</p>
+    {% endif %}
+
+</div>
+
+
+                <!-- Section Divider -->
+                <div class="section-divider"></div>
+
+                <!-- Pagination -->
+                <div class="flex justify-center mt-8">
+                    <div class="flex items-center gap-1.5">
+
+                        {% if products.has_previous %}
+                            <a href="?page={{ products.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_sub_category %}&subcategory={{ selected_sub_category }}{% endif %}{% if sort_option %}&sort={{ sort_option }}{% endif %}"
+                               class="pagination-item bg-gray-200 hover:bg-gray-300">
+                                <i class="fas fa-chevron-left text-xs"></i>
+                            </a>
+                        {% else %}
+                            <span class="pagination-item bg-gray-100 opacity-50">
+                                <i class="fas fa-chevron-left text-xs"></i>
+                            </span>
+                        {% endif %}
+
+                        {% for num in products.paginator.page_range %}
+                            {% if products.number == num %}
+                                <span class="pagination-item active">{{ num }}</span>
+                            {% else %}
+                                <a href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_sub_category %}&subcategory={{ selected_sub_category }}{% endif %}{% if sort_option %}&sort={{ sort_option }}{% endif %}"
+                                   class="pagination-item">
+                                    {{ num }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if products.has_next %}
+                            <a href="?page={{ products.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if selected_category %}&category={{ selected_category }}{% endif %}{% if selected_sub_category %}&subcategory={{ selected_sub_category }}{% endif %}{% if sort_option %}&sort={{ sort_option }}{% endif %}"
+                               class="pagination-item bg-gray-200 hover:bg-gray-300">
+                                <i class="fas fa-chevron-right text-xs"></i>
+                            </a>
+                        {% else %}
+                            <span class="pagination-item bg-gray-100 opacity-50">
+                                <i class="fas fa-chevron-right text-xs"></i>
+                            </span>
+                        {% endif %}
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile Filter Sidebar -->
+    <input type="checkbox" id="mobile-filter-toggle" class="hidden">
+    <div class="mobile-filter-overlay" id="mobile-filter-overlay"></div>
+    <div class="mobile-filter-sidebar" id="mobile-filter-sidebar">
+        <div class="flex justify-between items-center mb-5">
+            <h3 class="text-lg font-bold text-dark">Filters</h3>
+            <label for="mobile-filter-toggle" class="text-gray-500 cursor-pointer">
+                <i class="fas fa-times text-xl"></i>
+            </label>
+        </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle text-success"></i>
+        <div>
+            <p class="font-medium text-sm" id="toast-title">Product added to cart</p>
+            <p class="text-xs text-gray-600" id="toast-message">Premium Smartphone has been added to your cart</p>
+        </div>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <a href="#top" class="scroll-to-top" id="scroll-to-top">
+        <i class="fas fa-chevron-up"></i>
+    </a>
+
+   <!-- FOOTER -->
+    <footer class="bg-dark text-white pt-12 pb-6 md:pb-8 mt-12 md:mt-16">
+        <div class="container mx-auto px-4">
+            <div class="footer-columns grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-8">
+                <div class="footer-column">
+                    <h3 class="footer-title text-lg sm:text-xl mb-3 md:mb-4 pb-2 relative">Shopzy</h3>
+                    <p class="text-gray-300 mb-4 text-xs sm:text-sm">Your one-stop destination for all your shopping needs. Quality products, amazing prices, and exceptional customer service.</p>
+
+                </div>
+
+                <div class="footer-column">
+                    <h3 class="footer-title text-lg sm:text-xl mb-3 md:mb-4 pb-2 relative">Quick Links</h3>
+                    <ul class="space-y-1 md:space-y-2">
+                        <li><a href="{% url 'home' %}" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Home</a></li>
+                        <li><a href="{% url 'shop_page' %}" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Shop</a></li>
+                        <li><a href="{% url 'user_about' %}" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">About Us</a></li>
+                        <li><a href="{% url 'contact' %}" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3 class="footer-title text-lg sm:text-xl mb-3 md:mb-4 pb-2 relative">Customer Service</h3>
+                    <ul class="space-y-1 md:space-y-2">
+                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Return Policy</a></li>
+                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white text-xs sm:text-sm">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h3 class="footer-title text-lg sm:text-xl mb-3 md:mb-4 pb-2 relative">Contact Us</h3>
+                    <ul class="space-y-2 md:space-y-3">
+                        <li class="flex items-start">
+                            <i class="fas fa-map-marker-alt mt-0.5 md:mt-1 mr-2 md:mr-3 text-primary flex-shrink-0"></i>
+                            <span class="text-gray-300 text-xs sm:text-sm">Shopzy, Kaloor Junction, Kerala</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-phone mt-0.5 md:mt-1 mr-2 md:mr-3 text-primary flex-shrink-0"></i>
+                            <span class="text-gray-300 text-xs sm:text-sm">8078855744</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-envelope mt-0.5 md:mt-1 mr-2 md:mr-3 text-primary flex-shrink-0"></i>
+                            <span class="text-gray-300 text-xs sm:text-sm">support@shopzy.com</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom text-center pt-6 md:pt-8 border-t border-gray-700 text-gray-400 text-xs sm:text-sm">
+                <p>&copy; 2023 Shopzy. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
