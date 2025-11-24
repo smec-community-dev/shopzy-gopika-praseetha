@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Management - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .notification-dropdown, .profile-dropdown {
+            display: none;
+        }
+        .notification-button:focus + .notification-dropdown,
+        .notification-dropdown:hover,
+        .profile-button:focus + .profile-dropdown,
+        .profile-dropdown:hover {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Display Django Messages -->
+    {% if messages %}
+    <div class="fixed top-0 left-0 right-0 z-50">
+        {% for message in messages %}
+        <div class="{% if message.tags == 'error' %}bg-red-500{% else %}bg-green-500{% endif %} text-white px-4 py-3 rounded-none text-center">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="flex flex-col lg:flex-row min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-full lg:w-64 bg-white shadow-lg lg:min-h-screen">
+            <div class="p-6 border-b border-gray-200">
+                <h1 class="text-xl font-bold text-indigo-600">Admin Dashboard</h1>
+            </div>
+
+            <nav class="mt-6 px-4">
+                <a href="{% url 'admin_dashboard' %}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl mb-2 transition-colors">
+                    <i class="fas fa-tachometer-alt mr-3 text-gray-500"></i>
+                    Dashboard
+                </a>
+                <a href="{% url 'user_management' %}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl mb-2 transition-colors">
+                    <i class="fas fa-users mr-3 text-gray-500"></i>
+                    User Management
+                </a>
+                <a href="{% url 'product_management' %}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl mb-2 transition-colors">
+                    <i class="fas fa-shopping-bag mr-3 text-gray-500"></i>
+                    Product Management
+                </a>
+                <a href="{% url 'order_management' %}" class="flex items-center px-4 py-3 text-gray-600 hover:bg-indigo-50 rounded-xl mb-2 transition-colors">
+                    <i class="fas fa-box mr-3 text-gray-500"></i>
+                    Order Management
+                </a>
+                <a href="{% url 'seller_management' %}" class="flex items-center px-4 py-3 text-gray-700 bg-indigo-50 rounded-xl mb-2 font-medium">
+                    <i class="fas fa-store mr-3 text-indigo-600"></i>
+                    Seller Management
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 lg:ml-0 flex flex-col">
+            <!-- Desktop Header -->
+            <header class="hidden lg:block bg-white shadow-sm py-4 px-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">Seller Management</h1>
+                        <p class="text-gray-500 text-sm mt-1">Manage all sellers and their shops on the platform</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <button class="profile-button flex items-center space-x-2 p-2 text-gray-700 hover:text-gray-900 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                                <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold">
+                                    {{ request.user.username|first|upper }}
+                                </div>
+                                <span class="text-sm font-medium">{{ request.user.username }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Seller Management Content -->
+            <div class="p-4 md:p-6 flex-1">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+                    <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-xl bg-indigo-100 text-indigo-500">
+                                <i class="fas fa-store text-lg md:text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Total Sellers</p>
+                                <p class="text-xl md:text-2xl font-semibold text-gray-800">{{ total_sellers|default:"0" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-xl bg-green-100 text-green-500">
+                                <i class="fas fa-check-circle text-lg md:text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Active Sellers</p>
+                                <p class="text-xl md:text-2xl font-semibold text-gray-800">{{ active_sellers|default:"0" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-xl bg-amber-100 text-amber-500">
+                                <i class="fas fa-cubes text-lg md:text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Total Products</p>
+                                <p class="text-xl md:text-2xl font-semibold text-gray-800">{{ total_products|default:"0" }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
+                        <div class="flex items-center">
+                            <div class="p-3 rounded-xl bg-blue-100 text-blue-500">
+                                <i class="fas fa-shield-alt text-lg md:text-xl"></i>
+                            </div>
+                            <div class="ml-4">
+                                <p class="text-sm font-medium text-gray-500">Verified Sellers</p>
+                                <p class="text-xl md:text-2xl font-semibold text-gray-800">{{ verified_sellers|default:"0" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Sellers -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Recently Joined Sellers</h3>
+                    <div class="space-y-3">
+                        {% for seller in recent_sellers %}
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-semibold">
+                                    {{ seller.shop_name|first|upper }}
+                                </div>
+                                <div class="ml-4">
+                                    <p class="font-medium text-gray-900">{{ seller.shop_name }}</p>
+                                    <p class="text-sm text-gray-500">{{ seller.user.username }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-semibold text-gray-900">{{ seller.product_count }} products</p>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                                    {% if seller.user.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                    {% if seller.user.is_active %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-gray-500 text-center py-4">No recent sellers</p>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Search and Filter Section -->
+                <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 mb-6">
+                    <form method="GET" class="flex flex-col lg:flex-row gap-3">
+                        <div class="flex-1">
+                            <input
+                                type="text"
+                                name="search"
+                                placeholder="Search sellers by shop name, username, or address..."
+                                value="{{ search_query }}"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            >
+                        </div>
+                        <div class="flex gap-3">
+                            <select name="status" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                <option value="">All Status</option>
+                                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                                <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+                            </select>
+                            <button type="submit" class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center">
+                                <i class="fas fa-search mr-2"></i>Search
+                            </button>
+                            <a href="{% url 'seller_management' %}" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors flex items-center">
+                                <i class="fas fa-refresh mr-2"></i>Reset
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Sellers Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h2 class="text-lg font-semibold text-gray-900">All Sellers</h2>
+                                <p class="text-sm text-gray-500 mt-1">Manage seller accounts and shop information</p>
+                            </div>
+                            <div class="text-sm text-gray-500">
+                                {% if sellers.paginator.count %}
+                                    Showing {{ sellers.start_index }} to {{ sellers.end_index }} of {{ sellers.paginator.count }} sellers
+                                {% else %}
+                                    No sellers found
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Seller</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Shop Info</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Products</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for seller in sellers %}
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-semibold">
+                                                {{ seller.shop_name|first|upper }}
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">{{ seller.shop_name }}</div>
+                                                <div class="text-sm text-gray-500">{{ seller.user.username }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">{{ seller.user.email }}</div>
+                                        <div class="text-sm text-gray-500">{{ seller.user.contact|default:"No contact" }}</div>
+                                    </td>
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-900 max-w-xs truncate">{{ seller.address|truncatewords:6 }}</div>
+                                        {% if seller.website %}
+                                        <div class="text-sm text-indigo-600">
+                                            <a href="{{ seller.website }}" target="_blank" class="hover:underline">Website</a>
+                                        </div>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-semibold text-gray-900">{{ seller.product_count|default:"0" }} products</div>
+                                        <div class="text-xs text-gray-500">
+                                            {% if seller.total_sales %}
+                                            Sales: ₹{{ seller.total_sales|floatformat:0 }}
+                                            {% else %}
+                                            No sales yet
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                            {% if seller.user.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                            {% if seller.user.is_active %}
+                                            <i class="fas fa-check-circle mr-1"></i> Active
+                                            {% else %}
+                                            <i class="fas fa-times-circle mr-1"></i> Inactive
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <form method="POST" action="{% url 'toggle_seller_status' seller.id %}" class="inline">
+                                            {% csrf_token %}
+                                            {% if seller.user.is_active %}
+                                            <button type="submit" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800 hover:bg-amber-200 transition-colors">
+                                                <i class="fas fa-ban mr-1"></i> Deactivate
+                                            </button>
+                                            {% else %}
+                                            <button type="submit" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 hover:bg-green-200 transition-colors">
+                                                <i class="fas fa-check mr-1"></i> Activate
+                                            </button>
+                                            {% endif %}
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="px-6 py-8 text-center text-gray-500">
+                                        <div class="flex flex-col items-center justify-center">
+                                            <i class="fas fa-store text-4xl mb-3 text-gray-300"></i>
+                                            <p class="text-lg font-medium text-gray-900">No sellers found</p>
+                                            <p class="text-sm text-gray-500 mt-1">
+                                                {% if search_query or status_filter %}
+                                                Try adjusting your search or filters
+                                                {% else %}
+                                                No sellers in the system yet
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if sellers.has_other_pages %}
+                    <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                        <div class="flex items-center justify-between">
+                            <div class="text-sm text-gray-500">
+                                Showing {{ sellers.start_index }} to {{ sellers.end_index }} of {{ sellers.paginator.count }} sellers
+                            </div>
+                            <div class="flex space-x-2">
+                                {% if sellers.has_previous %}
+                                <a href="?page={{ sellers.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                                   class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors flex items-center">
+                                    <i class="fas fa-chevron-left mr-1 text-xs"></i> Previous
+                                </a>
+                                {% endif %}
+
+                                {% for num in sellers.paginator.page_range %}
+                                    {% if sellers.number == num %}
+                                    <span class="px-3 py-2 border border-indigo-500 bg-indigo-500 text-white rounded-lg text-sm">
+                                        {{ num }}
+                                    </span>
+                                    {% elif num > sellers.number|add:'-3' and num < sellers.number|add:'3' %}
+                                    <a href="?page={{ num }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                                       class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+                                        {{ num }}
+                                    </a>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if sellers.has_next %}
+                                <a href="?page={{ sellers.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+                                   class="px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition-colors flex items-center">
+                                    Next <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Bottom Navigation -->
+                <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 px-6 flex justify-around">
+                    <a href="{% url 'admin_dashboard' %}" class="flex flex-col items-center text-gray-500">
+                        <i class="fas fa-tachometer-alt mb-1"></i>
+                        <span class="text-xs">Dashboard</span>
+                    </a>
+                    <a href="{% url 'user_management' %}" class="flex flex-col items-center text-gray-500">
+                        <i class="fas fa-users mb-1"></i>
+                        <span class="text-xs">Users</span>
+                    </a>
+                    <a href="{% url 'product_management' %}" class="flex flex-col items-center text-gray-500">
+                        <i class="fas fa-shopping-bag mb-1"></i>
+                        <span class="text-xs">Products</span>
+                    </a>
+                    <a href="{% url 'seller_management' %}" class="flex flex-col items-center text-indigo-600">
+                        <i class="fas fa-store mb-1"></i>
+                        <span class="text-xs">Sellers</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="bg-white border-t border-gray-200 py-4 px-6 mt-auto">
+                <div class="text-center text-sm text-gray-500">
+                    &copy; 2025 Admin Dashboard. All rights reserved.
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // Auto-hide messages after 5 seconds
+        setTimeout(function() {
+            const messages = document.querySelectorAll('.fixed .bg-red-500, .fixed .bg-green-500');
+            messages.forEach(message => {
+                message.style.display = 'none';
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

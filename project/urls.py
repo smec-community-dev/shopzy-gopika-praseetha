@@ -17,14 +17,68 @@ Including another URLconf
 from tkinter.font import names
 
 from django.contrib import admin
+
+from django.urls import path, include
+
 from django.urls import path
+
 from django.conf import settings
 from django.conf.urls.static import static
 from User import views as view_user
 
 
+
+from Seller import views as views_seller
+from Core import views as view_admin
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+
+    path('seller/register',views_seller.user_register,name="seller_register"),
+
+    path('seller/login',views_seller.user_login,name="seller_login"),
+    path('sellerdashboard',views_seller.seller_dashboard,name="seller_dashboard"),
+    path('seller/product',views_seller.Create_Product,name="seller_addproduct"),
+    path('delete_product/<slug:slug>/', views_seller.product_delete, name='product_delete'),
+    path('edit_product/<slug:slug>/', views_seller.edit_product, name='edit_product'),
+    path('seller/orders',views_seller.order_list,name='oderslist'),
+    path('seller/order/<int:id>/', views_seller.order_single_list, name='orderlist_single'),
+    path('seller/product_single/<slug:slug>',views_seller.product_single, name='product_single'),
+    path('seller/profile',views_seller.seller_profile,name='profile_update'),
+    path('seller/forgott',views_seller.seller_forgott,name='forgott_password'),
+    path('seller/logout',views_seller.seller_logout,name='seller_logout'),
+    path('seller/addform',views_seller.Create_products_form,name='addform'),
+    path('order/<int:order_id>/update-status/', views_seller.update_order_status, name='update_order_status'),
+    path('profile/password_change/', views_seller.seller_password_change, name='seller_password_change'),
+    path('profile/update/', views_seller.seller_profile_update, name='seller_profile_update'),
+    path('profile/delete/', views_seller.seller_delete_profile, name='seller_delete_profile'),
+    path('accounts/', include('allauth.urls')),
+    path('login/admin',view_admin.admin_login,name='admin_login'),
+    path('dashbaords/admin',view_admin.admin_dashboard, name='admin_dashboard'),
+    path('admin/logout/', view_admin.admin_logout, name='admin_logout'),
+    path('create-admin/', view_admin.create_temp_admin, name='create_admin'),
+    path('users/admin/', view_admin.user_management, name='user_management'),
+    path('product/admin/', view_admin.product_management, name='product_management'),
+    path('orders/admin/', view_admin.order_management, name='order_management'),
+    path('sellers/admin/', view_admin.seller_management, name='seller_management'),
+    path('analytics/admin/', view_admin.analytics, name='analytics'),
+    path('settings/admin/', view_admin.admin_settings, name='admin_settings'),
+    path('users/admin/toggle/<int:user_id>/', view_admin.toggle_user_status, name='toggle_user_status'),
+    path('orders/admin/update-status/<int:order_id>/', view_admin.update_order_status, name='update_order_status'),
+    path('orders/admin/viewdetails/<int:order_id>/', view_admin.order_detail, name='order_detail'),
+    path('users/admin/update-role/<int:user_id>/', view_admin.update_user_role, name='update_user_role'),
+    path('users/admin/delete/<int:user_id>/', view_admin.delete_user, name='delete_user'),
+    path('products/admin/toggle-status/<int:product_id>/', view_admin.toggle_product_status, name='toggle_product_status'),
+    path('orders/admin/<int:order_id>/', view_admin.order_detail, name='order_detail'),
+    path('sellers/admin/toggle-status/<int:seller_id>/', view_admin.toggle_seller_status, name='toggle_seller_status'),
+    path('reviews/', view_admin.review_management, name='review_management'),
+    path('reviews/<int:review_id>/', view_admin.review_detail, name='review_detail'),
+    path('reviews/<int:review_id>/delete/', view_admin.delete_review, name='delete_review'),
+
+
+
+
+
     path('',view_user.user_home),
     path('user_register/',view_user.user_register,name='user_register'),
     path('user_login/',view_user.user_login,name='user_login'),
@@ -45,8 +99,14 @@ urlpatterns = [
     path('user_dashboard/', view_user.user_dashboard, name='user_dashboard'),
     path('user_orders/', view_user.user_orders, name='user_orders'),
     path("add_review/<slug:slug>/", view_user.add_review, name="add_review"),
-
 ]
+
+
+
+
+
+
+
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
