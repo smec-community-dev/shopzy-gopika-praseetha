@@ -1,3 +1,4 @@
+
 from datetime import timedelta
 from datetime import datetime, timedelta
 
@@ -715,4 +716,8 @@ def seller_delete_profile(request):
     # Redirect if accessed via GET accidentally
     return redirect('profile_update')
 
+
+
+
+# Create your views here.
 

@@ -17,10 +17,15 @@ Including another URLconf
 from tkinter.font import names
 
 from django.contrib import admin
+
 from django.urls import path, include
+
+from django.urls import path
+
 from django.conf import settings
 from django.conf.urls.static import static
 from User import views as view_user
+
 
 
 from Seller import views as views_seller
@@ -71,6 +76,9 @@ urlpatterns = [
     path('reviews/<int:review_id>/delete/', view_admin.delete_review, name='delete_review'),
 
 
+
+
+
     path('',view_user.user_home),
     path('user_register/',view_user.user_register,name='user_register'),
     path('user_login/',view_user.user_login,name='user_login'),
@@ -91,9 +99,8 @@ urlpatterns = [
     path('user_dashboard/', view_user.user_dashboard, name='user_dashboard'),
     path('user_orders/', view_user.user_orders, name='user_orders'),
     path("add_review/<slug:slug>/", view_user.add_review, name="add_review"),
-
-
 ]
+
 
 
 

@@ -21,9 +21,6 @@ class User(AbstractUser):
         return f"{self.username} ({self.role})"
 
 
-
-
-
 class Category(models.Model):
     category_name = models.CharField(max_length=200)
     slug = models.SlugField(unique=True, blank=True)
@@ -34,7 +31,6 @@ class Category(models.Model):
         if not self.slug:
             self.slug = slugify(self.category_name)
         super().save(*args, **kwargs)
-
 
     def __str__(self):
         return self.category_name
@@ -55,6 +51,4 @@ class SubCategory(models.Model):
     def __str__(self):
         return f"{self.sub_category_name} ({self.category.category_name})"
 
-    def __str__(self):
-        return f"{self.sub_category_name} ({self.category.category_name})"
 

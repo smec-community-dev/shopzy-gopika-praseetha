@@ -1,3 +1,4 @@
+
 from datetime import timedelta
 
 from django.core.paginator import Paginator
@@ -702,3 +703,8 @@ def delete_review(request, review_id):
         return redirect('review_management')
 
     return redirect('review_detail', review_id=review_id)
+
+
+
+# Create your views here.
+
