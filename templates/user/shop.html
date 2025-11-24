@@ -707,7 +707,6 @@
     </style>
 </head>
 <body class="bg-gray-50 text-dark">
-    <!-- Header & Navigation -->
     <header class="bg-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4">
             <nav class="flex justify-between items-center py-4">
@@ -724,9 +723,8 @@
                 </ul>
 
                 <div class="flex items-center">
-                    <!-- Search Form -->
                     <form action="{% url 'shop_page' %}" method="GET"
-                          class="flex items-center bg-light rounded-full px-4 py-2 mr-4 w-64 search-bar">
+                          class="hidden md:flex items-center bg-light rounded-full px-4 py-2 mr-4 max-w-xs w-full search-bar">
 
                         <input type="text"
                                name="q"
@@ -740,19 +738,16 @@
                     </form>
 
 
-                    <!-- Wishlist -->
                     <a href="{% url 'user_view_wishlist' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
                         <i class="far fa-heart text-xl"></i>
                         <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ request.user.wishlist.count }}</span>
                     </a>
 
-                    <!-- Cart -->
                     <a href="{% url 'user_view_cart' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
                         <i class="fas fa-shopping-cart text-xl"></i>
                         <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ request.user.cart_items.count }}</span>
                     </a>
 
-                    <!-- User Account Dropdown -->
                     <div class="relative group">
                         <div class="user-info flex items-center ml-4 bg-light rounded-full px-4 py-2 cursor-pointer transition-all hover:bg-primary hover:text-white">
                             <i class="fas fa-user mr-2 text-primary transition-colors"></i>
@@ -766,7 +761,6 @@
                             <i class="fas fa-chevron-down ml-2 text-sm"></i>
                         </div>
 
-                        <!-- Dropdown Menu -->
                         <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
                             {% if request.user.is_authenticated %}
                                 <a href="{% url 'user_dashboard' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
@@ -793,7 +787,6 @@
                         </div>
                     </div>
 
-                    <!-- Mobile menu toggle -->
                     <label for="nav-toggle" class="md:hidden ml-4 text-xl cursor-pointer">
                         <i class="fas fa-bars"></i>
                     </label>
@@ -801,10 +794,8 @@
             </nav>
         </div>
 
-        <!-- Hidden checkbox for mobile menu -->
         <input type="checkbox" id="nav-toggle" class="hidden">
 
-        <!-- Mobile Navigation -->
         <div class="mobile-nav bg-white shadow-lg md:hidden">
             <div class="container mx-auto px-4">
                 <a href="{% url 'home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
@@ -812,7 +803,6 @@
                 <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">About</a>
                 <a href="#" class="block py-3 hover:text-primary transition-colors">Contact</a>
 
-                <!-- Add login/register links for mobile -->
                 {% if not request.user.is_authenticated %}
                 <div class="border-t border-gray-200 mt-4 pt-4">
                     <a href="{% url 'user_login' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Login</a>
@@ -830,7 +820,6 @@
         </div>
     </header>
 
-    <!-- Shop Header Section -->
     <section class="bg-gradient-to-r from-primary to-accent text-white py-12 relative overflow-hidden">
         <div class="container mx-auto px-4 relative z-10">
             <div class="max-w-3xl">
@@ -849,14 +838,11 @@
         </div>
     </section>
 
-    <!-- Shop Content -->
     <section class="container mx-auto px-4 py-8 mb-12">
         <div class="flex flex-col lg:flex-row gap-6">
-            <!-- Sidebar Filters -->
             <div class="lg:w-1/4">
                 <div class="bg-white rounded-xl shadow-lg p-5 sticky top-24 hidden lg:block">
 
-                    <!-- Header -->
                     <div class="flex justify-between items-center mb-5">
                         <h3 class="text-lg font-bold text-dark">Filters</h3>
                         <a href="{% url 'shop_page' %}" class="text-primary text-sm font-medium">Clear All</a>
@@ -874,13 +860,11 @@
                                 {% for cat in categories %}
                                 <label class="flex items-center cursor-pointer">
 
-                                    <!-- Checkbox -->
                                     <input type="checkbox"
                                         class="mr-2 rounded text-primary focus:ring-primary"
                                         {% if selected_category == cat.slug %}checked{% endif %}
                                         onclick="window.location='?category={{ cat.slug }}{% if search_query %}&q={{ search_query }}{% endif %}{% if sort_option %}&sort={{ sort_option }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if rating_filter %}&rating={{ rating_filter }}{% endif %}'">
 
-                                    <!-- Name -->
                                     <span class="text-sm {% if selected_category == cat.slug %}text-primary font-semibold{% endif %}">
                                         {{ cat.category_name }}
                                     </span>
@@ -892,9 +876,6 @@
                         </div>
                     </div>
 
-                    <!-- ============================= -->
-                    <!-- PRICE FILTER (Dynamic)        -->
-                    <!-- ============================= -->
                     <div class="filter-section mb-5">
                         <div class="filter-toggle flex justify-between items-center mb-3" tabindex="0">
                             <h4 class="font-semibold text-base">Price Range</h4>
@@ -904,7 +885,6 @@
                         <div class="filter-content active">
                             <form method="GET">
 
-                                <!-- Keep existing filters -->
                                 {% if selected_category %}
                                 <input type="hidden" name="category" value="{{ selected_category }}">
                                 {% endif %}
@@ -921,7 +901,6 @@
                                 <input type="hidden" name="rating" value="{{ rating_filter }}">
                                 {% endif %}
 
-                                <!-- Range Inputs -->
                                 <div class="flex gap-2 mb-3">
                                     <input type="number" name="min_price" placeholder="Min"
                                            value="{{ min_price|default:'' }}"
@@ -939,16 +918,13 @@
                     </div>
                 </div>
 
-                <!-- Mobile Filter Button -->
                 <label for="mobile-filter-toggle" class="lg:hidden w-full bg-primary text-white py-3 rounded-lg font-semibold flex items-center justify-center mb-4 cursor-pointer">
                     <i class="fas fa-filter mr-2"></i>
                     Show Filters
                 </label>
             </div>
 
-            <!-- Products Grid -->
             <div class="lg:w-3/4">
-                <!-- Products Header -->
                 <div class="flex flex-col md:flex-row justify-between items-center mb-6">
                     <div class="mb-3 md:mb-0">
                         <p class="text-sm text-gray-600">
@@ -1005,11 +981,9 @@
                     </div>
                 </div>
 
-                <!-- Shop Search Bar -->
                 <div class="shop-search-container mb-5">
                     <form method="GET" class="shop-search-bar w-full">
 
-                        <!-- Keep existing filters in GET -->
                         {% if selected_category %}
                             <input type="hidden" name="category" value="{{ selected_category }}">
                         {% endif %}
@@ -1036,7 +1010,6 @@
                         </button>
                     </form>
 
-                    <!-- Optional Autocomplete Results -->
                     {% if search_suggestions %}
                     <div class="search-suggestions active">
                         {% for suggestion in search_suggestions %}
@@ -1057,14 +1030,11 @@
 
 
 
-               <!-- Products Grid -->
-<!-- Products Grid -->
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-slide-up" id="products-grid">
+               <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 animate-slide-up" id="products-grid">
 
     {% for product in products %}
     <div class="product-card bg-white rounded-xl shadow-md overflow-hidden relative">
 
-        <!-- ❤️ WISHLIST BUTTON -->
         {% if product.slug %}
         <div class="absolute top-3 right-3 z-30">
             <a href="{% url 'add_wishlist' product.slug %}"
@@ -1080,7 +1050,6 @@
         </div>
         {% endif %}
 
-        <!-- PRODUCT IMAGE -->
         <div class="product-img h-40 bg-light flex items-center justify-center relative overflow-hidden">
 
             {% if product.images.first %}
@@ -1093,7 +1062,6 @@
                      class="max-w-full max-h-full">
             {% endif %}
 
-            <!-- STOCK BADGE -->
             {% if product.stock > 10 %}
                 <div class="status-badge in-stock">In Stock</div>
             {% elif product.stock > 0 %}
@@ -1102,20 +1070,16 @@
                 <div class="status-badge out-of-stock">Out of Stock</div>
             {% endif %}
 
-            <!-- QUICK VIEW -->
             <a href="{% url 'user_single_product' product.slug %}"
                class="quick-view-btn absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-primary text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg opacity-0 transition">
                 Quick View
             </a>
         </div>
 
-        <!-- PRODUCT DETAILS -->
         <div class="product-info p-4">
 
-            <!-- NAME -->
             <h3 class="text-base font-semibold mb-1.5">{{ product.product_name }}</h3>
 
-            <!-- RATING -->
             <div class="flex items-center mb-1.5">
                 <div class="text-yellow-500 text-xs">
                     <i class="fas fa-star"></i>
@@ -1123,12 +1087,10 @@
                 <span class="ml-1.5 text-xs text-gray-600">({{ product.rating|default:"4.0" }})</span>
             </div>
 
-            <!-- PRICE -->
             <div class="product-price text-lg font-bold text-secondary mb-3">
                 ₹{{ product.price }}
             </div>
 
-            <!-- CART BUTTONS -->
             <div class="flex space-x-1.5">
                 {% if product.stock > 0 %}
                 {% if product.carted %}
@@ -1163,10 +1125,8 @@
 </div>
 
 
-                <!-- Section Divider -->
                 <div class="section-divider"></div>
 
-                <!-- Pagination -->
                 <div class="flex justify-center mt-8">
                     <div class="flex items-center gap-1.5">
 
@@ -1210,18 +1170,80 @@
         </div>
     </section>
 
-    <!-- Mobile Filter Sidebar -->
     <input type="checkbox" id="mobile-filter-toggle" class="hidden">
     <div class="mobile-filter-overlay" id="mobile-filter-overlay"></div>
     <div class="mobile-filter-sidebar" id="mobile-filter-sidebar">
-        <div class="flex justify-between items-center mb-5">
+        <div class="flex justify-between items-center mb-5 border-b pb-3">
             <h3 class="text-lg font-bold text-dark">Filters</h3>
             <label for="mobile-filter-toggle" class="text-gray-500 cursor-pointer">
                 <i class="fas fa-times text-xl"></i>
             </label>
         </div>
 
-    <!-- Toast Notification -->
+        <div class="space-y-6">
+
+            <div class="filter-section">
+                <h4 class="font-semibold text-base mb-3 border-b pb-2">Categories</h4>
+                <div class="filter-content active">
+                    <div class="space-y-2">
+                        {% for cat in categories %}
+                        <label class="flex items-center cursor-pointer">
+                            <input type="checkbox"
+                                class="mr-2 rounded text-primary focus:ring-primary"
+                                {% if selected_category == cat.slug %}checked{% endif %}
+                                onclick="window.location='?category={{ cat.slug }}{% if search_query %}&q={{ search_query }}{% endif %}{% if sort_option %}&sort={{ sort_option }}{% endif %}{% if min_price %}&min_price={{ min_price }}{% endif %}{% if max_price %}&max_price={{ max_price }}{% endif %}{% if rating_filter %}&rating={{ rating_filter }}{% endif %}'">
+
+                            <span class="text-sm {% if selected_category == cat.slug %}text-primary font-semibold{% endif %}">
+                                {{ cat.category_name }}
+                            </span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h4 class="font-semibold text-base mb-3 border-b pb-2">Price Range</h4>
+                <div class="filter-content active">
+                    <form method="GET">
+                        {% if selected_category %}
+                        <input type="hidden" name="category" value="{{ selected_category }}">
+                        {% endif %}
+                        {% if selected_sub_category %}
+                        <input type="hidden" name="subcategory" value="{{ selected_sub_category }}">
+                        {% endif %}
+                        {% if sort_option %}
+                        <input type="hidden" name="sort" value="{{ sort_option }}">
+                        {% endif %}
+                        {% if search_query %}
+                        <input type="hidden" name="q" value="{{ search_query }}">
+                        {% endif %}
+                        {% if rating_filter %}
+                        <input type="hidden" name="rating" value="{{ rating_filter }}">
+                        {% endif %}
+
+                        <div class="flex gap-2 mb-3">
+                            <input type="number" name="min_price" placeholder="Min"
+                                    value="{{ min_price|default:'' }}"
+                                    class="w-1/2 border p-2 rounded text-sm">
+                            <input type="number" name="max_price" placeholder="Max"
+                                    value="{{ max_price|default:'' }}"
+                                    class="w-1/2 border p-2 rounded text-sm">
+                        </div>
+
+                        <button class="w-full bg-primary text-white py-2 rounded-lg font-semibold text-sm">
+                            Apply Price
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t">
+                <a href="{% url 'shop_page' %}" class="block text-center text-primary font-medium text-sm">Clear All Filters</a>
+            </div>
+        </div>
+    </div>
+
     <div class="toast" id="toast">
         <i class="fas fa-check-circle text-success"></i>
         <div>
@@ -1230,13 +1252,11 @@
         </div>
     </div>
 
-    <!-- Scroll to Top Button -->
     <a href="#top" class="scroll-to-top" id="scroll-to-top">
         <i class="fas fa-chevron-up"></i>
     </a>
 
-   <!-- FOOTER -->
-    <footer class="bg-dark text-white pt-12 pb-6 md:pb-8 mt-12 md:mt-16">
+   <footer class="bg-dark text-white pt-12 pb-6 md:pb-8 mt-12 md:mt-16">
         <div class="container mx-auto px-4">
             <div class="footer-columns grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 mb-8">
                 <div class="footer-column">
