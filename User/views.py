@@ -13,7 +13,7 @@ from Core.models import User,Category,SubCategory
 from Seller.models import Product
 from decorators.decorators import role_required
 from django.conf import settings
-from .models import Customer,Review,ReviewImage,Wishlist,Cart,Order,OrderItem,Address
+from .models import Customer,Review,ReviewImage,Wishlist,Cart,Order,OrderItem,Address,CustomerNotification
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -834,3 +834,25 @@ def create_razorpay_order(request):
             "key": settings.RAZORPAY_KEY_ID,
             "amount": amount_in_paise,
         })
+
+@role_required("customer", login_url="/user_login")
+def user_notifications(request):
+    notifications = CustomerNotification.objects.filter(
+        user=request.user
+    ).order_by('-created_at')
+
+    # mark all as read
+    CustomerNotification.objects.filter(
+        user=request.user,
+        is_read=False
+    ).update(is_read=True)
+
+    return render(request, "user/notifications.html", {
+        "notifications": notifications
+    })
+
+@role_required("customer", login_url="/user_login")
+def get_notification_count(request):
+    unread = CustomerNotification.objects.filter(user=request.user, is_read=False).count()
+    return JsonResponse({"count": unread})
+

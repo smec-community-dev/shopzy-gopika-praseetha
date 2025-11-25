@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'Core',
     'User',
     'Seller.apps.SellerConfig',
+    'channels',
 ]
 
 
@@ -133,8 +134,12 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 
-WSGI_APPLICATION = 'project.wsgi.application'
-
+ASGI_APPLICATION = 'project.asgi.application'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"  # 👈 No Redis needed
+    }
+}
 
 # DATABASES = {
 #     'default': {

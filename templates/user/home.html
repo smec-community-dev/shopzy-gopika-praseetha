@@ -257,6 +257,34 @@
                         <i class="fas fa-shopping-cart text-lg md:text-xl"></i>
                         <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-4 h-4 md:w-5 md:h-5 rounded-full flex items-center justify-center">{{ request.user.cart_items.count }}</span>
                     </a>
+                    <!-- 🔔 NOTIFICATION BELL -->
+                    <style>
+                    .notif-bell {
+                        position: relative;
+                        font-size: 20px;
+                        cursor: pointer;
+                    }
+                    .notif-bell .badge {
+                        position: absolute;
+                        top: -6px;
+                        right: -8px;
+                        background: red;
+                        color: white;
+                        font-size: 10px;
+                        padding: 2px 5px;
+                        border-radius: 50%;
+                        display: none;
+                    }
+                    </style>
+
+                    <a href="{% url 'user_notifications' %}" class="notif-bell hover:text-primary transition-all hover:-translate-y-1">
+                        🔔
+<span id="notif_badge" class="badge"
+      style="display: {% if unread_count > 0 %}inline-block{% else %}none{% endif %};">
+    {{ unread_count }}
+</span>
+                    </a>
+
 
                     <label for="mobile-menu-toggle" class="md:hidden ml-2 text-xl cursor-pointer">
                         <i class="fas fa-bars"></i>
@@ -574,5 +602,39 @@
             </div>
         </div>
     </footer>
+<script>
+    // Only connect WebSocket if user is logged in
+    {% if request.user.is_authenticated %}
+    const socket = new WebSocket(
+        "ws://" + window.location.host + "/ws/notifications/"
+    );
+
+    socket.onopen = function() {
+        console.log("WebSocket Connected!");
+    };
+
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+
+        console.log("New Notification:", data);
+
+        // Update notification badge
+        let badge = document.getElementById("notif_badge");
+        if (badge) {
+            let count = parseInt(badge.innerText || "0");
+            badge.innerText = count + 1;
+            badge.style.display = "inline-block";
+        }
+
+        // Simple popup alert
+        alert(data.title + "\n" + data.message);
+    };
+
+    socket.onclose = function() {
+        console.log("WebSocket Disconnected");
+    };
+    {% endif %}
+</script>
+
 </body>
 </html>

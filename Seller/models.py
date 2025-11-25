@@ -21,7 +21,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
     slug=models.SlugField()
-    rating = models.FloatField(default=0)
+    rating = models.FloatField(default=0,null=True)
     stock = models.IntegerField(default=0)
 
     def __str__(self):

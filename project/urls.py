@@ -39,9 +39,9 @@ urlpatterns = [
 
 
 
-    path('seller/register',views_seller.user_register,name="seller_register"),
+    path('seller/register',views_seller.seller_register,name="seller_register"),
 
-    path('seller/login',views_seller.user_login,name="seller_login"),
+    path('seller/login',views_seller.seller_login,name="seller_login"),
     path('sellerdashboard',views_seller.seller_dashboard,name="seller_dashboard"),
     path('seller/product',views_seller.Create_Product,name="seller_addproduct"),
     path('delete_product/<slug:slug>/', views_seller.product_delete, name='product_delete'),
@@ -53,7 +53,9 @@ urlpatterns = [
     path('seller/forgott',views_seller.seller_forgott,name='forgott_password'),
     path('seller/logout',views_seller.seller_logout,name='seller_logout'),
     path('seller/addform',views_seller.Create_products_form,name='addform'),
-    path('order/<int:order_id>/update-status/', views_seller.update_order_status, name='update_order_status'),
+    # path('order/<int:order_id>/update-status/', views_seller.update_order_status, name='update_order_status'),
+    path('order/update/<slug:slug>/', views_seller.update_order_status, name="update_order_status"),
+
     path('profile/password_change/', views_seller.seller_password_change, name='seller_password_change'),
     path('profile/update/', views_seller.seller_profile_update, name='seller_profile_update'),
     path('profile/delete/', views_seller.seller_delete_profile, name='seller_delete_profile'),
@@ -119,6 +121,10 @@ urlpatterns = [
     # path("accounts/", include("allauth.urls")),
     path('contact/',view_user.contact,name='contact'),
     path("create_razorpay_order/", view_user.create_razorpay_order, name="create_razorpay_order"),
+    path("user_notifications/", view_user.user_notifications, name="user_notifications"),
+    path("get_notification_count/", view_user.get_notification_count, name="get_notification_count"),
+
+
 ]
 
 
