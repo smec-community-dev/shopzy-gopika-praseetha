@@ -442,6 +442,7 @@ def user_orders(request):
             item.subtotal = item.quantity * item.product.price
     return render(request, "user/orders_table.html", {"orders": orders})
 
+@role_required("customer", login_url="/user_login")
 def add_review(request, slug):
     try:
         product = Product.objects.get(slug=slug)
@@ -573,7 +574,7 @@ def cancel_order(request, order_id):
     dj_messages.success(request, "Order cancelled successfully.")
     return redirect("user_orders")
 
-@login_required(login_url='/user_login')
+@role_required("customer", login_url="/user_login")
 def user_dashboard(request):
     user = request.user
 
@@ -602,7 +603,7 @@ def user_dashboard(request):
 
 
 
-@login_required(login_url='/user_login')
+@role_required("customer", login_url="/user_login")
 def user_profile_edit(request):
     user = request.user
 
@@ -752,7 +753,7 @@ def save_address(request):
 
     return redirect("/user_dashboard")
 
-@login_required
+@role_required("customer", login_url="/user_login")
 def delete_address(request, address_id):
     address = get_object_or_404(Address, id=address_id, user=request.user)
     address.delete()
@@ -765,7 +766,7 @@ def delete_address(request, address_id):
 
     return redirect("/user_dashboard/?section=addresses")
 
-@login_required
+@role_required("customer", login_url="/user_login")
 def set_default_address(request, address_id):
     user = request.user
 
@@ -777,7 +778,7 @@ def set_default_address(request, address_id):
 
     return redirect("/user_dashboard/?section=addresses")
 
-@login_required(login_url='/user_login')
+@role_required("customer", login_url="/user_login")
 def change_password_view(request):
     if request.method == 'POST':
         user = request.user
@@ -809,6 +810,7 @@ def user_about(request):
 def contact(request):
     return render(request, 'user/contact.html')
 
+@role_required("customer", login_url="/user_login")
 @csrf_exempt
 def create_razorpay_order(request):
     if request.method == "POST":
