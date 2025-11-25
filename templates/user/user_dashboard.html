@@ -150,7 +150,7 @@
                 <ul class="hidden md:flex space-x-6 lg:space-x-8">
                     <li><a href="{% url 'home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
                     <li><a href="{% url 'shop_page' %}" class="nav-link font-medium text-primary transition-colors">Shop</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
+                    <li><a href="{% url 'user_about' %}" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
                     <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
                 </ul>
 
@@ -216,8 +216,8 @@
                 <div class="container mx-auto px-4 mobile-menu">
                     <a href="{% url 'home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
                     <a href="{% url 'shop_page' %}" class="block py-3 border-b border-gray-200 text-primary transition-colors">Shop</a>
-                    <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">About</a>
-                    <a href="#" class="block py-3 hover:text-primary transition-colors">Contact</a>
+                    <a href="{% url 'user_about' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">About</a>
+                    <a href="{% url 'contact' %}" class="block py-3 hover:text-primary transition-colors">Contact</a>
 
                     {% if request.user.is_authenticated %}
                     <div class="py-3 border-t mt-2 bg-gray-50 -mx-4 px-4">
@@ -286,6 +286,12 @@
                             <li>
                                 <a href="{% url 'user_view_cart' %}" class="sidebar-link flex items-center rounded-lg text-dark hover:bg-primary hover:text-white">
                                     <i class="fas fa-shopping-cart mr-3 w-5 text-center text-primary"></i> Cart
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'user_notifications' %}"
+                                   class="sidebar-link flex items-center rounded-lg text-dark hover:bg-primary hover:text-white">
+                                    <i class="fas fa-bell mr-3 w-5 text-center text-primary"></i> Notifications
                                 </a>
                             </li>
                             <li class="pt-3 border-t mt-3">

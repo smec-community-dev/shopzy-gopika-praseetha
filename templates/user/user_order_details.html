@@ -102,20 +102,47 @@
             left: 100%;
         }
 
-        /* Mobile Navigation with CSS-only toggle */
-        #nav-toggle {
+        /* Mobile Navigation with Drawer */
+        #drawer-toggle {
             display: none;
         }
 
-        #nav-toggle:checked ~ .mobile-nav {
-            max-height: 500px;
-            padding: 1.5rem 0;
+        /* Initial state: hidden off-screen */
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 50; /* Below header z-index 50, but we need it on top of everything else for overlay */
         }
 
-        .mobile-nav {
-            max-height: 0;
-            overflow: hidden;
-            transition: all 0.4s ease;
+        .drawer-content {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 80%; /* Max width for drawer */
+            max-width: 300px;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            z-index: 55; /* Higher than overlay */
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+            overflow-y: auto;
+        }
+
+        /* Checked state: visible and slid in */
+        #drawer-toggle:checked ~ .drawer-overlay {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #drawer-toggle:checked ~ .drawer-content {
+            transform: translateX(0);
         }
 
         /* Search bar focus effect */
@@ -152,10 +179,21 @@
             background-color: #fee2e2;
             color: #dc2626;
         }
+
+        /* Make Order Card Smaller: Change grid-cols-1 lg:grid-cols-2 to md:grid-cols-2 for tablet/smaller desktop */
+        .order-grid-layout {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .order-grid-layout {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        /* No change to order item card size, only the two-column layout is activated sooner (at md) */
     </style>
 </head>
 <body class="bg-gray-50 text-dark">
-    <!-- Header & Navigation -->
     <header class="bg-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4">
             <nav class="flex justify-between items-center py-4">
@@ -174,7 +212,6 @@
                 </ul>
 
                 <div class="flex items-center">
-                    <!-- Search Form -->
                     <form action="{% url 'user_home' %}" class="hidden md:flex items-center bg-light rounded-full px-4 py-2 mr-4 w-64 search-bar">
                         <input type="text"
                                name="q"
@@ -186,21 +223,18 @@
                         </button>
                     </form>
 
-                    <!-- Wishlist -->
                     <a href="{% url 'user_view_wishlist' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
                         <i class="far fa-heart text-xl"></i>
                         <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ request.user.wishlist.count }}</span>
                     </a>
 
-                    <!-- Cart -->
                     <a href="{% url 'user_view_cart' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
                         <i class="fas fa-shopping-cart text-xl"></i>
                         <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ request.user.cart_set.count }}</span>
                     </a>
 
-                    <!-- User Account Dropdown -->
-                    <div class="relative group">
-                        <div class="user-info flex items-center ml-4 bg-light rounded-full px-4 py-2 cursor-pointer transition-all hover:bg-primary hover:text-white">
+                    <div class="relative group hidden md:block">
+                        <div id="desktop-account-toggle" class="user-info flex items-center ml-4 bg-light rounded-full px-4 py-2 cursor-pointer transition-all hover:bg-primary hover:text-white">
                             <i class="fas fa-user mr-2 text-primary transition-colors"></i>
                             <span class="font-medium">
                                 {% if request.user.is_authenticated %}
@@ -212,7 +246,6 @@
                             <i class="fas fa-chevron-down ml-2 text-sm"></i>
                         </div>
 
-                        <!-- Dropdown Menu -->
                         <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
                             {% if request.user.is_authenticated %}
                                 <a href="{% url 'user_home' %}" class="block px-4 py-2 text-dark hover:bg-gray-100 transition-colors">
@@ -239,48 +272,117 @@
                         </div>
                     </div>
 
-                    <!-- Mobile menu toggle -->
-                    <label for="nav-toggle" class="md:hidden ml-4 text-xl cursor-pointer">
+                    <label for="drawer-toggle" id="drawer-toggle-btn" class="md:hidden ml-4 text-xl cursor-pointer" aria-controls="mobile-drawer" aria-expanded="false">
                         <i class="fas fa-bars"></i>
                     </label>
                 </div>
             </nav>
         </div>
 
-        <!-- Hidden checkbox for mobile menu -->
-        <input type="checkbox" id="nav-toggle" class="hidden">
+        <input type="checkbox" id="drawer-toggle" class="hidden">
 
-        <!-- Mobile Navigation -->
-        <div class="mobile-nav bg-white shadow-lg md:hidden">
-            <div class="container mx-auto px-4">
-                <a href="{% url 'user_home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Shop</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Categories</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Deals</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">About</a>
-                <a href="#" class="block py-3 hover:text-primary transition-colors">Contact</a>
+        <div class="drawer-overlay" id="drawer-overlay" aria-hidden="true"></div>
 
-                <!-- Add login/register links for mobile -->
-                {% if not request.user.is_authenticated %}
-                <div class="border-t border-gray-200 mt-4 pt-4">
-                    <a href="{% url 'user_login' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Login</a>
-                    <a href="{% url 'user_register' %}" class="block py-3 hover:text-primary transition-colors">Register</a>
-                </div>
-                {% else %}
-                <div class="border-t border-gray-200 mt-4 pt-4">
-                    <a href="{% url 'user_home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Profile</a>
-                    <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Orders</a>
-                    <a href="{% url 'user_view_wishlist' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Wishlist</a>
-                    <a href="{% url 'user_logout' %}" class="block py-3 hover:text-primary transition-colors">Logout</a>
-                </div>
-                {% endif %}
+        <div class="drawer-content bg-white py-4" id="mobile-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" tabindex="-1">
+            <div class="px-4 border-b pb-4 mb-4 flex justify-between items-center">
+                <h2 id="drawer-title" class="text-xl font-bold text-primary">Menu</h2>
+                <label for="drawer-toggle" class="text-xl cursor-pointer hover:text-secondary">
+                    <i class="fas fa-times"></i>
+                </label>
+            </div>
+
+            <div class="px-4">
+                <form action="{% url 'user_home' %}" class="flex items-center bg-light rounded-full px-4 py-2 mb-4 search-bar">
+                    <input type="text"
+                           name="q"
+                           value="{{ request.GET.q }}"
+                           placeholder="Search products..."
+                           class="bg-transparent outline-none w-full px-2">
+                    <button class="text-gray hover:text-primary transition-colors">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+
+                <ul class="space-y-1 nav-list">
+                    <li><a href="{% url 'user_home' %}" class="block py-3 px-2 rounded hover:bg-gray-100 transition-colors font-medium">Home</a></li>
+                    <li><a href="#" class="block py-3 px-2 rounded hover:bg-gray-100 transition-colors font-medium">Shop</a></li>
+                    <li><a href="#" class="block py-3 px-2 rounded hover:bg-gray-100 transition-colors font-medium">Categories</a></li>
+                    <li><a href="#" class="block py-3 px-2 rounded hover:bg-gray-100 transition-colors font-medium">Deals</a></li>
+                    <li><a href="#" class="block py-3 px-2 rounded hover:bg-gray-100 transition-colors font-medium">About</a></li>
+                    <li><a href="#" class="block py-3 px-2 rounded hover:bg-gray-100 transition-colors font-medium">Contact</a></li>
+                </ul>
+
+                <div class="border-t my-4"></div>
+
+                <ul class="space-y-1 account-list">
+                    {% if request.user.is_authenticated %}
+                        <li><a href="{% url 'user_home' %}" class="block py-3 px-2 rounded hover:bg-gray-100 transition-colors font-medium"><i class="fas fa-user-circle mr-2"></i>My Profile ({{ request.user.username }})</a></li>
+                        <li><a href="#" class="block py-3 px-2 rounded hover:bg-gray-100 transition-colors font-medium"><i class="fas fa-shopping-bag mr-2"></i>My Orders</a></li>
+                        <li><a href="{% url 'user_view_wishlist' %}" class="block py-3 px-2 rounded hover:bg-gray-100 transition-colors font-medium"><i class="fas fa-heart mr-2"></i>Wishlist ({{ request.user.wishlist.count }})</a></li>
+                        <li><a href="{% url 'user_view_cart' %}" class="block py-3 px-2 rounded hover:bg-gray-100 transition-colors font-medium"><i class="fas fa-shopping-cart mr-2"></i>Cart ({{ request.user.cart_set.count }})</a></li>
+                        <li><a href="{% url 'user_logout' %}" class="block py-3 px-2 rounded hover:bg-gray-100 transition-colors font-medium text-danger"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a></li>
+                    {% else %}
+                        <li><a href="{% url 'user_login' %}" class="block py-3 px-2 rounded hover:bg-gray-100 transition-colors font-medium text-primary"><i class="fas fa-sign-in-alt mr-2"></i>Login</a></li>
+                        <li><a href="{% url 'user_register' %}" class="block py-3 px-2 rounded hover:bg-gray-100 transition-colors font-medium text-primary"><i class="fas fa-user-plus mr-2"></i>Register</a></li>
+                    {% endif %}
+                </ul>
             </div>
         </div>
+
     </header>
 
-    <!-- Order Details Section -->
+    <script>
+        const drawerToggle = document.getElementById('drawer-toggle');
+        const drawer = document.getElementById('mobile-drawer');
+        const drawerOverlay = document.getElementById('drawer-overlay');
+        const drawerToggleBtn = document.getElementById('drawer-toggle-btn');
+        const focusableElements = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])';
+
+        function closeDrawer() {
+            drawerToggle.checked = false;
+            drawerToggleBtn.setAttribute('aria-expanded', 'false');
+            // Return focus to the toggle button
+            if (drawerToggleBtn) {
+                drawerToggleBtn.focus();
+            }
+        }
+
+        function handleDrawerOpen() {
+            if (drawerToggle.checked) {
+                drawerToggleBtn.setAttribute('aria-expanded', 'true');
+                // Trap focus logic (minimal)
+                const focusableContent = drawer.querySelectorAll(focusableElements);
+                if (focusableContent.length) {
+                    // Focus on the first focusable element (close button or first link)
+                    focusableContent[0].focus();
+                }
+            }
+        }
+
+        // Close on overlay click
+        drawerOverlay.addEventListener('click', closeDrawer);
+
+        // Close on link click inside drawer
+        drawer.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                // Use a slight delay to allow navigation before closing animation
+                setTimeout(closeDrawer, 100);
+            });
+        });
+
+        // Close on Esc key press
+        document.addEventListener('keydown', (e) => {
+            if (e.key === "Escape" && drawerToggle.checked) {
+                e.preventDefault();
+                closeDrawer();
+            }
+        });
+
+        // Handle drawer state change
+        drawerToggle.addEventListener('change', handleDrawerOpen);
+    </script>
+
     <section class="container mx-auto px-4 py-10 animate-fade-in">
-        <!-- Breadcrumb -->
         <div class="mb-6">
             <nav class="flex" aria-label="Breadcrumb">
                 <ol class="inline-flex items-center space-x-1 md:space-x-3">
@@ -307,7 +409,6 @@
         </div>
 
         <div class="bg-white rounded-2xl shadow-xl p-8 max-w-4xl mx-auto">
-            <!-- Order Header -->
             <div class="text-center mb-8 border-b pb-6">
                 <div class="flex justify-center mb-4">
                     <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
@@ -317,7 +418,6 @@
                 <h1 class="text-3xl font-bold text-gray-800">Order Confirmed!</h1>
                 <p class="text-gray-600 mt-2 text-lg">Thank you for your purchase. Your order has been successfully placed.</p>
 
-                <!-- Order Status -->
                 <div class="mt-4 inline-flex items-center bg-blue-50 px-4 py-2 rounded-full">
                     <i class="fas fa-info-circle text-blue-500 mr-2"></i>
                     <span class="text-blue-700 font-medium">Order Status: </span>
@@ -328,10 +428,8 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Left Column: Order Information -->
+            <div class="grid order-grid-layout gap-8">
                 <div class="space-y-6">
-                    <!-- Order Summary -->
                     <div class="bg-gray-50 p-6 rounded-xl border">
                         <h2 class="text-xl font-bold mb-4 flex items-center">
                             <i class="fas fa-receipt mr-2 text-primary"></i>
@@ -357,7 +455,6 @@
                         </div>
                     </div>
 
-                    <!-- Shipping Information -->
                     <div class="bg-gray-50 p-6 rounded-xl border">
                         <h2 class="text-xl font-bold mb-4 flex items-center">
                             <i class="fas fa-truck mr-2 text-primary"></i>
@@ -374,7 +471,6 @@
                     </div>
                 </div>
 
-                <!-- Right Column: Order Items -->
                 <div>
                     <h2 class="text-xl font-bold mb-4 flex items-center">
                         <i class="fas fa-shopping-bag mr-2 text-primary"></i>
@@ -409,7 +505,6 @@
                         {% endfor %}
                     </div>
 
-                    <!-- Order Total -->
                     <div class="mt-6 p-4 bg-primary bg-opacity-5 rounded-lg border border-primary border-opacity-20">
                         <div class="flex justify-between items-center">
                             <span class="text-lg font-bold text-gray-800">Order Total:</span>
@@ -419,7 +514,6 @@
                 </div>
             </div>
 
-            <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row gap-4 justify-center mt-10 pt-6 border-t">
                 <a href="{% url 'user_home' %}"
                    class="btn bg-primary text-white px-8 py-3 rounded-lg shadow hover:bg-primary-dark font-semibold text-lg text-center transition-all">
@@ -438,7 +532,6 @@
                 </a>
             </div>
 
-            <!-- Help Section -->
             <div class="mt-8 p-6 bg-blue-50 rounded-xl border border-blue-200">
                 <div class="flex items-start">
                     <i class="fas fa-question-circle text-blue-500 text-xl mt-1 mr-3"></i>
@@ -465,7 +558,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="bg-dark text-white pt-16 pb-8 mt-16">
         <div class="container mx-auto px-4">
             <div class="footer-content grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">

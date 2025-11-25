@@ -205,21 +205,45 @@
             border-radius: 2px;
         }
 
-        /* Mobile Navigation with CSS-only toggle */
-        #nav-toggle {
-            display: none;
+        /* Mobile Drawer Styles (New) */
+        .main-drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 50; /* Higher than header (z-50) */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
         }
 
-        #nav-toggle:checked ~ .mobile-nav {
-            max-height: 500px;
-            padding: 1.5rem 0;
+        .main-drawer-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 80%;
+            max-width: 300px;
+            height: 100%;
+            background: white;
+            z-index: 60;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            padding: 1.5rem;
         }
 
-        .mobile-nav {
-            max-height: 0;
-            overflow: hidden;
-            transition: all 0.4s ease;
+        /* State Classes controlled by JS */
+        .main-drawer-overlay.is-open {
+            opacity: 1;
+            visibility: visible;
         }
+
+        .main-drawer-sidebar.is-open {
+            transform: translateX(0);
+        }
+        /* End Mobile Drawer Styles */
 
         /* Search bar focus effect */
         .search-bar input:focus {
@@ -718,8 +742,8 @@
                 <ul class="hidden md:flex space-x-8">
                     <li><a href="{% url 'home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
                     <li><a href="{% url 'shop_page' %}" class="nav-link font-medium text-primary transition-colors">Shop</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
+                    <li><a href="{% url 'user_about' %}" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
+                    <li><a href="{% url 'contact' %}" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
                 </ul>
 
                 <div class="flex items-center">
@@ -738,17 +762,17 @@
                     </form>
 
 
-                    <a href="{% url 'user_view_wishlist' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
+                    <a href="{% url 'user_view_wishlist' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1 hidden sm:block">
                         <i class="far fa-heart text-xl"></i>
                         <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ request.user.wishlist.count }}</span>
                     </a>
 
-                    <a href="{% url 'user_view_cart' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1">
+                    <a href="{% url 'user_view_cart' %}" class="relative mx-2 text-dark hover:text-primary transition-all hover:-translate-y-1 hidden sm:block">
                         <i class="fas fa-shopping-cart text-xl"></i>
                         <span class="absolute -top-2 -right-2 bg-secondary text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">{{ request.user.cart_items.count }}</span>
                     </a>
 
-                    <div class="relative group">
+                    <div class="relative group hidden md:block">
                         <div class="user-info flex items-center ml-4 bg-light rounded-full px-4 py-2 cursor-pointer transition-all hover:bg-primary hover:text-white">
                             <i class="fas fa-user mr-2 text-primary transition-colors"></i>
                             <span class="font-medium">
@@ -787,36 +811,15 @@
                         </div>
                     </div>
 
-                    <label for="nav-toggle" class="md:hidden ml-4 text-xl cursor-pointer">
+                    <button id="drawer-open-btn"
+                            class="md:hidden ml-4 text-xl cursor-pointer p-1"
+                            aria-label="Toggle navigation menu"
+                            aria-expanded="false"
+                            aria-controls="main-drawer">
                         <i class="fas fa-bars"></i>
-                    </label>
+                    </button>
                 </div>
             </nav>
-        </div>
-
-        <input type="checkbox" id="nav-toggle" class="hidden">
-
-        <div class="mobile-nav bg-white shadow-lg md:hidden">
-            <div class="container mx-auto px-4">
-                <a href="{% url 'home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
-                <a href="{% url 'shop_page' %}" class="block py-3 border-b border-gray-200 text-primary transition-colors">Shop</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">About</a>
-                <a href="#" class="block py-3 hover:text-primary transition-colors">Contact</a>
-
-                {% if not request.user.is_authenticated %}
-                <div class="border-t border-gray-200 mt-4 pt-4">
-                    <a href="{% url 'user_login' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Login</a>
-                    <a href="{% url 'user_register' %}" class="block py-3 hover:text-primary transition-colors">Register</a>
-                </div>
-                {% else %}
-                <div class="border-t border-gray-200 mt-4 pt-4">
-                    <a href="{% url 'home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Profile</a>
-                    <a href="{% url 'user_orders' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Orders</a>
-                    <a href="{% url 'user_view_wishlist' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Wishlist</a>
-                    <a href="#" class="block py-3 hover:text-primary transition-colors">Logout</a>
-                </div>
-                {% endif %}
-            </div>
         </div>
     </header>
 
@@ -1170,6 +1173,53 @@
         </div>
     </section>
 
+    <div class="main-drawer-overlay" id="main-drawer-overlay" role="presentation"></div>
+    <div class="main-drawer-sidebar" id="main-drawer-sidebar" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+        <div class="flex justify-between items-center mb-6 border-b pb-4">
+            <h3 id="drawer-title" class="text-xl font-bold text-primary">Shopzy Menu</h3>
+            <button id="drawer-close-btn" class="text-gray-500 hover:text-dark cursor-pointer p-1">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+
+        <nav class="space-y-1">
+            <a href="{% url 'home' %}" class="block py-3 px-2 border-b border-gray-100 hover:bg-gray-50 hover:text-primary transition-colors font-medium">Home</a>
+            <a href="{% url 'shop_page' %}" class="block py-3 px-2 border-b border-gray-100 text-primary transition-colors font-medium">Shop</a>
+            <a href="{% url 'user_about' %}" class="block py-3 px-2 border-b border-gray-100 hover:bg-gray-50 hover:text-primary transition-colors font-medium">About</a>
+            <a href="{% url 'contact' %}" class="block py-3 px-2 border-b border-gray-100 hover:bg-gray-50 hover:text-primary transition-colors font-medium">Contact</a>
+        </nav>
+
+        <div class="border-t border-gray-200 mt-6 pt-6">
+            <h4 class="font-bold text-sm text-gray-700 mb-3 uppercase tracking-wider">Account</h4>
+            <div class="space-y-1">
+                {% if request.user.is_authenticated %}
+                <a href="{% url 'user_dashboard' %}" class="block py-3 px-2 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fas fa-user-circle mr-2 w-5"></i>My Profile
+                </a>
+                <a href="{% url 'user_orders' %}" class="block py-3 px-2 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fas fa-shopping-bag mr-2 w-5"></i>My Orders
+                </a>
+                <a href="{% url 'user_view_wishlist' %}" class="block py-3 px-2 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fas fa-heart mr-2 w-5"></i>Wishlist
+                </a>
+                <a href="{% url 'user_view_cart' %}" class="block py-3 px-2 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fas fa-shopping-cart mr-2 w-5"></i>Cart
+                </a>
+                <a href="{% url 'user_logout' %}" class="block py-3 px-2 text-danger hover:bg-gray-50 transition-colors font-medium">
+                    <i class="fas fa-sign-out-alt mr-2 w-5"></i>Logout
+                </a>
+                {% else %}
+                <a href="{% url 'user_login' %}" class="block py-3 px-2 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fas fa-sign-in-alt mr-2 w-5"></i>Login
+                </a>
+                <a href="{% url 'user_register' %}" class="block py-3 px-2 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fas fa-user-plus mr-2 w-5"></i>Register
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
     <input type="checkbox" id="mobile-filter-toggle" class="hidden">
     <div class="mobile-filter-overlay" id="mobile-filter-overlay"></div>
     <div class="mobile-filter-sidebar" id="mobile-filter-sidebar">
@@ -1309,6 +1359,84 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const openBtn = document.getElementById('drawer-open-btn');
+            const closeBtn = document.getElementById('drawer-close-btn');
+            const sidebar = document.getElementById('main-drawer-sidebar');
+            const overlay = document.getElementById('main-drawer-overlay');
+            const focusableElements = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+            let firstFocusableEl;
+            let lastFocusableEl;
+
+            // Function to close the drawer
+            const closeDrawer = () => {
+                sidebar.classList.remove('is-open');
+                overlay.classList.remove('is-open');
+                openBtn.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = ''; // Restore scrolling
+                // Return focus to the button that opened the drawer
+                openBtn.focus();
+            };
+
+            // Function to open the drawer
+            const openDrawer = () => {
+                sidebar.classList.add('is-open');
+                overlay.classList.add('is-open');
+                openBtn.setAttribute('aria-expanded', 'true');
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+
+                // Focus trapping setup
+                const focusableContent = sidebar.querySelectorAll(focusableElements);
+                firstFocusableEl = focusableContent[0];
+                lastFocusableEl = focusableContent[focusableContent.length - 1];
+
+                // Focus on the close button when opened
+                closeBtn.focus();
+            };
+
+            // Trap Focus Handler
+            const trapFocus = (e) => {
+                if (e.key === 'Tab') {
+                    if (e.shiftKey) { // Shift + Tab
+                        if (document.activeElement === firstFocusableEl) {
+                            lastFocusableEl.focus();
+                            e.preventDefault();
+                        }
+                    } else { // Tab
+                        if (document.activeElement === lastFocusableEl) {
+                            firstFocusableEl.focus();
+                            e.preventDefault();
+                        }
+                    }
+                }
+            };
+
+            // Event Listeners
+            openBtn.addEventListener('click', openDrawer);
+            closeBtn.addEventListener('click', closeDrawer);
+            overlay.addEventListener('click', closeDrawer);
+
+            // Close when any link inside is clicked
+            sidebar.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    // Timeout allows navigation to start before closing drawer.
+                    setTimeout(closeDrawer, 100);
+                });
+            });
+
+            // Close on ESC key press
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && sidebar.classList.contains('is-open')) {
+                    closeDrawer();
+                }
+            });
+
+            // Add keydown listener to the sidebar for focus trap
+            sidebar.addEventListener('keydown', trapFocus);
+        });
+    </script>
 
 </body>
 </html>

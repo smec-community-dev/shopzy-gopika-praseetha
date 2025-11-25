@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from Core.models import User,SubCategory
 from Seller.models import Product
@@ -106,3 +107,24 @@ class Address(models.Model):
 
     def __str__(self):
         return f"{self.full_name}, {self.address_line1}, {self.city}"
+
+class CustomerNotification(models.Model):
+    NOTIFICATION_TYPES = (
+        ('order_placed', 'Order Placed'),
+        ('order_confirmed', 'Order Confirmed'),
+        ('order_shipped', 'Order Shipped'),
+        ('order_delivered', 'Order Delivered'),
+        ('order_cancelled', 'Order Cancelled'),
+    )
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, default='info')
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    order = models.ForeignKey('Order', on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+

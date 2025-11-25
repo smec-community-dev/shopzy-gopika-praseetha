@@ -136,6 +136,7 @@ SOCIALACCOUNT_PROVIDERS = {
 
 ASGI_APPLICATION = 'project.asgi.application'
 
+
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
@@ -144,6 +145,7 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
 
 
 # DATABASES = {
@@ -159,6 +161,9 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 
 
 

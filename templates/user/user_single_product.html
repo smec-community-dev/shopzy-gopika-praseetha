@@ -173,8 +173,8 @@
                 <ul class="hidden md:flex space-x-8">
                     <li><a href="{% url 'home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
                     <li><a href="{% url 'shop_page' %}"class="nav-link font-medium text-primary transition-colors">Shop</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
-                    <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
+                    <li><a href="{% url 'user_about' %}" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
+                    <li><a href="{% url 'contact' %}" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
                 </ul>
 
                 <div class="flex items-center">
@@ -263,8 +263,8 @@
             <div class="container mx-auto px-4">
                 <a href="{% url 'home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
                 <a href="{% url 'shop_page' %}" class="block py-3 border-b border-gray-200 text-primary transition-colors">Shop</a>
-                <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">About</a>
-                <a href="#" class="block py-3 hover:text-primary transition-colors">Contact</a>
+                <a href="{% url 'user_about' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">About</a>
+                <a href="{% url 'contact' %}" class="block py-3 hover:text-primary transition-colors">Contact</a>
 
                 <!-- Add login/register links for mobile -->
                 {% if not request.user.is_authenticated %}

@@ -23,6 +23,7 @@ from django.utils.timezone import now
 
 from Core.models import User, SubCategory
 from User.models import Order, OrderItem, Review
+from User.utils import notify_order_status
 from decorators.decorators import role_required
 from .models import Seller, Product, ProductImage
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
@@ -33,7 +34,7 @@ from django.contrib import messages
 
 from django.contrib import messages
 
-def user_register(request):
+def seller_register(request):
     if request.method == "POST":
 
 
@@ -309,7 +310,7 @@ def seller_dashboard(request):
 
     return render(request, 'seller/seller_dashboard.html', context)
 
-def user_login(request):
+def seller_login(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -530,8 +531,9 @@ def update_order_status(request, order_id):
             messages.success(request, f'Order status updated to {new_status}.')
         else:
             messages.error(request, 'Invalid status.')
+    notify_order_status(order, new_status)
 
-        return redirect('orderlist_single', id=order_id)
+    return redirect('orderlist_single', id=order_id)
 # def order_single_list(request, id):
 #     seller = Seller.objects.get(user=request.user)
 #     order = OrderItem.objects.get(id=id, product__seller=seller)

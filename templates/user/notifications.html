@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notifications</title>
+    <style>
+        .notif-card {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+        }
+        .notif-unread {
+            border-left: 4px solid #007bff;
+            background: #f0f7ff;
+        }
+        .notif-title {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .notif-date {
+            font-size: 12px;
+            color: #777;
+        }
+        .notif-msg {
+            margin-top: 5px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Your Notifications</h2>
+
+{% if notifications %}
+    {% for notif in notifications %}
+    <div class="notif-card {% if not notif.is_read %}notif-unread{% endif %}">
+        <div class="notif-title">{{ notif.title }}</div>
+        <div class="notif-msg">{{ notif.message }}</div>
+        <div class="notif-date">{{ notif.created_at }}</div>
+    </div>
+    {% endfor %}
+{% else %}
+    <p>No notifications found.</p>
+{% endif %}
+
+<script>
+    {% if request.user.is_authenticated %}
+    const socket = new WebSocket(
+        "ws://" + window.location.host + "/ws/notifications/"
+    );
+
+    socket.onmessage = function(event) {
+        const data = JSON.parse(event.data);
+
+        console.log("New Notification (inside notifications page):", data);
+
+        // OPTIONALLY: auto-refresh page
+        location.reload();
+
+        // OR append new notification (if you prefer no reload)
+        // (Tell me if you want this version)
+    };
+    {% endif %}
+</script>
+</body>
+</html>

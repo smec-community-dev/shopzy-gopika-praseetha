@@ -3,16 +3,20 @@ from asgiref.sync import async_to_sync
 from Seller.models import SellerNotification
 import re
 
+import razorpay
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages as dj_messages
+from django.views.decorators.csrf import csrf_exempt
 from unicodedata import category
 
 from Core.models import User,Category,SubCategory
 from Seller.models import Product
 from decorators.decorators import role_required
-from .models import Customer,Review,ReviewImage,Wishlist,Cart,Order,OrderItem,Address
+from django.conf import settings
+from .models import Customer,Review,ReviewImage,Wishlist,Cart,Order,OrderItem,Address,CustomerNotification
 from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -137,7 +141,7 @@ def user_single_product(request, slug):
     try:
         product = Product.objects.get(slug=slug)
     except Product.DoesNotExist:
-        return redirect("/home")
+        return redirect("/")
 
     images = product.images.all()
 
@@ -426,8 +430,12 @@ def place_order(request):
         Cart.objects.filter(user=user).delete()
 
     dj_messages.success(request, "Order placed successfully!")
+
     send_order_notification(order)
-    return redirect("user_orders")
+
+    return redirect("order_success", order_slug=order.slug)
+
+
 
 @login_required(login_url='/user_login')
 def user_dashboard(request):
@@ -441,6 +449,7 @@ def user_orders(request):
             item.subtotal = item.quantity * item.product.price
     return render(request, "user/orders_table.html", {"orders": orders})
 
+@role_required("customer", login_url="/user_login")
 def add_review(request, slug):
     try:
         product = Product.objects.get(slug=slug)
@@ -573,7 +582,7 @@ def cancel_order(request, order_id):
     dj_messages.success(request, "Order cancelled successfully.")
     return redirect("user_orders")
 
-@login_required(login_url='/user_login')
+@role_required("customer", login_url="/user_login")
 def user_dashboard(request):
     user = request.user
 
@@ -602,7 +611,7 @@ def user_dashboard(request):
 
 
 
-@login_required(login_url='/user_login')
+@role_required("customer", login_url="/user_login")
 def user_profile_edit(request):
     user = request.user
 
@@ -753,7 +762,7 @@ def save_address(request):
 
     return redirect("/user_dashboard")
 
-@login_required
+@role_required("customer", login_url="/user_login")
 def delete_address(request, address_id):
     address = get_object_or_404(Address, id=address_id, user=request.user)
     address.delete()
@@ -766,7 +775,7 @@ def delete_address(request, address_id):
 
     return redirect("/user_dashboard/?section=addresses")
 
-@login_required
+@role_required("customer", login_url="/user_login")
 def set_default_address(request, address_id):
     user = request.user
 
@@ -778,7 +787,7 @@ def set_default_address(request, address_id):
 
     return redirect("/user_dashboard/?section=addresses")
 
-@login_required(login_url='/user_login')
+@role_required("customer", login_url="/user_login")
 def change_password_view(request):
     if request.method == 'POST':
         user = request.user
@@ -809,6 +818,7 @@ def user_about(request):
 
 def contact(request):
     return render(request, 'user/contact.html')
+
 
 
 def send_order_notification(order):
@@ -893,3 +903,51 @@ def send_review_notification(review):
         print(f"Review notification sent to seller {seller_id}")
     except Exception as e:
         print(f"Error sending review notification: {e}")
+
+@role_required("customer", login_url="/user_login")
+@csrf_exempt
+def create_razorpay_order(request):
+    if request.method == "POST":
+        amount = request.POST.get("amount")
+
+        amount_in_paise = int(float(amount) * 100)  # ₹ → paise
+
+        client = razorpay.Client(auth=(
+            settings.RAZORPAY_KEY_ID,
+            settings.RAZORPAY_KEY_SECRET
+        ))
+
+        order = client.order.create({
+            "amount": amount_in_paise,
+            "currency": "INR",
+            "payment_capture": 1
+        })
+
+    return JsonResponse({
+            "order_id": order["id"],
+            "key": settings.RAZORPAY_KEY_ID,
+            "amount": amount_in_paise,
+        })
+
+@role_required("customer", login_url="/user_login")
+def user_notifications(request):
+    notifications = CustomerNotification.objects.filter(
+        user=request.user
+    ).order_by('-created_at')
+
+    # mark all as read
+    CustomerNotification.objects.filter(
+        user=request.user,
+        is_read=False
+    ).update(is_read=True)
+
+    return render(request, "user/notifications.html", {
+        "notifications": notifications
+    })
+
+@role_required("customer", login_url="/user_login")
+def get_notification_count(request):
+    unread = CustomerNotification.objects.filter(user=request.user, is_read=False).count()
+    return JsonResponse({"count": unread})
+
+

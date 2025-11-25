@@ -193,13 +193,13 @@
   <header class="bg-white shadow-lg sticky top-0 z-50">
     <div class="container mx-auto px-4">
         <nav class="flex justify-between items-center py-4">
-            <a href="{% url 'user_home' %}" class="logo-hover flex items-center text-2xl font-bold text-primary">
+            <a href="{% url 'home' %}" class="logo-hover flex items-center text-2xl font-bold text-primary">
                 <i class="fas fa-shopping-bag mr-2 transform -rotate-12"></i>
                 Shopzy
             </a>
 
             <ul class="hidden md:flex space-x-8">
-                <li><a href="{% url 'user_home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
+                <li><a href="{% url 'home' %}" class="nav-link font-medium hover:text-primary transition-colors">Home</a></li>
                 <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Categories</a></li>
                 <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">About</a></li>
                 <li><a href="#" class="nav-link font-medium hover:text-primary transition-colors">Contact</a></li>
@@ -207,7 +207,7 @@
 
             <div class="flex items-center">
                 <!-- Search Form -->
-                <form action="{% url 'user_home' %}" class="hidden md:flex items-center bg-light rounded-full px-4 py-2 mr-4 w-64 search-bar">
+                <form action="{% url 'home' %}" class="hidden md:flex items-center bg-light rounded-full px-4 py-2 mr-4 w-64 search-bar">
                     <input type="text"
                            name="q"
                            value="{{ request.GET.q }}"
@@ -285,7 +285,7 @@
     <!-- Mobile Navigation -->
     <div class="mobile-nav bg-white shadow-lg md:hidden">
         <div class="container mx-auto px-4">
-            <a href="{% url 'user_home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
+            <a href="{% url 'home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Home</a>
             <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Shop</a>
             <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Categories</a>
             <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Deals</a>
@@ -300,7 +300,7 @@
             </div>
             {% else %}
             <div class="border-t border-gray-200 mt-4 pt-4">
-                <a href="{% url 'user_home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Profile</a>
+                <a href="{% url 'home' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Profile</a>
                 <a href="#" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">My Orders</a>
                 <a href="{% url 'user_view_wishlist' %}" class="block py-3 border-b border-gray-200 hover:text-primary transition-colors">Wishlist</a>
                 <a href="#" class="block py-3 hover:text-primary transition-colors">Logout</a>
@@ -433,7 +433,7 @@
             <div class="footer-column">
                 <h3 class="footer-title text-xl mb-4 pb-2 relative">Quick Links</h3>
                 <ul class="space-y-2">
-                    <li><a href="{% url 'user_home' %}" class="text-gray-300 no-underline transition-colors hover:text-white">Home</a></li>
+                    <li><a href="{% url 'home' %}" class="text-gray-300 no-underline transition-colors hover:text-white">Home</a></li>
                     <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Shop</a></li>
                     <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Categories</a></li>
                     <li><a href="#" class="text-gray-300 no-underline transition-colors hover:text-white">Deals</a></li>
