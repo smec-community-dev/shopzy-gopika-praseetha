@@ -1,3 +1,6 @@
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from Seller.models import SellerNotification
 import re
 
 from django.core.exceptions import ValidationError
@@ -94,7 +97,7 @@ def user_login(request):
         if user is not None:
             if user.role == "customer":
                 login(request, user)
-                return redirect('/home')
+                return redirect('/')
             else:
                 return render(request, 'user/user_login.html', {'error': 'Access denied! Only customers can login here.'})
         else:
@@ -423,6 +426,7 @@ def place_order(request):
         Cart.objects.filter(user=user).delete()
 
     dj_messages.success(request, "Order placed successfully!")
+    send_order_notification(order)
     return redirect("user_orders")
 
 @login_required(login_url='/user_login')
@@ -459,6 +463,7 @@ def add_review(request, slug):
         dj_messages.success(request, "Review added successfully!")
 
         return redirect("user_orders")
+        send_review_notification(review)
 
     return render(request, "user/add_review.html", {"product": product,"order_slug": order.slug})
 
@@ -701,6 +706,7 @@ def user_buy_now(request, slug):
 
     request.session.set_expiry(20 * 60)
 
+
     return redirect("user_checkout")
 
 @role_required("customer", login_url="/user_login")
@@ -803,3 +809,87 @@ def user_about(request):
 
 def contact(request):
     return render(request, 'user/contact.html')
+
+
+def send_order_notification(order):
+    """Send real-time notification to seller when order is placed"""
+    try:
+        channel_layer = get_channel_layer()
+
+        # Get all order items and notify respective sellers
+        for order_item in order.order_items.all():
+            seller = order_item.product.seller
+            seller_id = seller.id
+
+            message = f"New order received for {order_item.product.product_name}"
+            data = {
+                'order_id': order.id,
+                'product_name': order_item.product.product_name,
+                'customer_name': order.user.get_full_name() or order.user.username,
+                'quantity': order_item.quantity,
+                'total_amount': str(order_item.price * order_item.quantity),
+                'order_date': order.created_at.strftime("%Y-%m-%d %H:%M"),
+            }
+
+            # Save notification to database
+            notification = SellerNotification.objects.create(
+                seller=seller,
+                notification_type='order',
+                message=message,
+                data=data
+            )
+
+            # Send via WebSocket
+            async_to_sync(channel_layer.group_send)(
+                f'seller_{seller_id}',
+                {
+                    'type': 'send_notification',
+                    'id': notification.id,
+                    'message': message,
+                    'notification_type': 'order',
+                    'data': data
+                }
+            )
+            print(f"Order notification sent to seller {seller_id}")
+    except Exception as e:
+        print(f"Error sending order notification: {e}")
+
+
+def send_review_notification(review):
+    """Send real-time notification to seller when review is posted"""
+    try:
+        channel_layer = get_channel_layer()
+        seller = review.product.seller
+        seller_id = seller.id
+
+        message = f"New {review.rating}★ review for {review.product.product_name}"
+        data = {
+            'product_name': review.product.product_name,
+            'rating': review.rating,
+            'review_text': review.review[:100] + "..." if len(review.review) > 100 else review.review,
+            'reviewer': review.user.get_full_name() or review.user.username,
+            'review_date': review.created_at.strftime("%Y-%m-%d %H:%M"),
+        }
+
+        # Save notification to database
+        notification = SellerNotification.objects.create(
+            seller=seller,
+            notification_type='review',
+            message=message,
+            data=data
+        )
+
+        # Send via WebSocket
+        async_to_sync(channel_layer.group_send)(
+            f'seller_{seller_id}',
+            {
+                'type': 'send_notification',
+                'id': notification.id,
+                'message': message,
+                'notification_type': 'review',
+                'data': data
+            }
+        )
+        print(f"Review notification sent to seller {seller_id}")
+    except Exception as e:
+        print(f"Error sending review notification: {e}")

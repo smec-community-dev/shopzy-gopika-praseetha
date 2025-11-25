@@ -289,9 +289,7 @@ def product_management(request):
 
 
 def order_management(request):
-    if request.user.role != "admin":
-        messages.error(request, "Unauthorized access ❌")
-        return redirect("admin_login")
+
 
     try:
         # Get all orders with related data
@@ -362,7 +360,7 @@ def order_management(request):
             'shipped_orders': shipped_orders,
             'delivered_orders_count': delivered_orders_count,
             'recent_orders': recent_orders,
-            'STATUS_CHOICES': Order.STATUS_CHOICES,
+            # 'STATUS_CHOICES': Order.STATUS_CHOICES,
         }
 
         return render(request, "admin/admin_orders.html", context)
@@ -374,9 +372,7 @@ def order_management(request):
 
 @login_required(login_url="admin_login")
 def order_detail(request, order_id):
-    if request.user.role != "admin":
-        messages.error(request, "Unauthorized access ❌")
-        return redirect("admin_login")
+
 
     order = get_object_or_404(Order, id=order_id)
     order_items = order.order_items.select_related('product').all()
@@ -525,9 +521,7 @@ def toggle_user_status(request, user_id):
 
 @login_required(login_url="admin_login")
 def update_order_status(request, order_id):
-    if request.user.role != "admin":
-        messages.error(request, "Unauthorized access ❌")
-        return redirect("admin_login")
+
 
     if request.method == "POST":
         order = get_object_or_404(Order, id=order_id)

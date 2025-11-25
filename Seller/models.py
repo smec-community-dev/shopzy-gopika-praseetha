@@ -21,7 +21,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     description = models.TextField()
     slug=models.SlugField()
-    rating = models.FloatField(default=0)
+    rating = models.FloatField(default=0,null=True)
     stock = models.IntegerField(default=0)
 
     def __str__(self):
@@ -35,4 +35,23 @@ class ProductImage(models.Model):
     def __str__(self):
         return f"Image for {self.product.product_name}"
 
+
+class SellerNotification(models.Model):
+    NOTIFICATION_TYPES = (
+        ('order', 'New Order'),
+        ('review', 'New Review'),
+    )
+
+    seller = models.ForeignKey('Seller', on_delete=models.CASCADE, related_name='notifications')
+    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    data = models.JSONField(default=dict, blank=True)  # Store extra info
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.notification_type} - {self.seller.shop_name}"
 

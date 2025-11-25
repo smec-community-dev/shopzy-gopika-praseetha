@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'Core',
     'User',
     'Seller.apps.SellerConfig',
+    'channels',
 ]
 
 
@@ -133,7 +134,16 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 
-WSGI_APPLICATION = 'project.wsgi.application'
+ASGI_APPLICATION = 'project.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],  # Redis server
+        },
+    },
+}
 
 
 # DATABASES = {
