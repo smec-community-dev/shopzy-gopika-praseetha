@@ -27,13 +27,35 @@
         .chart-active {
             display: block;
         }
+        .notification-item.unread {
+            background-color: #f0f9ff;
+            border-left: 3px solid #3b82f6;
+        }
+        .toast {
+            transition: all 0.3s ease-in-out;
+            z-index: 1000;
+        }
+        .notification-badge {
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 18px;
+            height: 18px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
+    <!-- Toast Container -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
     <div class="flex flex-col lg:flex-row min-h-screen">
+        <!-- Mobile Header -->
         <header class="lg:hidden bg-white shadow-sm py-4 px-6 flex items-center justify-between">
             <h1 class="text-xl font-bold text-indigo-600">Seller Dashboard</h1>
             <div class="flex items-center space-x-4">
+                <!-- Profile Dropdown Mobile -->
                 <div class="relative">
                     <button class="profile-button p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-300">
                         <i class="fas fa-user"></i>
@@ -60,26 +82,21 @@
                     </div>
                 </div>
 
+                <!-- Notification Dropdown Mobile -->
                 <div class="relative">
-                    <button class="notification-button p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                    <button class="notification-button p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-300 relative">
                         <i class="fas fa-bell"></i>
+                        <span class="notification-badge absolute -top-1 -right-1 bg-red-500 text-white rounded-full"></span>
                     </button>
-                    <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
 
-                    <div class="notification-dropdown absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-10 border border-gray-200">
-                        <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                            <i class="fas fa-bell mr-2 text-gray-500"></i>
-                            Notifications
-                        </a>
-                        <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                            <i class="fas fa-cog mr-2 text-gray-500"></i>
-                            Notification Settings
-                        </a>
+                    <div class="notification-dropdown absolute right-0 mt-2 z-50">
+                        <!-- Content will be populated by JavaScript -->
                     </div>
                 </div>
             </div>
         </header>
 
+        <!-- Sidebar -->
         <aside class="w-full lg:w-64 bg-white shadow-lg lg:min-h-screen">
             <div class="p-6 border-b border-gray-200">
                 <h1 class="text-xl font-bold text-indigo-600">Seller Dashboard</h1>
@@ -106,7 +123,9 @@
             </nav>
         </aside>
 
+        <!-- Main Content -->
         <main class="flex-1 lg:ml-0 flex flex-col">
+            <!-- Desktop Header -->
             <header class="hidden lg:block bg-white shadow-sm py-4 px-6">
                 <div class="flex items-center justify-between">
                     <div>
@@ -114,6 +133,7 @@
                         <p class="text-gray-500 text-sm mt-1">Welcome back! Here's what's happening today.</p>
                     </div>
                     <div class="flex items-center space-x-4">
+                        <!-- Profile Dropdown Desktop -->
                         <div class="relative">
                             <button class="profile-button flex items-center space-x-2 p-2 text-gray-700 hover:text-gray-900 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-300">
                                 <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-semibold">
@@ -144,28 +164,24 @@
                             </div>
                         </div>
 
+                        <!-- Notification Dropdown Desktop -->
                         <div class="relative">
-                            <button class="notification-button p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                            <button class="notification-button p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-300 relative">
                                 <i class="fas fa-bell"></i>
+                                <span class="notification-badge absolute -top-1 -right-1 bg-red-500 text-white rounded-full"></span>
                             </button>
-                            <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
 
-                            <div class="notification-dropdown absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-10 border border-gray-200">
-                                <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    <i class="fas fa-bell mr-2 text-gray-500"></i>
-                                    Notifications
-                                </a>
-                                <a href="#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    <i class="fas fa-cog mr-2 text-gray-500"></i>
-                                    Notification Settings
-                                </a>
+                            <div class="notification-dropdown absolute right-0 mt-2 z-50">
+                                <!-- Content will be populated by JavaScript -->
                             </div>
                         </div>
                     </div>
                 </div>
             </header>
 
+            <!-- Dashboard Content -->
             <div class="p-4 md:p-6 flex-1">
+                <!-- Stats Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
                     <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
                         <div class="flex items-center">
@@ -216,7 +232,7 @@
                     </div>
                 </div>
 
-                <!-- Corrected Sales Overview Section -->
+                <!-- Sales Overview Section -->
                 <div class="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-6 md:mb-8">
                     <div class="xl:col-span-2 bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
@@ -338,6 +354,7 @@
                     </div>
                 </div>
 
+                <!-- Recent Reviews and Top Products -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 md:mb-8">
                     <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
                         <div class="flex items-center justify-between mb-6">
@@ -426,6 +443,7 @@
                     </div>
                 </div>
 
+                <!-- Recent Orders and Quick Stats -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-white rounded-xl shadow-sm p-4 md:p-6 border border-gray-100">
                         <div class="flex items-center justify-between mb-6">
@@ -485,6 +503,7 @@
                     </div>
                 </div>
 
+                <!-- Mobile Bottom Navigation -->
                 <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3 px-6 flex justify-around">
                     <a href="#" class="flex flex-col items-center text-indigo-600">
                         <i class="fas fa-tachometer-alt mb-1"></i>
@@ -505,6 +524,7 @@
                 </div>
             </div>
 
+            <!-- Footer -->
             <footer class="bg-white border-t border-gray-200 py-4 px-6 mt-auto">
                 <div class="text-center text-sm text-gray-500">
                     &copy; 2025 Seller Dashboard. All rights reserved.
@@ -513,8 +533,256 @@
         </main>
     </div>
 
+    <!-- WebSocket Notification Script -->
     <script>
+        // WebSocket for real-time seller notifications
+        let notificationSocket;
+        let unreadCount = {{ unread_notifications_count|default:0 }};
 
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            notificationSocket = new WebSocket(
+                protocol + '//' + window.location.host + '/ws/seller/notifications/'
+            );
+
+            notificationSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                console.log('WebSocket message received:', data);
+
+                if (data.type === 'unread_count') {
+                    unreadCount = data.count;
+                    updateNotificationBadge();
+                }
+                else if (data.type === 'notification') {
+                    unreadCount++;
+                    updateNotificationBadge();
+                    addNotificationToDropdown(data);
+                    showToastNotification(data);
+                }
+            };
+
+            notificationSocket.onclose = function(e) {
+                console.log('WebSocket disconnected, attempting to reconnect...');
+                setTimeout(connectWebSocket, 3000);
+            };
+
+            notificationSocket.onerror = function(err) {
+                console.error('WebSocket error:', err);
+            };
+        }
+
+        function updateNotificationBadge() {
+            const badges = document.querySelectorAll('.notification-badge');
+            badges.forEach(badge => {
+                if (unreadCount > 0) {
+                    badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            });
+        }
+
+        function addNotificationToDropdown(notification) {
+            let notificationList = document.getElementById('notificationList');
+            if (!notificationList) {
+                initializeNotificationDropdown();
+                notificationList = document.getElementById('notificationList');
+            }
+
+            // Remove "no notifications" message if it exists
+            const noNotifications = notificationList.querySelector('.no-notifications');
+            if (noNotifications) {
+                noNotifications.remove();
+            }
+
+            const notificationItem = createNotificationElement(notification);
+            notificationList.insertBefore(notificationItem, notificationList.firstChild);
+
+            // Limit to 10 notifications
+            if (notificationList.children.length > 10) {
+                notificationList.removeChild(notificationList.lastChild);
+            }
+        }
+
+        function createNotificationElement(notification) {
+            const div = document.createElement('div');
+            div.className = 'notification-item p-3 border-b border-gray-100 hover:bg-gray-50 cursor-pointer unread';
+            div.setAttribute('data-notification-id', notification.id);
+
+            const icon = notification.notification_type === 'order' ?
+                'fas fa-shopping-cart' : 'fas fa-star';
+            const iconColor = notification.notification_type === 'order' ?
+                'bg-blue-500' : 'bg-yellow-500';
+            const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            div.innerHTML = `
+                <div class="flex items-start">
+                    <div class="flex-shrink-0 ${iconColor} p-2 rounded-lg">
+                        <i class="${icon} text-white text-sm"></i>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <p class="text-sm font-medium text-gray-900">${notification.message}</p>
+                        <p class="text-xs text-gray-500 mt-1">${time}</p>
+                        ${notification.data.order_id ?
+                            `<p class="text-xs text-blue-600 mt-1">Order #${notification.data.order_id} • ₹${notification.data.total_amount}</p>` :
+                            ''}
+                        ${notification.data.rating ?
+                            `<p class="text-xs text-yellow-600 mt-1">${notification.data.rating}★ Rating • ${notification.data.reviewer}</p>` :
+                            ''}
+                    </div>
+                    <button onclick="markAsRead(${notification.id}, this)" class="ml-2 text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times text-xs"></i>
+                    </button>
+                </div>
+            `;
+
+            div.onclick = function() {
+                markAsRead(notification.id, this);
+                // Navigate based on notification type
+                if (notification.notification_type === 'order') {
+                    window.location.href = "{% url 'oderslist' %}";
+                }
+            };
+
+            return div;
+        }
+
+        function markAsRead(notificationId, element) {
+            // Send to server
+            fetch(`/seller/notifications/${notificationId}/read/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Update UI
+                    if (element.closest) {
+                        const notificationItem = element.closest('.notification-item');
+                        if (notificationItem) {
+                            notificationItem.classList.remove('unread');
+                            notificationItem.style.opacity = '0.7';
+                        }
+                    }
+
+                    // Update count
+                    if (unreadCount > 0) {
+                        unreadCount--;
+                        updateNotificationBadge();
+                    }
+                }
+            });
+        }
+
+        function showToastNotification(notification) {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast bg-white shadow-lg rounded-lg border-l-4 ${
+                notification.notification_type === 'order' ? 'border-blue-500' : 'border-yellow-500'
+            } transform transition-all duration-300 ease-in-out translate-x-full`;
+
+            const icon = notification.notification_type === 'order' ?
+                'fas fa-shopping-cart' : 'fas fa-star';
+            const iconColor = notification.notification_type === 'order' ?
+                'text-blue-500' : 'text-yellow-500';
+
+            toast.innerHTML = `
+                <div class="p-4">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0">
+                            <i class="${icon} ${iconColor} text-lg"></i>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <p class="text-sm font-medium text-gray-900">${notification.message}</p>
+                            <p class="mt-1 text-xs text-gray-500">Just now</p>
+                        </div>
+                        <div class="ml-4 flex-shrink-0">
+                            <button class="bg-white rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none close-toast">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+                toast.classList.add('translate-x-0');
+            }, 100);
+
+            // Close button
+            toast.querySelector('.close-toast').addEventListener('click', function() {
+                closeToast(toast);
+            });
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    closeToast(toast);
+                }
+            }, 5000);
+        }
+
+        function closeToast(toast) {
+            toast.classList.remove('translate-x-0');
+            toast.classList.add('translate-x-full');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }
+
+        function initializeNotificationDropdown() {
+            const notificationDropdowns = document.querySelectorAll('.notification-dropdown');
+            notificationDropdowns.forEach(dropdown => {
+                dropdown.innerHTML = `
+                    <div class="w-80 bg-white rounded-lg shadow-lg border border-gray-200">
+                        <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-lg">
+                            <span class="font-semibold text-gray-700">Notifications</span>
+                            <span class="notification-badge bg-red-500 text-white text-xs rounded-full px-2 py-1" style="${unreadCount > 0 ? '' : 'display: none;'}">${unreadCount}</span>
+                        </div>
+                        <div id="notificationList" class="max-h-96 overflow-y-auto">
+                            <div class="no-notifications p-6 text-center text-gray-500">
+                                <i class="fas fa-bell text-2xl mb-2"></i>
+                                <p class="text-sm">No new notifications</p>
+                            </div>
+                        </div>
+                        <div class="px-4 py-3 border-t border-gray-200 bg-gray-50 rounded-b-lg">
+                            <a href="#" class="flex items-center justify-center text-sm text-indigo-600 hover:text-indigo-800 font-medium">
+                                <i class="fas fa-cog mr-2"></i>
+                                Notification Settings
+                            </a>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // CSRF token helper
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Chart switching function
         function changeChart(type) {
             // Hide all charts
             document.querySelectorAll('.chart-container').forEach(chart => {
@@ -531,8 +799,11 @@
             document.getElementById(type + 'Btn').className = 'px-3 py-1 text-xs bg-indigo-100 text-indigo-700 rounded-full font-medium transition-colors';
         }
 
-        // Initialize with weekly chart
+        // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
+            connectWebSocket();
+            initializeNotificationDropdown();
+            updateNotificationBadge();
             changeChart('weekly');
         });
     </script>

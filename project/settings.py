@@ -37,7 +37,7 @@ DEBUG = os.getenv("DEBUG") == "True"
 
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 
@@ -135,11 +135,18 @@ SOCIALACCOUNT_PROVIDERS = {
 
 
 ASGI_APPLICATION = 'project.asgi.application'
+
+
 CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"  # 👈 No Redis needed
-    }
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],  # Redis server
+        },
+    },
 }
+
+
 
 # DATABASES = {
 #     'default': {

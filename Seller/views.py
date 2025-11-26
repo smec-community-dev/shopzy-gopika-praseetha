@@ -719,7 +719,3 @@ def seller_delete_profile(request):
     return redirect('profile_update')
 
 
-
-
-# Create your views here.
-

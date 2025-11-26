@@ -36,3 +36,22 @@ class ProductImage(models.Model):
         return f"Image for {self.product.product_name}"
 
 
+class SellerNotification(models.Model):
+    NOTIFICATION_TYPES = (
+        ('order', 'New Order'),
+        ('review', 'New Review'),
+    )
+
+    seller = models.ForeignKey('Seller', on_delete=models.CASCADE, related_name='notifications')
+    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
+    message = models.TextField()
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    data = models.JSONField(default=dict, blank=True)  # Store extra info
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.notification_type} - {self.seller.shop_name}"
+
